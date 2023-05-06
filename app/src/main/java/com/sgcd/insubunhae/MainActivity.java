@@ -25,7 +25,8 @@ public class MainActivity extends AppCompatActivity {
     SQLiteDatabase idb = null;
     private Cursor dbCursor;
 
-    //PR test comment
+    //PR test comment2
+    // merge this to feature
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
