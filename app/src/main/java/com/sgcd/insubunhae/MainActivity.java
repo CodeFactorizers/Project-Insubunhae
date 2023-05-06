@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private Cursor dbCursor;
 
     //PR test comment2
-    // merge this to feature
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
