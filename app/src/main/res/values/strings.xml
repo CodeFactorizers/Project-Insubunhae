@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">insubunhae</string>
+    <string name="title_home">홈</string>
+    <string name="title_statistics">통계</string>
+    <string name="title_notifications">알림</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+</resources>

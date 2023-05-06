@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu  xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/menu_btn1"
+        android:title="버튼1"
+        app:showAsAction="always" />
+    <item android:id="@+id/menu_btn2"
+        android:title="버튼2"
+        app:showAsAction="always" />
+    <item android:id="@+id/menu_btn3"
+        android:text="action_btn3"
+        android:title="버튼3"
+        app:showAsAction="never" />
+    <item android:id="@+id/menu_btn4"
+        android:title="버튼4"
+        app:showAsAction="never"/>
+    <item android:id="@+id/menu_btn5"
+        android:title="버튼5"
+        app:showAsAction="never"/>
+
+</menu>
