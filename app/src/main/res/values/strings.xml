@@ -3,5 +3,27 @@
     <string name="title_home">홈</string>
     <string name="title_statistics">통계</string>
     <string name="title_notifications">알림</string>
-    <string name="title_activity_settings">SettingsActivity</string>
+    <string name="title_activity_settings">설정</string>
+
+    <!-- Top menu buttons -->
+    <string name="menu_button1">버튼1</string>
+    <string name="menu_button2">설정</string>
+    <string name="menu_button3">버튼3</string>
+    <string name="menu_button4">버튼4</string>
+    <string name="menu_button5">버튼5</string>
+
+    <!-- Preference Titles -->
+    <string name="messages_header">Messages</string>
+    <string name="sync_header">Sync</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">Your signature</string>
+    <string name="reply_title">Default reply action</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
 </resources>
