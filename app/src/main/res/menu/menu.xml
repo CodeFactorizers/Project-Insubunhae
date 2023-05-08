@@ -3,20 +3,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item android:id="@+id/menu_btn1"
-        android:title="버튼1"
-        app:showAsAction="always" />
+        android:title="@string/menu_button1"
+        app:showAsAction="ifRoom" />
     <item android:id="@+id/menu_btn2"
-        android:title="버튼2"
+        android:title="@string/menu_button2"
         app:showAsAction="always" />
     <item android:id="@+id/menu_btn3"
-        android:text="action_btn3"
-        android:title="버튼3"
+        android:title="@string/menu_button3"
         app:showAsAction="never" />
     <item android:id="@+id/menu_btn4"
-        android:title="버튼4"
+        android:title="@string/menu_button4"
         app:showAsAction="never"/>
     <item android:id="@+id/menu_btn5"
-        android:title="버튼5"
+        android:title="@string/menu_button5"
         app:showAsAction="never"/>
 
 </menu>

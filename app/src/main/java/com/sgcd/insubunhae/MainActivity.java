@@ -1,11 +1,13 @@
 package com.sgcd.insubunhae;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -13,9 +15,11 @@ import androidx.navigation.ui.NavigationUI;
 import android.view.MenuInflater;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.view.MenuItem;
 
 import com.sgcd.insubunhae.databinding.ActivityMainBinding;
 import com.sgcd.insubunhae.db.DBHelper;
+import com.sgcd.insubunhae.ui.settings.SettingsFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -51,11 +55,28 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(binding.navView, navController);
     }
 
+    // Inflating the menu items from the menu_items.xml file
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater=getMenuInflater();
         inflater.inflate(R.menu.menu, menu);
         return true;
     }
+    // Handling the click events of the menu items
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Switching on the item id of the menu item
+        switch (item.getItemId()) {
+            case R.id.menu_btn2:
+                Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.menu_btn1:
+                break;
 
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+        return true;
+    }
 }
