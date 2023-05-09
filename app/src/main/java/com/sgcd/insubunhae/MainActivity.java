@@ -44,6 +44,21 @@ public class MainActivity extends AppCompatActivity {
         // also be created.
         idb = dbHelper.getWritableDatabase();
 
+        // MESSENGER_HISTORY data 추가
+        dbHelper.insertMessengerHistory(1, 1000, "2022-01-01 10:30:00", "SAT", "msg", 10);
+        dbHelper.insertMessengerHistory(2, 1000, "2022-01-01 10:40:00", "SAT", "katalk", 5);
+        dbHelper.insertMessengerHistory(3, 1001, "2022-01-02 10:30:00", "SUN", "msg", 10);
+        dbHelper.insertMessengerHistory(4, 1002, "2022-01-03 10:30:00", "MON", "msg", 10);
+        dbHelper.insertMessengerHistory(5, 1002, "2022-01-03 10:30:00", "MON", "msg", 10);
+        dbHelper.insertMessengerHistory(6, 1002, "2022-01-04 10:30:00", "TUE", "msg", 10);
+        dbHelper.insertMessengerHistory(7, 1004, "2022-01-04 10:30:00", "TUE", "msg", 10);
+        dbHelper.insertMessengerHistory(8, 1004, "2022-01-04 10:30:00", "TUE", "msg", 10);
+        dbHelper.insertMessengerHistory(9, 1005, "2022-01-05 10:30:00", "WED", "msg", 10);
+        dbHelper.insertMessengerHistory(10, 1005, "2022-01-05 10:31:00", "WED", "msg", 10);
+        dbHelper.insertMessengerHistory(11, 1005, "2022-01-05 10:32:00", "WED", "msg", 10);
+        dbHelper.insertMessengerHistory(12, 1005, "2022-01-05 10:33:00", "WED", "msg", 10);
+        dbHelper.insertMessengerHistory(13, 1005, "2022-01-05 10:34:00", "WED", "msg", 10);
+
         BottomNavigationView navView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
