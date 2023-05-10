@@ -4,6 +4,7 @@ import static com.sgcd.insubunhae.db.DBContract.ARRAY_LENGTH;
 import static com.sgcd.insubunhae.db.DBContract.SQL_CREATE_TABLE_ARRAY;
 import static com.sgcd.insubunhae.db.DBContract.TABLE_NAME_ARRAY;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -39,5 +40,20 @@ public class DBHelper extends SQLiteOpenHelper  {
             Log.d("Database Operations", "Table : " + TABLE_NAME_ARRAY[i] + " dropped...");
         }
         onCreate(db);
+    }
+
+    // MESSENGER_HISTORY data 추가 메소드
+    public void insertMessengerHistory(int historyId, int contactId, String datetime, String day, String type, int count) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("history_id", historyId);
+        values.put("contact_id", contactId);
+        values.put("datetime", datetime);
+        values.put("day", day);
+        values.put("type", type);
+        values.put("count", count);
+        db.insert("MESSENGER_HISTORY", null, values);
+        Log.d("Database Operations", "Data inserted...");
+        db.close();
     }
 }
