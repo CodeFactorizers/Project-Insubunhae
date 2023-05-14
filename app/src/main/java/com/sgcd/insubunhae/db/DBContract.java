@@ -52,12 +52,17 @@ public class DBContract {
         public static final String NAME = "name";
         public static final String FIRST_CHAR = "first_char";
         public static final String PHONE1 = "phone_number1";
+        public static final String PHONE_TYPE1 = "phone_number_type1";
         public static final String PHONE2 = "phone_number2";
-        public static final String PHONE3 = "phobe_number3";
+        public static final String PHONE_TYPE2 = "phone_number_type2";
+        public static final String PHONE3 = "phone_number3";
+        public static final String PHONE_TYPE3 = "phone_number_type3";
         public static final String IS_GROUPED = "is_grouped";
         public static final String GROUP_CNT = "group_count";
-        public static final String ADDRESS = "address";
-        public static final String ADDR2 = "address2";
+        public static final String ADDRESS = "address1";
+        public static final String ADDRESS_TYPE1 = "address_type1";
+        public static final String ADDRESS2 = "address2";
+        public static final String ADDRESS_TYPE2 = "address_type2";
         public static final String EMAIL = "email";
         public static final String EMAIL2 = "sub_email";
         public static final String WORK = "work";
@@ -79,14 +84,19 @@ public class DBContract {
         public static final String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " ("
                 + KEY_CONTACT_ID + " INTEGER,"
                 + NAME + " VARCHAR(30) NOT NULL,"
-                + FIRST_CHAR + " CHARACTER(1),"
+                + FIRST_CHAR + " TEXT,"
                 + PHONE1 + " VARCHAR(15),"
+                + PHONE_TYPE1 + " TEXT,"
                 + PHONE2 + " VARCHAR(15),"
+                + PHONE_TYPE2 + " TEXT,"
                 + PHONE3 + " VARCHAR(15),"
+                + PHONE_TYPE3 + " TEXT,"
                 + IS_GROUPED + " INTEGER NOT NULL,"
                 + GROUP_CNT + " INTEGER,"
                 + ADDRESS + " VARCHAR(50),"
-                + ADDR2 + " VARCHAR(30),"
+                + ADDRESS_TYPE1 + " TEXT,"
+                + ADDRESS2 + " VARCHAR(30),"
+                + ADDRESS_TYPE2 + " TEXT,"
                 + EMAIL + " VARCHAR(30) CHECK (" + EMAIL + " like '%@%'),"
                 + EMAIL2 + " VARCHAR(30) CHECK (" + EMAIL2 + " like '%@%'),"
                 + WORK + " VARCHAR(20),"
@@ -104,12 +114,17 @@ public class DBContract {
                 NAME,
                 FIRST_CHAR,
                 PHONE1,
+                PHONE_TYPE1,
                 PHONE2,
+                PHONE_TYPE2,
                 PHONE3,
+                PHONE_TYPE3,
                 IS_GROUPED,
                 GROUP_CNT,
                 ADDRESS,
-                ADDR2,
+                ADDRESS_TYPE1,
+                ADDRESS2,
+                ADDRESS_TYPE2,
                 EMAIL,
                 EMAIL2,
                 WORK,
@@ -285,14 +300,14 @@ public class DBContract {
         public static final String DEFAULT_SORT_ORDER = HISTORY_ID + " ASC";
 
         public static final String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " ("
-                + HISTORY_ID + " INTEGER,"
+                + HISTORY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + KEY_CONTACT_ID + " INTEGER NOT NULL,"
                 + DATETIME + " INTEGER NOT NULL,"
                 + NAME + " VARCHAR(30),"
                 + PHONE + " VARCHAR(15) NOT NULL,"
                 + TYPE + " INTEGER NOT NULL,"
                 + DURATION + " INTEGER NOT NULL,"
-                + "PRIMARY KEY(" + HISTORY_ID + "),"
+                //+ "PRIMARY KEY(" + HISTORY_ID + "),"
                 + "FOREIGN KEY(" + KEY_CONTACT_ID + ") REFERENCES " + FK_TABLE_NAME + " (" + KEY_CONTACT_ID + ")"
                 + ");";
 
