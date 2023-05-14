@@ -137,12 +137,14 @@ public class ContactsList {
                                 ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE
                         },
                         null);
-                String company = orgCursor.getString(orgCursor.getColumnIndex(ContactsContract.CommonDataKinds.Organization.COMPANY));
-                String title = orgCursor.getString(orgCursor.getColumnIndex(ContactsContract.CommonDataKinds.Organization.TITLE));
-                String department = orgCursor.getString(orgCursor.getColumnIndex(ContactsContract.CommonDataKinds.Organization.DEPARTMENT));
-                contact.setCompany(company);
-                contact.setTitle(title);
-                contact.setDepartment(department);
+                if(orgCursor.moveToNext()) {
+                    String company = orgCursor.getString(orgCursor.getColumnIndex(ContactsContract.CommonDataKinds.Organization.COMPANY));
+                    String title = orgCursor.getString(orgCursor.getColumnIndex(ContactsContract.CommonDataKinds.Organization.TITLE));
+                    String department = orgCursor.getString(orgCursor.getColumnIndex(ContactsContract.CommonDataKinds.Organization.DEPARTMENT));
+                    contact.setCompany(company);
+                    contact.setTitle(title);
+                    contact.setDepartment(department);
+                }
 
                 // im address
 //                Cursor imCursor = resolver.query(
@@ -202,7 +204,7 @@ public class ContactsList {
                     }
                 }
 
-                if(!tmp.getCompany().isEmpty()){
+                if(tmp.getCompany() != null){
                     cv.put("work", tmp.getCompany());
                 }
 
