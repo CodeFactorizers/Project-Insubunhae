@@ -6,14 +6,22 @@ import static com.sgcd.insubunhae.db.DBContract.TABLE_NAME_ARRAY;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.net.Uri;
 import android.util.Log;
 
+import java.util.Calendar;
+
 public class DBHelper extends SQLiteOpenHelper  {
+    private Context context;
+
+    int i = 0;
 
     public DBHelper(Context context) {
         super(context, DBContract.DATABASE_NAME, null, DBContract.DATABASE_VERSION);
+        this.context = context;
         Log.d("Database Operations", "Database created...");
     }
 
@@ -25,6 +33,8 @@ public class DBHelper extends SQLiteOpenHelper  {
             db.execSQL(SQL_CREATE_TABLE_ARRAY[i]);
             Log.d("Database Operations", "Table : " + TABLE_NAME_ARRAY[i] + " created...");
         }
+
+        smsFromDeviceToDB(db);
     }
 
     @Override
@@ -83,5 +93,85 @@ public class DBHelper extends SQLiteOpenHelper  {
 
         db.insert(DBContract.CallLog.TABLE_NAME, null, values);
         db.close();// constraints needed..?
+    }
+
+    public void smsFromDeviceToDB(SQLiteDatabase db) {
+        int smsHistoryId = 0;   //기록 번호
+        int smsContactId = 0;   //연락처 고유 아이디
+        long smsDatetime = 0;    //연락 날짜
+        String smsDay = "";     //연락 요일
+        String smsType = "";    //연락 수단
+        int smsCount = 0;       //일 연락 횟수(동일 연락 수단)
+
+        Uri messagesUri = Uri.parse("content://sms/inbox");
+        Cursor cursor = context.getContentResolver().query(messagesUri, null, null, null, null);
+
+        if (cursor == null) Log.d("getSmsFromDevice", "cursor is null..");
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                /* get sms from device */
+                smsHistoryId = i++;
+                int senderIndex = cursor.getColumnIndex("address");
+                if (senderIndex >= 0) {
+                    String smsSender = cursor.getString(senderIndex);
+                }
+                smsContactId = 1234;
+                int dateIndex = cursor.getColumnIndex("date");
+                if (dateIndex >= 0) {
+                    smsDatetime = cursor.getLong(dateIndex);
+                }
+                smsDay = getDayOfDatetime(smsDatetime);
+                //smsDay = "Monday"; //연락 요일
+                smsType = "Sms"; //연락 수단
+                smsCount = 0; //일 연락 횟수(동일 연락 수단)
+
+                Log.d("getSmsFromDevice", "datetime : " + smsDatetime);
+                Log.d("getSmsFromDevice", "day : " + smsDay);
+                Log.d("getSmsFromDevice", "type : " + smsType);
+                Log.d("getSmsFromDevice", "count : " + smsCount);
+
+
+                /* insert sms to db */
+                ContentValues values = new ContentValues();
+                values.put("history_id", smsHistoryId);
+                values.put("contact_id", smsContactId);
+                values.put("datetime", smsDatetime);
+                values.put("day", smsDay);
+                values.put("type", smsType);
+                values.put("count", smsCount);
+                db.insert("MESSENGER_HISTORY", null, values);
+
+            } while (cursor.moveToNext());
+        }
+
+        if (cursor != null) {
+            cursor.close();
+        }
+    }
+
+    public String getDayOfDatetime(long timestamp) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timestamp);
+
+        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+
+        switch (dayOfWeek) {
+            case Calendar.SUNDAY:
+                return "Sun";
+            case Calendar.MONDAY:
+                return "Mon";
+            case Calendar.TUESDAY:
+                return "Tue";
+            case Calendar.WEDNESDAY:
+                return "Wed";
+            case Calendar.THURSDAY:
+                return "Thu";
+            case Calendar.FRIDAY:
+                return "Fri";
+            case Calendar.SATURDAY:
+                return "Sat";
+            default:
+                return "";
+        }
     }
 }
