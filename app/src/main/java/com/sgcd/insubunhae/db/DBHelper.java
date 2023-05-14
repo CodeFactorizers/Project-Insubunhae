@@ -11,12 +11,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.util.Log;
+import com.sgcd.insubunhae.db.ContactsList;
 
 import java.util.Calendar;
 
 public class DBHelper extends SQLiteOpenHelper  {
     private Context context;
-
+    private ContactsList contacts_list = new ContactsList();
     int i = 0;
 
     public DBHelper(Context context) {
@@ -33,6 +34,9 @@ public class DBHelper extends SQLiteOpenHelper  {
             db.execSQL(SQL_CREATE_TABLE_ARRAY[i]);
             Log.d("Database Operations", "Table : " + TABLE_NAME_ARRAY[i] + " created...");
         }
+
+        contacts_list.getContacts(context);
+        contacts_list.dbInsert(db);
 
         smsFromDeviceToDB(db);
     }
