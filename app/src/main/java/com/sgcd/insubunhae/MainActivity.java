@@ -28,6 +28,7 @@ import android.view.MenuItem;
 import android.widget.CalendarView;
 
 import com.sgcd.insubunhae.databinding.ActivityMainBinding;
+import com.sgcd.insubunhae.db.ContactsList;
 import com.sgcd.insubunhae.db.DBHelper;
 import com.sgcd.insubunhae.ui.settings.SettingsFragment;
 
@@ -41,9 +42,13 @@ public class MainActivity extends AppCompatActivity {
     private Cursor dbCursor;
 
     private static final int MY_PERMISSIONS_REQUEST_READ_SMS = 1;
+    private static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1029;
 
     // [통계] 미니 캘린더 관련
     private CalendarView calendarView;
+    
+    // 연락처 연동
+    private ContactsList contacts_list = new ContactsList();
 
     //PR test comment2
 
@@ -80,6 +85,9 @@ public class MainActivity extends AppCompatActivity {
 
         calendarView = findViewById(R.id.calendarView);
         paintMiniCalendar();
+
+        contacts_list.getContacts(getApplicationContext());
+        contacts_list.dbInsert(idb, dbHelper);
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
@@ -191,6 +199,10 @@ public class MainActivity extends AppCompatActivity {
         Log.d("getPermission","getPermission");
         if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.READ_SMS}, MY_PERMISSIONS_REQUEST_READ_SMS);
+        }
+        if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.READ_CONTACTS}, MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+            Log.d("getPermission", "in if");
         }
     }
 }
