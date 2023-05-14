@@ -84,7 +84,7 @@ public class ContactsList {
                 Cursor emailCursor = resolver.query(ContactsContract.CommonDataKinds.Email.CONTENT_URI, null,
                         ContactsContract.CommonDataKinds.Email.CONTACT_ID + "=?", new String[]{id}, null);
 
-                while (emailCursor.moveToNext()) {
+                while (emailCursor != null && emailCursor.moveToNext()) {
                     String email = emailCursor.getString(emailCursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
                     contact.setEmail(email);
                 }
@@ -96,7 +96,7 @@ public class ContactsList {
                 Cursor addressCursor = resolver.query(ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_URI, null,
                         ContactsContract.CommonDataKinds.Phone.RAW_CONTACT_ID + "=?", new String[]{id}, null);
                 // 커스텀 타입 처리 해야 함
-                while (addressCursor.moveToNext()) {
+                while (addressCursor != null && addressCursor.moveToNext()) {
                     String address = addressCursor.getString(addressCursor.getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS));
                     String addressType = addressCursor.getString(addressCursor.getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.TYPE));
 
@@ -173,7 +173,7 @@ public class ContactsList {
         return this.contacts_list;
     }
 
-    public void dbInsert(SQLiteDatabase db, DBHelper helper){
+    public void dbInsert(SQLiteDatabase db){
         db.beginTransaction();
         try{
             //Main_Contacts

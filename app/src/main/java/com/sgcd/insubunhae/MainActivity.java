@@ -86,8 +86,8 @@ public class MainActivity extends AppCompatActivity {
         calendarView = findViewById(R.id.calendarView);
         paintMiniCalendar();
 
-        contacts_list.getContacts(getApplicationContext());
-        contacts_list.dbInsert(idb, dbHelper);
+        //contacts_list.getContacts(getApplicationContext());
+        //contacts_list.dbInsert(idb, dbHelper);
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
