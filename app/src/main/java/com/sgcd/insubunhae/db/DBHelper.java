@@ -56,4 +56,26 @@ public class DBHelper extends SQLiteOpenHelper  {
         Log.d("Database Operations", "Data inserted...");
         db.close();
     }
+
+    /*
+    Usage:
+    DBHelper dbHelper = new DBHelper(context);
+    dbHelper.insertCallLog(log_id, contact_id, datetime, name, phone, type, duration);
+     */
+    public void insertCallLog(int log_id, int contact_id, long datetime, String name, String phone, int type, int duration) {
+        SQLiteDatabase db = getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(DBContract.CallLog.HISTORY_ID, log_id);
+        values.put(DBContract.CallLog.KEY_CONTACT_ID, contact_id);
+        values.put(DBContract.CallLog.DATETIME, datetime);
+        values.put(DBContract.CallLog.NAME, name);
+        values.put(DBContract.CallLog.PHONE, phone);
+        values.put(DBContract.CallLog.TYPE, type);
+        values.put(DBContract.CallLog.DURATION, duration);
+
+        db.insert(DBContract.CallLog.TABLE_NAME, null, values);
+        db.close();// check needed..?
+    }
+
 }

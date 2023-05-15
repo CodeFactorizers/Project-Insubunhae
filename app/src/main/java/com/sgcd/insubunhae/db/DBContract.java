@@ -191,7 +191,7 @@ public class DBContract {
                 + MEMO_ID + " INTEGER,"
                 + KEY_CONTACT_ID + " INTEGER NOT NULL,"
                 + MEMO_CONTENTS + " TEXT,"
-                + DATETIME + " INTEGER NOT NULL,"
+                + DATETIME + " LONG NOT NULL,"
                 + "PRIMARY KEY(" + MEMO_ID + "),"
                 + "FOREIGN KEY(" + KEY_CONTACT_ID + ") REFERENCES " + FK_TABLE_NAME + " (" + KEY_CONTACT_ID + ")"
                 + ");";
@@ -236,7 +236,7 @@ public class DBContract {
         public static final String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " ("
                 + HISTORY_ID + " INTEGER,"
                 + KEY_CONTACT_ID + " INTEGER NOT NULL,"
-                + DATETIME + " INTEGER NOT NULL,"
+                + DATETIME + " LONG NOT NULL,"
                 + DAY + " VARCHAR(10) NOT NULL,"
                 + TYPE + " VARCHAR(10) NOT NULL,"
                 + COUNT + " INTEGER,"
@@ -263,7 +263,6 @@ public class DBContract {
         }
         public static final String TABLE_NAME = "CALL_LOG";
         public static final String FK_TABLE_NAME = "MAIN_CONTACTS";
-
         public static final String HISTORY_ID = "log_id";
         public static final String KEY_CONTACT_ID = "contact_id";
         public static final String DATETIME = "datetime";
@@ -287,7 +286,7 @@ public class DBContract {
         public static final String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " ("
                 + HISTORY_ID + " INTEGER,"
                 + KEY_CONTACT_ID + " INTEGER NOT NULL,"
-                + DATETIME + " INTEGER NOT NULL,"
+                + DATETIME + " LONG NOT NULL,"
                 + NAME + " VARCHAR(30),"
                 + PHONE + " VARCHAR(15) NOT NULL,"
                 + TYPE + " INTEGER NOT NULL,"
@@ -425,7 +424,7 @@ public class DBContract {
 
         public static final String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " ("
                 + SCHEDULE_id + " INTEGER,"
-                + DATETIME + " INTEGER NOT NULL,"
+                + DATETIME + " LONG NOT NULL,"
                 + COMPLETE + " INTEGER NOT NULL,"
                 + DISMISS_CNT + " INTEGER NOT NULL,"
                 + KEY_CONTACT_ID + " INTEGER NOT NULL,"
