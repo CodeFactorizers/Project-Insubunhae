@@ -11,13 +11,13 @@ import java.util.Locale;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
-<<<<<<< HEAD
+
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-=======
+
 import android.content.pm.PackageManager;
->>>>>>> origin/feature
+
 import android.os.Bundle;
 import android.provider.CallLog;
 import android.provider.ContactsContract;
@@ -58,17 +58,12 @@ public class MainActivity extends AppCompatActivity {
     SQLiteDatabase idb = null;
     private Cursor dbCursor;
 
-<<<<<<< HEAD
     private static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1;
     private static final int MY_PERMISSIONS_REQUEST_READ_CALL_LOG = 2;
     private static final int MY_PERMISSIONS_REQUEST_READ_SMS = 3;
 
     private long lastRetrievalDate = 0L; // Store the timestamp of the last retrieval
 
-=======
-    private static final int MY_PERMISSIONS_REQUEST_READ_SMS = 1;
-    private static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1029;
->>>>>>> origin/feature
 
     // [통계] 미니 캘린더 관련
     private CalendarView calendarView;
@@ -243,7 +238,6 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-<<<<<<< HEAD
     /*
     Below: Permission Related Methods & Log Process Methods
      */
@@ -481,16 +475,3 @@ public class MainActivity extends AppCompatActivity {
     }
     // some additional functions end
 }
-=======
-    private void getPermission() {
-        Log.d("getPermission","getPermission");
-        if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.READ_SMS}, MY_PERMISSIONS_REQUEST_READ_SMS);
-        }
-        if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.READ_CONTACTS}, MY_PERMISSIONS_REQUEST_READ_CONTACTS);
-            Log.d("getPermission", "in if");
-        }
-    }
-}
->>>>>>> origin/feature
