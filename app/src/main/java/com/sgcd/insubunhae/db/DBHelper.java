@@ -72,9 +72,22 @@ public class DBHelper extends SQLiteOpenHelper  {
     }
 
     /*
+<<<<<<< HEAD
     Usage:
     DBHelper dbHelper = new DBHelper(context);
     dbHelper.insertCallLog(log_id, contact_id, datetime, name, phone, type, duration);
+=======
+    public void insertCallLog();
+    Method for inserting a call log record
+    This method takes the necessary parameters for a call log record (log_id, contact_id, datetime, name, phone, type, duration)
+    and inserts them into the CALL_LOG table using the insert method of the SQLiteDatabase class.
+
+    Usage:
+    DBHelper dbHelper = new DBHelper(context);
+    dbHelper.insertCallLog(log_id, contact_id, datetime, name, phone, type, duration);
+
+    Note: log_id, contact_id, is the actual values that you want to insert
+>>>>>>> origin/feature
      */
     public void insertCallLog(int log_id, int contact_id, long datetime, String name, String phone, int type, int duration) {
         SQLiteDatabase db = getWritableDatabase();
