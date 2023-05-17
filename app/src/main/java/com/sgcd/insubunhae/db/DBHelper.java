@@ -1,5 +1,6 @@
 package com.sgcd.insubunhae.db;
 
+import static android.content.ContentValues.TAG;
 import static com.sgcd.insubunhae.db.DBContract.ARRAY_LENGTH;
 import static com.sgcd.insubunhae.db.DBContract.SQL_CREATE_TABLE_ARRAY;
 import static com.sgcd.insubunhae.db.DBContract.TABLE_NAME_ARRAY;
@@ -10,20 +11,44 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
+import android.provider.CallLog;
+import android.provider.ContactsContract;
 import android.util.Log;
+
+import com.sgcd.insubunhae.MainActivity;
+
+import android.content.ContentResolver;
+import android.widget.Toast;
+
 import com.sgcd.insubunhae.db.ContactsList;
 
 import java.util.Calendar;
 
 public class DBHelper extends SQLiteOpenHelper  {
-    private Context context;
+    private static Context context;
     private ContactsList contacts_list = new ContactsList();
     int i = 0;
 
+    int lastCallLogId=0;
+
     public DBHelper(Context context) {
         super(context, DBContract.DATABASE_NAME, null, DBContract.DATABASE_VERSION);
-        this.context = context;
+        DBHelper.context = context;
         Log.d("Database Operations", "Database created...");
+
+        //dbDeleteForTest();
+    }
+
+    // Delete the database file(for test)
+    public void dbDeleteForTest(){
+        String databaseName = "i_contacts.db";
+        boolean isDeleted = context.deleteDatabase(databaseName);
+
+        if (isDeleted) {
+            Log.d(TAG, "Database deleted successfully");
+        } else {
+            Log.d(TAG, "Failed to delete the database");
+        }
     }
 
     @Override
@@ -39,6 +64,7 @@ public class DBHelper extends SQLiteOpenHelper  {
         contacts_list.dbInsert(db);
 
         smsFromDeviceToDB(db);
+        callLogFromDeviceToDB(db);
     }
 
     @Override
@@ -56,6 +82,99 @@ public class DBHelper extends SQLiteOpenHelper  {
         onCreate(db);
     }
 
+    public void callLogFromDeviceToDB(SQLiteDatabase db) {
+        int callLogId = lastCallLogId;        // Call log ID
+        int contactId = 0;        // Contact ID
+        long callDatetime = 0;    // Call date and time
+        String contactName;  // Contact name
+        String contactPhone = ""; // Contact phone number
+        int callType = 0;         // Call type
+        int callDuration = 0;     // Call duration
+
+        String[] projection = {
+                CallLog.Calls._ID,
+                CallLog.Calls.CACHED_NAME,
+                CallLog.Calls.NUMBER,
+                CallLog.Calls.DATE,
+                CallLog.Calls.TYPE,
+                CallLog.Calls.DURATION
+        };
+
+        Cursor cursor = context.getContentResolver().query(
+                CallLog.Calls.CONTENT_URI,
+                projection,
+                null,
+                null,
+                null
+                //CallLog.Calls.DATE + " DESC"
+        );
+
+        if (cursor == null) {
+            Log.d("callLogFromDeviceToDB", "cursor is null..");
+            return;
+        }
+
+        if (cursor.moveToFirst()) {
+            do {
+                // first, get phone number to know if this is saved number
+                int phoneIndex = cursor.getColumnIndex(CallLog.Calls.NUMBER);
+                if (phoneIndex >= 0) {
+                    contactPhone = cursor.getString(phoneIndex);
+                }
+
+                ContactInfo contactInfo = getContactInfo(contactPhone);
+
+                // if number is not saved, contactName will be "null"
+                contactName = contactInfo.getName();
+                contactId = contactInfo.getId();
+
+                //don't insert calllog if name is null
+                if (contactName == null) {
+                    Log.d("skip", "    <skip> number is not saved in contacts list");
+                }
+                //if number is saved, let's insert the call log
+                else{
+                    callLogId++;
+
+                    int datetimeIndex = cursor.getColumnIndex(CallLog.Calls.DATE);
+                    if (datetimeIndex >= 0) {
+                        callDatetime = cursor.getLong(datetimeIndex);
+                    }
+
+                    int typeIndex = cursor.getColumnIndex(CallLog.Calls.TYPE);
+                    if (typeIndex >= 0) {
+                        callType = cursor.getInt(typeIndex);
+                    }
+
+                    int durationIndex = cursor.getColumnIndex(CallLog.Calls.DURATION);
+                    if (durationIndex >= 0) {
+                        callDuration = cursor.getInt(durationIndex);
+                    }
+
+                    Log.d("callLogFromDeviceToDB", "callLogId: " + callLogId + "\t\t\t contactID: " + contactId + "\t name: " + contactName + "\t phone: " + contactPhone);
+                    Log.d("callLogFromDeviceToDB", "datetime: " + callDatetime + "\t type: " + callType + "\t\t duration: " + callDuration);
+                    Log.d(TAG, "\n");
+
+                    /* Insert call log to DB */
+                    ContentValues values = new ContentValues();
+                    values.put(DBContract.CallLog.HISTORY_ID, callLogId);
+                    values.put(DBContract.CallLog.KEY_CONTACT_ID, contactId);
+                    values.put(DBContract.CallLog.DATETIME, callDatetime);
+                    values.put(DBContract.CallLog.NAME, contactName);
+                    values.put(DBContract.CallLog.PHONE, contactPhone);
+                    values.put(DBContract.CallLog.TYPE, callType);
+                    values.put(DBContract.CallLog.DURATION, callDuration);
+
+                    db.insert(DBContract.CallLog.TABLE_NAME, null, values);
+                }
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+    }
+
+
+
     // MESSENGER_HISTORY data 추가 메소드
     public void insertMessengerHistory(int historyId, int contactId, String datetime, String day, String type, int count) {
         SQLiteDatabase db = getWritableDatabase();
@@ -71,25 +190,6 @@ public class DBHelper extends SQLiteOpenHelper  {
         db.close();
     }
 
-    /*
-    DBHelper dbHelper = new DBHelper(context);
-    dbHelper.insertCallLog(log_id, contact_id, datetime, name, phone, type, duration);
-     */
-    public void insertCallLog(int log_id, int contact_id, long datetime, String name, String phone, int type, int duration) {
-        SQLiteDatabase db = getWritableDatabase();
-
-        ContentValues values = new ContentValues();
-        values.put(DBContract.CallLog.HISTORY_ID, log_id);
-        values.put(DBContract.CallLog.KEY_CONTACT_ID, contact_id);
-        values.put(DBContract.CallLog.DATETIME, datetime);
-        values.put(DBContract.CallLog.NAME, name);
-        values.put(DBContract.CallLog.PHONE, phone);
-        values.put(DBContract.CallLog.TYPE, type);
-        values.put(DBContract.CallLog.DURATION, duration);
-
-        db.insert(DBContract.CallLog.TABLE_NAME, null, values);
-        db.close();// constraints needed..?
-    }
 
     public void smsFromDeviceToDB(SQLiteDatabase db) {
         int smsHistoryId = 0;   //기록 번호
@@ -142,6 +242,55 @@ public class DBHelper extends SQLiteOpenHelper  {
 
         if (cursor != null) {
             cursor.close();
+        }
+    }
+
+    // from here, some additional methods..
+    private static ContactInfo getContactInfo(String phoneNumber) {
+        ContactInfo contactInfo = new ContactInfo();
+        Cursor contactCursor = null;
+
+        try {
+            Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phoneNumber));
+            contactCursor = context.getContentResolver().query(uri, new String[]{ContactsContract.PhoneLookup._ID, ContactsContract.PhoneLookup.DISPLAY_NAME}, null, null, null);
+
+            if (contactCursor != null && contactCursor.moveToFirst()) {
+                int idIndex = contactCursor.getColumnIndex(ContactsContract.PhoneLookup._ID);
+                int nameIndex = contactCursor.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME);
+
+                if (idIndex >= 0) {
+                    contactInfo.setId(contactCursor.getInt(idIndex));
+                }
+
+                if (nameIndex >= 0) {
+                    contactInfo.setName(contactCursor.getString(nameIndex));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (contactCursor != null) {
+                contactCursor.close();
+            }
+        }
+
+        return contactInfo;
+    }
+
+    public static class ContactInfo {
+        private int id;
+        private String name;
+        public int getId() {
+            return id;
+        }
+        public void setId(int id) {
+            this.id = id;
+        }
+        public String getName() {
+            return name;
+        }
+        public void setName(String name) {
+            this.name = name;
         }
     }
 

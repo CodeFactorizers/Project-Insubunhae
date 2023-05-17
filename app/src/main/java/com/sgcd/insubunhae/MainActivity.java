@@ -7,16 +7,12 @@ import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
-
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.Intent;
 
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-
-import android.content.pm.PackageManager;
 
 import android.os.Bundle;
 import android.provider.CallLog;
@@ -30,7 +26,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -47,7 +42,6 @@ import android.widget.Toast;
 import com.sgcd.insubunhae.databinding.ActivityMainBinding;
 import com.sgcd.insubunhae.db.ContactsList;
 import com.sgcd.insubunhae.db.DBHelper;
-import com.sgcd.insubunhae.ui.settings.SettingsFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -87,6 +81,8 @@ public class MainActivity extends AppCompatActivity {
         // Get the database. If it does not exist, this is where it will
         // also be created.
         idb = dbHelper.getWritableDatabase();
+
+        //dbHelper.callLogFromDeviceToDB(idb);
 
         /* MESSENGER_HISTORY data 추가
         dbHelper.insertMessengerHistory(1, 1000, "2022-01-01 10:30:00", "SAT", "msg", 10);
@@ -320,13 +316,15 @@ public class MainActivity extends AppCompatActivity {
                 // Insert the call log into the database
                 //databaseHelper.insertCallLog(dateInMillis, phoneNumber, callType, duration);
 
-                // Lookup name based on phone number
-                String contactDisplayName = getContactDisplayName(phoneNumber);
-                if (!contactDisplayName.isEmpty()) {
+                // Lookup contact name and contact id based on phone number
+                ContactInfo contactInfo = getContactInfo(phoneNumber);
+                String contactInfoName = contactInfo.getName();
+                String contactInfoId = contactInfo.getId();
+
+                if (!contactInfoName.isEmpty()) {
                     // Log the retrieved call information
-                    Log.d(TAG, "Datetime Format: "+ dateInMillis);
-                    Log.d(TAG, "Name: " + contactDisplayName + ", Phone Number: " + phoneNumber);
-                    Log.d(TAG, "Call Date: " + dateInString + ", Duration: " + duration + ", Call Type: " + callType);
+                    Log.d(TAG, "Contact ID: " + contactInfoId + ", Name: " + contactInfoName + ", Phone Number: " + phoneNumber);
+                    Log.d(TAG, "Datetime in Millis / in String): " + dateInMillis + " / " + dateInString + ", Duration: " + duration + ", Call Type: " + callType);
                 }
             }
             // Update the last retrieval date to the latest call log date
@@ -442,17 +440,25 @@ public class MainActivity extends AppCompatActivity {
         return isRefreshed;
     }
 
-    @SuppressLint("Range")
-    private String getContactDisplayName(String phoneNumber) {
-        String contactName = "";
+    public ContactInfo getContactInfo(String phoneNumber) {
+        ContactInfo contactInfo = new ContactInfo();
         Cursor contactCursor = null;
 
         try {
             Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phoneNumber));
-            contactCursor = getContentResolver().query(uri, new String[]{ContactsContract.PhoneLookup.DISPLAY_NAME}, null, null, null);
+            contactCursor = getContentResolver().query(uri, new String[]{ContactsContract.PhoneLookup._ID, ContactsContract.PhoneLookup.DISPLAY_NAME}, null, null, null);
 
             if (contactCursor != null && contactCursor.moveToFirst()) {
-                contactName = contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME));
+                int idIndex = contactCursor.getColumnIndex(ContactsContract.PhoneLookup._ID);
+                int nameIndex = contactCursor.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME);
+
+                if (idIndex >= 0) {
+                    contactInfo.setId(contactCursor.getString(idIndex));
+                }
+
+                if (nameIndex >= 0) {
+                    contactInfo.setName(contactCursor.getString(nameIndex));
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -461,10 +467,28 @@ public class MainActivity extends AppCompatActivity {
                 contactCursor.close();
             }
         }
-        return contactName;
+
+        return contactInfo;
+    }
+    // some additional functions start
+
+    public static class ContactInfo {
+        private String id;
+        private String name;
+        public String getId() {
+            return id;
+        }
+        public void setId(String id) {
+            this.id = id;
+        }
+        public String getName() {
+            return name;
+        }
+        public void setName(String name) {
+            this.name = name;
+        }
     }
 
-    // some additional functions start
     private String getFormattedDateTime(long timestampInMillis) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         Date date = new Date(timestampInMillis);
