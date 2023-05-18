@@ -1,5 +1,6 @@
 package com.sgcd.insubunhae;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 // [통계] 미니 캘린더
 import static android.content.ContentValues.TAG;
 
@@ -8,10 +9,13 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 import android.Manifest;
+
 import android.content.Intent;
 
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+
+import android.graphics.Color;
 import android.net.Uri;
 
 import android.os.Bundle;
@@ -21,8 +25,8 @@ import android.util.Log;
 import android.view.Menu;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
 import androidx.annotation.NonNull;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -30,6 +34,13 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
 import android.view.MenuInflater;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -100,9 +111,6 @@ public class MainActivity extends AppCompatActivity {
         dbHelper.insertMessengerHistory(13, 1005, "2022-01-05 10:34:00", "WED", "msg", 10);
         */
 
-        calendarView = findViewById(R.id.calendarView);
-        paintMiniCalendar();
-
         //contacts_list.getContacts(getApplicationContext());
         //contacts_list.dbInsert(idb, dbHelper);
 
@@ -139,76 +147,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    // [통계] 미니 캘린더 구현
-    public void paintMiniCalendar() {
-        int calc_fam = 0; // 친밀도(계산값)
-        int content_score = 1; // 최근 연락내용(점수 1~5점)
-        int user_fam = 1; // 친밀도(유저 입력)
-        int how_long_month = -1; // 알고 지낸 시간(월)
-        int recent_days = -1; // 최근 연락일 ~ 현재(일)
-        int recent_score = -1; // 최근 연락일(점수 1~5점)
-
-        // DB에서 data 추출할 예정
-        String recent_contact = "23-05-09 13:30:00";
-        String first_contact = "23-05-08 13:30:00";
-
-        // currentTimestamp = 현재 시간(yy-MM-dd HH:mm:ss) ---------------------------------*/
-        Date currentDate = new Date();
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(currentDate);
-
-        String currentTimestamp = dateFormat.format(calendar.getTime());
-        Log.d("Calendar", "currentTimestamp : " + currentTimestamp);
-        //-------------------------------------------------------------------------------*/
-
-        // how_long_month, recent_days, recent_score 계산 --------------------------------*/
-        try {
-            Date date1 = dateFormat.parse(recent_contact);
-            Date date2 = dateFormat.parse(currentTimestamp);
-
-            long milliseconds = date2.getTime() - date1.getTime();
-
-            how_long_month = (int) (milliseconds / (30 * 24 * 60 * 60 * 1000));
-            Log.d("Calendar", "how_long_month : " + how_long_month);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        try {
-            Date date1 = dateFormat.parse(first_contact);
-            Date date2 = dateFormat.parse(currentTimestamp);
-
-            long milliseconds = date2.getTime() - date1.getTime();
-
-            recent_days = (int) (milliseconds / (24 * 60 * 60 * 1000));
-            Log.d("Calendar", "recent_days : " + recent_days);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        if (recent_days >= 0 && recent_days <= 3) {
-            recent_score = 5;
-        }
-        else if (recent_days >= 4 && recent_days <= 7) {
-            recent_score = 4;
-        }
-        else if (recent_days >= 8 && recent_days <= 30) {
-            recent_score = 3;
-        }
-        else if (recent_days >= 31 && recent_days <= 180) {
-            recent_score = 2;
-        }
-        else if (recent_days >= 180) {
-            recent_score = 1;
-        }
-        Log.d("Calendar", "recent_score : " + recent_score);
-        //-------------------------------------------------------------------------------*/
-
-    }
-
     // Inflating the menu items from the menu_items.xml file
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -238,9 +176,10 @@ public class MainActivity extends AppCompatActivity {
     Below: Permission Related Methods & Log Process Methods
      */
     private void getPermission() {
-        Log.d("getPermission", "getPermission");
 
+        Log.d("getPermission", "getPermission");
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.READ_CONTACTS}, MY_PERMISSIONS_REQUEST_READ_CONTACTS);
             Log.d("getPermission", "in if");
         } else {
@@ -468,6 +407,10 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+        if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.READ_SMS}, MY_PERMISSIONS_REQUEST_READ_SMS);
+        }
+
         return contactInfo;
     }
     // some additional functions start
@@ -496,6 +439,7 @@ public class MainActivity extends AppCompatActivity {
     }
     private void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+
     }
     // some additional functions end
 }
