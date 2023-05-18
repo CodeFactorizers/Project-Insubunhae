@@ -1,6 +1,5 @@
 package com.sgcd.insubunhae;
 
-// [통계] 미니 캘린더
 import static android.content.ContentValues.TAG;
 
 import java.util.Date;
@@ -59,8 +58,6 @@ public class MainActivity extends AppCompatActivity {
     private long lastRetrievalDate = 0L; // Store the timestamp of the last retrieval
 
 
-    // [통계] 미니 캘린더 관련
-    private CalendarView calendarView;
     
     // 연락처 연동
     private ContactsList contacts_list = new ContactsList();
@@ -100,9 +97,6 @@ public class MainActivity extends AppCompatActivity {
         dbHelper.insertMessengerHistory(13, 1005, "2022-01-05 10:34:00", "WED", "msg", 10);
         */
 
-        calendarView = findViewById(R.id.calendarView);
-        paintMiniCalendar();
-
         //contacts_list.getContacts(getApplicationContext());
         //contacts_list.dbInsert(idb, dbHelper);
 
@@ -139,75 +133,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    // [통계] 미니 캘린더 구현
-    public void paintMiniCalendar() {
-        int calc_fam = 0; // 친밀도(계산값)
-        int content_score = 1; // 최근 연락내용(점수 1~5점)
-        int user_fam = 1; // 친밀도(유저 입력)
-        int how_long_month = -1; // 알고 지낸 시간(월)
-        int recent_days = -1; // 최근 연락일 ~ 현재(일)
-        int recent_score = -1; // 최근 연락일(점수 1~5점)
-
-        // DB에서 data 추출할 예정
-        String recent_contact = "23-05-09 13:30:00";
-        String first_contact = "23-05-08 13:30:00";
-
-        // currentTimestamp = 현재 시간(yy-MM-dd HH:mm:ss) ---------------------------------*/
-        Date currentDate = new Date();
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(currentDate);
-
-        String currentTimestamp = dateFormat.format(calendar.getTime());
-        Log.d("Calendar", "currentTimestamp : " + currentTimestamp);
-        //-------------------------------------------------------------------------------*/
-
-        // how_long_month, recent_days, recent_score 계산 --------------------------------*/
-        try {
-            Date date1 = dateFormat.parse(recent_contact);
-            Date date2 = dateFormat.parse(currentTimestamp);
-
-            long milliseconds = date2.getTime() - date1.getTime();
-
-            how_long_month = (int) (milliseconds / (30 * 24 * 60 * 60 * 1000));
-            Log.d("Calendar", "how_long_month : " + how_long_month);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        try {
-            Date date1 = dateFormat.parse(first_contact);
-            Date date2 = dateFormat.parse(currentTimestamp);
-
-            long milliseconds = date2.getTime() - date1.getTime();
-
-            recent_days = (int) (milliseconds / (24 * 60 * 60 * 1000));
-            Log.d("Calendar", "recent_days : " + recent_days);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        if (recent_days >= 0 && recent_days <= 3) {
-            recent_score = 5;
-        }
-        else if (recent_days >= 4 && recent_days <= 7) {
-            recent_score = 4;
-        }
-        else if (recent_days >= 8 && recent_days <= 30) {
-            recent_score = 3;
-        }
-        else if (recent_days >= 31 && recent_days <= 180) {
-            recent_score = 2;
-        }
-        else if (recent_days >= 180) {
-            recent_score = 1;
-        }
-        Log.d("Calendar", "recent_score : " + recent_score);
-        //-------------------------------------------------------------------------------*/
-
-    }
 
     // Inflating the menu items from the menu_items.xml file
     @Override
