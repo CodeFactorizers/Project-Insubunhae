@@ -71,31 +71,16 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        getPermission(); //sms 접근권한 받는 메소드(contacts, call log도 이 메소드 내에 추가하면 될듯!)
+        if(getPermission()) { //sms 접근권한 받는 메소드(contacts, call log도 이 메소드 내에 추가하면 될듯!)
 
-        // Create new helper
-        dbHelper = new DBHelper(this);
-        // Get the database. If it does not exist, this is where it will
-        // also be created.
-        idb = dbHelper.getWritableDatabase();
+            // Create new helper
+            dbHelper = new DBHelper(this);
+            // Get the database. If it does not exist, this is where it will
+            // also be created.
+            idb = dbHelper.getWritableDatabase();
+        }
 
         //dbHelper.callLogFromDeviceToDB(idb);
-
-        /* MESSENGER_HISTORY data 추가
-        dbHelper.insertMessengerHistory(1, 1000, "2022-01-01 10:30:00", "SAT", "msg", 10);
-        dbHelper.insertMessengerHistory(2, 1000, "2022-01-01 10:40:00", "SAT", "katalk", 5);
-        dbHelper.insertMessengerHistory(3, 1001, "2022-01-02 10:30:00", "SUN", "msg", 10);
-        dbHelper.insertMessengerHistory(4, 1002, "2022-01-03 10:30:00", "MON", "msg", 10);
-        dbHelper.insertMessengerHistory(5, 1002, "2022-01-03 10:30:00", "MON", "msg", 10);
-        dbHelper.insertMessengerHistory(6, 1002, "2022-01-04 10:30:00", "TUE", "msg", 10);
-        dbHelper.insertMessengerHistory(7, 1004, "2022-01-04 10:30:00", "TUE", "msg", 10);
-        dbHelper.insertMessengerHistory(8, 1004, "2022-01-04 10:30:00", "TUE", "msg", 10);
-        dbHelper.insertMessengerHistory(9, 1005, "2022-01-05 10:30:00", "WED", "msg", 10);
-        dbHelper.insertMessengerHistory(10, 1005, "2022-01-05 10:31:00", "WED", "msg", 10);
-        dbHelper.insertMessengerHistory(11, 1005, "2022-01-05 10:32:00", "WED", "msg", 10);
-        dbHelper.insertMessengerHistory(12, 1005, "2022-01-05 10:33:00", "WED", "msg", 10);
-        dbHelper.insertMessengerHistory(13, 1005, "2022-01-05 10:34:00", "WED", "msg", 10);
-        */
 
         //contacts_list.getContacts(getApplicationContext());
         //contacts_list.dbInsert(idb, dbHelper);
@@ -162,15 +147,17 @@ public class MainActivity extends AppCompatActivity {
     /*
     Below: Permission Related Methods & Log Process Methods
      */
-    private void getPermission() {
+    private boolean getPermission() {
         Log.d("getPermission", "getPermission");
 
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.READ_CONTACTS}, MY_PERMISSIONS_REQUEST_READ_CONTACTS);
             Log.d("getPermission", "in if");
+            return false;
         } else {
             showToast("Contacts permission already granted.");
             requestCallLogPermission();// If contacts permission is granted, request call log permission
+            return true;
         }
     }
 

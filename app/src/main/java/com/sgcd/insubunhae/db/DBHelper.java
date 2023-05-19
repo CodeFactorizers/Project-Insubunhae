@@ -65,6 +65,7 @@ public class DBHelper extends SQLiteOpenHelper  {
 
         smsFromDeviceToDB(db);
         callLogFromDeviceToDB(db);
+
     }
 
     @Override
