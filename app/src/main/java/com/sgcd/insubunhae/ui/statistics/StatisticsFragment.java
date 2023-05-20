@@ -20,6 +20,7 @@ import com.github.mikephil.charting.utils.ColorTemplate;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -104,6 +105,9 @@ public class StatisticsFragment extends Fragment {
         BarChart barChart = binding.barchart;
         drawBarChart(barChart);
 
+        //final TextView textView = binding.textStatistics;
+        //statisticsViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+
         return root;
     }
 
@@ -139,7 +143,7 @@ public class StatisticsFragment extends Fragment {
         calendar.setTime(currentDate);
 
         String currentTimestamp = dateFormat.format(calendar.getTime());
-        //Log.d("Calendar", "currentTimestamp : " + currentTimestamp);
+
         //-------------------------------------------------------------------------------*/
 
         // how_long_month, recent_days, recent_score 계산 --------------------------------*/
@@ -150,7 +154,7 @@ public class StatisticsFragment extends Fragment {
             long milliseconds = date2.getTime() - date1.getTime();
 
             how_long_month = (int) (milliseconds / (30 * 24 * 60 * 60 * 1000));
-            //Log.d("Calendar", "how_long_month : " + how_long_month);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -162,7 +166,7 @@ public class StatisticsFragment extends Fragment {
             long milliseconds = date2.getTime() - date1.getTime();
 
             recent_days = (int) (milliseconds / (24 * 60 * 60 * 1000));
-            //Log.d("Calendar", "recent_days : " + recent_days);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -182,10 +186,11 @@ public class StatisticsFragment extends Fragment {
         else if (recent_days >= 180) {
             recent_score = 1;
         }
-        //Log.d("Calendar", "recent_score : " + recent_score);
+
         //-------------------------------------------------------------------------------*/
 
     }
+
 
     public void drawPieChart(PieChart pieChart) {
         pieChart.setDrawHoleEnabled(true);
@@ -201,7 +206,9 @@ public class StatisticsFragment extends Fragment {
         entries.add(new PieEntry(30.0f, "Red"));
         entries.add(new PieEntry(40.0f, "Blue"));
 
+
         PieDataSet dataSet = new PieDataSet(entries, "LabelPie");
+
         dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
         dataSet.setValueTextSize(12f);
         dataSet.setValueTextColor(Color.BLACK);
@@ -211,6 +218,7 @@ public class StatisticsFragment extends Fragment {
         pieChart.setData(data); // chart에 data설정
         pieChart.invalidate(); // chart 그리기
     }
+
 
     public void drawBarChart(BarChart barChart){
 
@@ -242,4 +250,5 @@ public class StatisticsFragment extends Fragment {
         barChart.setData(barData);
         barChart.invalidate();
     }
+
 }

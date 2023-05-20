@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+
 public class DBHelper extends SQLiteOpenHelper  {
     private static Context context;
     private ContactsList contacts_list = new ContactsList();
