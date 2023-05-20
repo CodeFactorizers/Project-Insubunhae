@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="일반"
+        >
+        <PreferenceScreen
+            android:title="비밀번호 설정"
+            android:key="password_pref"
+            >
+
+        </PreferenceScreen>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="연락 알림">
+        <PreferenceScreen android:title="연락 알림 설정">
+
+        </PreferenceScreen>
+    </PreferenceCategory>
+</PreferenceScreen>
