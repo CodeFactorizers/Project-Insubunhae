@@ -25,12 +25,14 @@ import com.sgcd.insubunhae.db.ContactsList;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Date;
+import java.text.SimpleDateFormat;
 
 
 public class DBHelper extends SQLiteOpenHelper  {
     private static Context context;
     private ContactsList contacts_list = new ContactsList();
-    int i = 0;
+    int i = 1; //MESSENGER_HISTORY history_id는 1부터 시작.
 
     int lastCallLogId=0;
 
@@ -177,71 +179,117 @@ public class DBHelper extends SQLiteOpenHelper  {
         cursor.close();
     }
 
-
-
-    // MESSENGER_HISTORY data 추가 메소드
-    public void insertMessengerHistory(int historyId, int contactId, String datetime, String day, String type, int count) {
-        SQLiteDatabase db = getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("history_id", historyId);
-        values.put("contact_id", contactId);
-        values.put("datetime", datetime);
-        values.put("day", day);
-        values.put("type", type);
-        values.put("count", count);
-        db.insert("MESSENGER_HISTORY", null, values);
-        Log.d("Database Operations", "Data inserted...");
-        db.close();
-    }
-
-
     public void smsFromDeviceToDB(SQLiteDatabase db) {
+        //Log.d("smsFromDeviceToDB", "sms 1");
         int smsHistoryId = 0;   //기록 번호
-        int smsContactId = 0;   //연락처 고유 아이디
+        int smsContactId = -1;   //연락처 고유 아이디
         long smsDatetime = 0;    //연락 날짜
         String smsDay = "";     //연락 요일
         String smsType = "";    //연락 수단
-        int smsCount = 0;       //일 연락 횟수(동일 연락 수단)
+        int smsCount = -1;       //일 연락 횟수(동일 연락 수단)
 
-        Uri messagesUri = Uri.parse("content://sms/inbox");
+        Uri messagesUri = Uri.parse("content://sms/sent");
         Cursor cursor = context.getContentResolver().query(messagesUri, null, null, null, null);
 
-        if (cursor == null) Log.d("getSmsFromDevice", "cursor is null..");
-        if (cursor != null && cursor.moveToFirst()) {
-            do {
-                /* get sms from device */
-                smsHistoryId = i++;
-                int senderIndex = cursor.getColumnIndex("address");
-                if (senderIndex >= 0) {
-                    String smsSender = cursor.getString(senderIndex);
-                }
-                smsContactId = 1234;
-                int dateIndex = cursor.getColumnIndex("date");
-                if (dateIndex >= 0) {
-                    smsDatetime = cursor.getLong(dateIndex);
-                }
-                smsDay = getDayOfDatetime(smsDatetime);
-                //smsDay = "Monday"; //연락 요일
-                smsType = "Sms"; //연락 수단
-                smsCount = 0; //일 연락 횟수(동일 연락 수단)
+        Cursor cursor1 = null;
+        Cursor cursor2 = null;
 
-                Log.d("getSmsFromDevice", "datetime : " + smsDatetime);
-                Log.d("getSmsFromDevice", "day : " + smsDay);
-                Log.d("getSmsFromDevice", "type : " + smsType);
-                Log.d("getSmsFromDevice", "count : " + smsCount);
+        if (cursor == null) Log.d("getSmsFromDeviceToDB", "cursor is null..");
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    //Log.d("getSmsFromDeviceToDB", "---------");
+                    /* get sms from device */
+                    smsHistoryId = i++;
+                    //Log.d("getSmsFromDeviceToDB", "smsHistoryId : " + smsHistoryId);
+
+                    int senderIndex = cursor.getColumnIndex("address");
+                    String smsSender = null;
+                    if (senderIndex >= 0) {
+                        smsSender = cursor.getString(senderIndex);
+                        try {
+                            String query = "SELECT contact_id FROM MAIN_CONTACTS WHERE phone_number1 = '"
+                                    + smsSender + "'";
+                            cursor1 = db.rawQuery(query, null);
+
+                            if (cursor1 != null) {
+                                if (cursor1.moveToFirst()) {
+                                    int columnIndex = cursor1.getColumnIndex("contact_id");
+                                    if (columnIndex >= 0) {
+                                        smsContactId = cursor1.getInt(columnIndex);
+                                    }
+                                }
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    cursor1.close();
+                    //Log.d("getSmsFromDeviceToDB", "smsContactId : " + smsContactId);
+
+                    int dateIndex = cursor.getColumnIndex("date");
+                    Long dateAndTime = null;
+                    if (dateIndex >= 0) {
+                        dateAndTime = cursor.getLong(dateIndex);
+                    }
+                    Date date = new Date(dateAndTime);
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+                    try {
+                        smsDatetime = dateFormat.parse(dateFormat.format(date)).getTime();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    smsDay = getDayOfDatetime(dateAndTime);
+                    smsType = "Sms"; //연락 수단
+
+                    //Log.d("getSmsFromDeviceToDB", "smsDatetime : " + smsDatetime);
+                    //Log.d("getSmsFromDeviceToDB", "smsDay : " + smsDay);
+                    //Log.d("getSmsFromDeviceToDB", "smsType : " + smsType);
+
+                    //MESSENGER_HISTORY count 체크
+                    String attributeValue = null; //없으면 null 유지, 이미 있으면 count값이 들어감.
+                    try {
+                        String query = "SELECT count FROM MESSENGER_HISTORY " + "WHERE (contact_id = " + smsContactId +
+                                " AND type = '" + smsType + "' AND datetime = " + smsDatetime +")";
+                        cursor2 = db.rawQuery(query, null);
+
+                        if (cursor2 != null && cursor2.moveToFirst()) {
+                            int columnIndex = cursor2.getColumnIndex("count");
+                            attributeValue = cursor2.getString(columnIndex);
+                       }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    cursor2.close();
+
+                    if (attributeValue == null) { //없어서 새로 추가
+                        smsCount = 1; //시작이 1개
+                        //Log.d("smsFromDeviceToDB", "smsCount : " + smsCount);
+
+                        /* insert sms to db */
+                        ContentValues values = new ContentValues();
+                        values.put("history_id", smsHistoryId);
+                        values.put("contact_id", smsContactId);
+                        values.put("datetime", smsDatetime);
+                        values.put("day", smsDay);
+                        values.put("type", smsType);
+                        values.put("count", smsCount);
+                        db.insert("MESSENGER_HISTORY", null, values);
+                    }
+                    else if (attributeValue != null) { //있어서 count만 ++하기
+                        int new_count = Integer.parseInt(attributeValue) + 1;
+
+                        String query = "UPDATE Messenger_History SET count = " + new_count + " WHERE contact_id = " + smsContactId + " AND type = '" + smsType + "' AND datetime = " + smsDatetime;
+                        db.execSQL(query);
+
+                        //Log.d("smsFromDeviceToDB", "smsCount : " + new_count);
+                    }
 
 
-                /* insert sms to db */
-                ContentValues values = new ContentValues();
-                values.put("history_id", smsHistoryId);
-                values.put("contact_id", smsContactId);
-                values.put("datetime", smsDatetime);
-                values.put("day", smsDay);
-                values.put("type", smsType);
-                values.put("count", smsCount);
-                db.insert("MESSENGER_HISTORY", null, values);
-
-            } while (cursor.moveToNext());
+                } while (cursor.moveToNext());
+            } else {
+                Log.d("smsFromDeviceToDB", "cursor move to first failed");
+            }
         }
 
         if (cursor != null) {
