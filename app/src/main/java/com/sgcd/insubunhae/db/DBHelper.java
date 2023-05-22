@@ -29,12 +29,12 @@ import java.util.Date;
 import java.text.SimpleDateFormat;
 
 
-public class DBHelper extends SQLiteOpenHelper  {
+public class DBHelper extends SQLiteOpenHelper {
     private static Context context;
     private ContactsList contacts_list = new ContactsList();
     int i = 1; //MESSENGER_HISTORY history_id는 1부터 시작.
 
-    int lastCallLogId=0;
+    int lastCallLogId = 0;
 
     public DBHelper(Context context) {
         super(context, DBContract.DATABASE_NAME, null, DBContract.DATABASE_VERSION);
@@ -45,7 +45,7 @@ public class DBHelper extends SQLiteOpenHelper  {
     }
 
     // Delete the database file(for test)
-    public void dbDeleteForTest(){
+    public void dbDeleteForTest() {
         String databaseName = "i_contacts.db";
         boolean isDeleted = context.deleteDatabase(databaseName);
 
@@ -60,7 +60,7 @@ public class DBHelper extends SQLiteOpenHelper  {
     public void onCreate(SQLiteDatabase db) {
 
         // Create tables
-        for(int i=0; i<ARRAY_LENGTH; i++) {
+        for (int i = 0; i < ARRAY_LENGTH; i++) {
             db.execSQL(SQL_CREATE_TABLE_ARRAY[i]);
             Log.d("Database Operations", "Table : " + TABLE_NAME_ARRAY[i] + " created...");
         }
@@ -81,8 +81,8 @@ public class DBHelper extends SQLiteOpenHelper  {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Create tables
-        for(int i=0; i<ARRAY_LENGTH; i++) {
-            db.execSQL("DROP TABLE IF EXISTS "+TABLE_NAME_ARRAY[i]);
+        for (int i = 0; i < ARRAY_LENGTH; i++) {
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME_ARRAY[i]);
             Log.d("Database Operations", "Table : " + TABLE_NAME_ARRAY[i] + " dropped...");
         }
         onCreate(db);
@@ -139,7 +139,7 @@ public class DBHelper extends SQLiteOpenHelper  {
                     Log.d("skip", "    <skip> number is not saved in contacts list");
                 }
                 //if number is saved, let's insert the call log
-                else{
+                else {
                     callLogId++;
 
                     int datetimeIndex = cursor.getColumnIndex(CallLog.Calls.DATE);
@@ -250,13 +250,13 @@ public class DBHelper extends SQLiteOpenHelper  {
                     String attributeValue = null; //없으면 null 유지, 이미 있으면 count값이 들어감.
                     try {
                         String query = "SELECT count FROM MESSENGER_HISTORY " + "WHERE (contact_id = " + smsContactId +
-                                " AND type = '" + smsType + "' AND datetime = " + smsDatetime +")";
+                                " AND type = '" + smsType + "' AND datetime = " + smsDatetime + ")";
                         cursor2 = db.rawQuery(query, null);
 
                         if (cursor2 != null && cursor2.moveToFirst()) {
                             int columnIndex = cursor2.getColumnIndex("count");
                             attributeValue = cursor2.getString(columnIndex);
-                       }
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -275,8 +275,7 @@ public class DBHelper extends SQLiteOpenHelper  {
                         values.put("type", smsType);
                         values.put("count", smsCount);
                         db.insert("MESSENGER_HISTORY", null, values);
-                    }
-                    else if (attributeValue != null) { //있어서 count만 ++하기
+                    } else if (attributeValue != null) { //있어서 count만 ++하기
                         int new_count = Integer.parseInt(attributeValue) + 1;
 
                         String query = "UPDATE Messenger_History SET count = " + new_count + " WHERE contact_id = " + smsContactId + " AND type = '" + smsType + "' AND datetime = " + smsDatetime;
@@ -332,15 +331,19 @@ public class DBHelper extends SQLiteOpenHelper  {
     public static class ContactInfo {
         private int id;
         private String name;
+
         public int getId() {
             return id;
         }
+
         public void setId(int id) {
             this.id = id;
         }
+
         public String getName() {
             return name;
         }
+
         public void setName(String name) {
             this.name = name;
         }
@@ -397,7 +400,37 @@ public class DBHelper extends SQLiteOpenHelper  {
                 dbCursor.close();
             }
         }
-        //idb.close();
+        idb.close();
+
+        return attributeValues;
+    }
+
+    public List<Long> getLongFromTable(String tableName, String attributeName, String condition) {
+        List<Long> attributeValues = new ArrayList<>();
+
+        SQLiteDatabase idb = getWritableDatabase();
+        Cursor dbCursor = null;
+
+        try {
+            String query = "SELECT " + attributeName + " FROM " + tableName + " WHERE " + condition;
+            dbCursor = idb.rawQuery(query, null);
+            Log.d("StatisticsFragment", "query : " + query);
+
+            if (dbCursor != null) {
+                while (dbCursor.moveToNext()) {
+                    int columnIndex = dbCursor.getColumnIndex(attributeName);
+                    Long attributeValue = dbCursor.getLong(columnIndex);
+                    attributeValues.add(attributeValue);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (dbCursor != null) {
+                dbCursor.close();
+            }
+        }
+        idb.close();
 
         return attributeValues;
     }
@@ -419,5 +452,39 @@ public class DBHelper extends SQLiteOpenHelper  {
         idb.close();
 
         return sum;
+    }
+
+    // DB 집계함수-MAX
+    public Long getMaxOfAttribute(String tableName, String attributeName) {
+        SQLiteDatabase idb = this.getReadableDatabase();
+
+        String query = "SELECT MAX(" + attributeName + ") FROM " + tableName;
+        Cursor dbCursor = idb.rawQuery(query, null);
+        Long maxValue = null;
+        if (dbCursor.moveToFirst()) {
+            int columnIndex = dbCursor.getColumnIndex("MAX(" + attributeName + ")");
+            if (columnIndex >= 0) {
+                maxValue = dbCursor.getLong(columnIndex);
+            }
+        }
+        dbCursor.close();
+        return maxValue;
+    }
+
+    // DB 집계함수-MIN
+    public Long getMinOfAttribute(String tableName, String attributeName) {
+        SQLiteDatabase idb = this.getReadableDatabase();
+
+        String query = "SELECT MIN(" + attributeName + ") FROM " + tableName;
+        Cursor dbCursor = idb.rawQuery(query, null);
+        Long minValue = null;
+        if (dbCursor.moveToFirst()) {
+            int columnIndex = dbCursor.getColumnIndex("MIN(" + attributeName + ")");
+            if (columnIndex >= 0) {
+                minValue = dbCursor.getLong(columnIndex);
+            }
+        }
+        dbCursor.close();
+        return minValue;
     }
 }

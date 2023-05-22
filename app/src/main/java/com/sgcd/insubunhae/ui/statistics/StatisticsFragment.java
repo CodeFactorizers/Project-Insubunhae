@@ -1,11 +1,22 @@
 package com.sgcd.insubunhae.ui.statistics;
 
 // [통계] 미니 캘린더
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
+
+import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
+
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+
+import com.prolificinteractive.materialcalendarview.CalendarDay;
+import com.prolificinteractive.materialcalendarview.DayViewDecorator;
+import com.prolificinteractive.materialcalendarview.DayViewFacade;
+
 
 // [통계] 차트
 import com.github.mikephil.charting.charts.BarChart;
@@ -33,16 +44,16 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.sgcd.insubunhae.R;
 import com.sgcd.insubunhae.databinding.FragmentStatisticsBinding;
 import com.sgcd.insubunhae.db.DBHelper;
+import com.sgcd.insubunhae.ui.statistics.StatisticsViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
-
-//import com.sgcd.insubunhae.databinding.FragmentStatisticsBinding;
 
 public class StatisticsFragment extends Fragment {
 
@@ -77,25 +88,18 @@ public class StatisticsFragment extends Fragment {
         List<String> c_dt = new ArrayList<>();
         c_dt = dbHelper.getAttributeValueFromTable("CALL_LOG",
                 "datetime", "contact_id = " + cur_contact_id);
-        Log.d("StatisticsFragment", "result1 : " + c_dt);
+        //Log.d("StatisticsFragment", "result1 : " + c_dt);
         List<String> c_dr = new ArrayList<>();
         c_dr = dbHelper.getAttributeValueFromTable("CALL_LOG",
                 "duration", "contact_id = " + cur_contact_id);
-        Log.d("StatisticsFragment", "result2 : " + c_dr);
+        //Log.d("StatisticsFragment", "result2 : " + c_dr);
 
-        //현재 인물의 MESSENGER_HISTORY에서 data받아오기 : datetime, count
-        List<String> m_dt = new ArrayList<>();
-        m_dt = dbHelper.getAttributeValueFromTable("MESSENGER_HISTORY",
-                "datetime", "contact_id = " + cur_contact_id);
-        Log.d("StatisticsFragment", "result3 : " + m_dt);
-        List<String> m_cnt = new ArrayList<>();
-        m_cnt = dbHelper.getAttributeValueFromTable("MESSENGER_HISTORY",
-                "count", "contact_id = " + cur_contact_id);
-        Log.d("StatisticsFragment", "result4 : " + m_cnt);
+        // 친밀도 계산
+        calculateFamiliarity();
 
         // 캘린더
-        CalendarView calendarView = binding.calendarView;
-        paintMiniCalendar();
+        MaterialCalendarView calendarView = binding.calendarView;
+        paintMiniCalendar(calendarView);
 
         // 차트
         PieChart pieChart1 = binding.piechart1;
@@ -117,8 +121,8 @@ public class StatisticsFragment extends Fragment {
         binding = null;
     }
 
-    // [통계] 미니 캘린더 구현
-    public void paintMiniCalendar() {
+    // 친밀도 계산
+    public void calculateFamiliarity() {
         int calc_fam = 0; // 친밀도(계산값)
         int content_score = 1; // 최근 연락내용(점수 1~5점)
         int user_fam = 1; // 친밀도(유저 입력)
@@ -126,12 +130,24 @@ public class StatisticsFragment extends Fragment {
         int recent_days = -1; // 최근 연락일 ~ 현재(일)
         int recent_score = -1; // 최근 연락일(점수 1~5점)
 
-        // DB에서 data 추출할 예정
-        String recent_contact = "23-05-09 13:30:00";
-        String first_contact = "23-05-08 13:30:00";
 
-        // recent_contact from DB
-        //recent_contact = dbHelper.getAttributeValueFromTable("CallLog", "");
+        //현재 인물의 MESSENGER_HISTORY에서 data받아오기 : datetime, count
+        List<String> m_dt = new ArrayList<>();
+        m_dt = dbHelper.getAttributeValueFromTable("MESSENGER_HISTORY",
+                "datetime", "contact_id = " + cur_contact_id);
+        Log.d("paintMiniCal", "sms_datetime : " + m_dt);
+        List<String> m_cnt = new ArrayList<>();
+        m_cnt = dbHelper.getAttributeValueFromTable("MESSENGER_HISTORY",
+                "count", "contact_id = " + cur_contact_id);
+        Log.d("paintMiniCal", "sms_cnt : " + m_cnt);
+
+        // DB에서 data 추출할 예정
+        //String recent_contact = "23-05-09 13:30:00";
+        Long recent_contact = dbHelper.getMaxOfAttribute("MESSENGER_HISTORY", "datetime");
+        Log.d("paintMiniCal", "recent_contact : " + recent_contact);
+        //String first_contact = "23-05-08 13:30:00";
+        Long first_contact = dbHelper.getMinOfAttribute("MESSENGER_HISTORY", "datetime");
+        Log.d("paintMiniCal", "first_contact : " + first_contact);
 
 
         // currentTimestamp = 현재 시간(yy-MM-dd HH:mm:ss) ---------------------------------*/
@@ -148,7 +164,8 @@ public class StatisticsFragment extends Fragment {
 
         // how_long_month, recent_days, recent_score 계산 --------------------------------*/
         try {
-            Date date1 = dateFormat.parse(recent_contact);
+            //Date date1 = dateFormat.parse(recent_contact);
+            Date date1 = dateFormat.parse("23-05-09 13:30:00");
             Date date2 = dateFormat.parse(currentTimestamp);
 
             long milliseconds = date2.getTime() - date1.getTime();
@@ -160,7 +177,8 @@ public class StatisticsFragment extends Fragment {
         }
 
         try {
-            Date date1 = dateFormat.parse(first_contact);
+            //Date date1 = dateFormat.parse(first_contact);
+            Date date1 = dateFormat.parse("23-05-08 13:30:00");
             Date date2 = dateFormat.parse(currentTimestamp);
 
             long milliseconds = date2.getTime() - date1.getTime();
@@ -173,17 +191,13 @@ public class StatisticsFragment extends Fragment {
 
         if (recent_days >= 0 && recent_days <= 3) {
             recent_score = 5;
-        }
-        else if (recent_days >= 4 && recent_days <= 7) {
+        } else if (recent_days >= 4 && recent_days <= 7) {
             recent_score = 4;
-        }
-        else if (recent_days >= 8 && recent_days <= 30) {
+        } else if (recent_days >= 8 && recent_days <= 30) {
             recent_score = 3;
-        }
-        else if (recent_days >= 31 && recent_days <= 180) {
+        } else if (recent_days >= 31 && recent_days <= 180) {
             recent_score = 2;
-        }
-        else if (recent_days >= 180) {
+        } else if (recent_days >= 180) {
             recent_score = 1;
         }
 
@@ -191,6 +205,39 @@ public class StatisticsFragment extends Fragment {
 
     }
 
+    // [통계] 미니 캘린더 색칠
+    public void paintMiniCalendar(MaterialCalendarView calendarView) {
+
+        //우선 SMS만, 2번 인물만.
+        List<Long> contactedDates = dbHelper.getLongFromTable("MESSENGER_HISTORY",
+                "datetime", "contact_id = 2");
+
+        List<CalendarDay> paintedDates = new ArrayList<>();
+        for (Long paintingDate : contactedDates) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(paintingDate);
+
+            CalendarDay calendarDay = CalendarDay.from(calendar.get(Calendar.YEAR),
+                    calendar.get(Calendar.MONTH) + 1,
+                    calendar.get(Calendar.DAY_OF_MONTH));
+
+            paintedDates.add(calendarDay);
+        }
+
+        DayViewDecorator decorator = new DayViewDecorator() {
+            @Override
+            public boolean shouldDecorate(CalendarDay day) {
+                return paintedDates.contains(day);
+            }
+
+            @Override
+            public void decorate(DayViewFacade view) {
+                view.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#9999FF")));
+            }
+        };
+
+        calendarView.addDecorator(decorator);
+    }
 
     public void drawPieChart(PieChart pieChart) {
         pieChart.setDrawHoleEnabled(true);
@@ -220,7 +267,7 @@ public class StatisticsFragment extends Fragment {
     }
 
 
-    public void drawBarChart(BarChart barChart){
+    public void drawBarChart(BarChart barChart) {
 
         ArrayList<BarEntry> entries = new ArrayList<>();
         entries.add(new BarEntry(0f, 10f));
