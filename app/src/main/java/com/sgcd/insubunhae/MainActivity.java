@@ -211,14 +211,14 @@ public class MainActivity extends AppCompatActivity {
 
     private void processCallLog(Cursor cursor) {
         if (cursor != null && cursor.moveToFirst()) {
-            //int nameColumnIndex = cursor.getColumnIndex(CallLog.Calls.CACHED_NAME);
+            int nameColumnIndex = cursor.getColumnIndex(CallLog.Calls.CACHED_NAME);
             int numberColumnIndex = cursor.getColumnIndex(CallLog.Calls.NUMBER);
             int dateColumnIndex = cursor.getColumnIndex(CallLog.Calls.DATE);
             int durationColumnIndex = cursor.getColumnIndex(CallLog.Calls.DURATION);
             int typeColumnIndex = cursor.getColumnIndex(CallLog.Calls.TYPE);
 
             while (cursor.moveToNext()) {
-                //String Name = cursor.getString(nameColumnIndex);
+                String Name = cursor.getString(nameColumnIndex);
                 String phoneNumber = cursor.getString(numberColumnIndex);
                 int callType = cursor.getInt(typeColumnIndex);
                 int duration = cursor.getInt(durationColumnIndex);
@@ -233,11 +233,14 @@ public class MainActivity extends AppCompatActivity {
                 String contactInfoName = contactInfo.getName();
                 String contactInfoId = contactInfo.getId();
 
-                if (!contactInfoName.isEmpty()) {
+                //Log.d(TAG, ", Name: " + Name + ", Phone Number: " + phoneNumber);
+                //Log.d(TAG, "Datetime in Millis / in String): " + dateInMillis + " / " + dateInString + ", Duration: " + duration + ", Call Type: " + callType);
+                //if (!contactInfoName.isEmpty()) {
                     // Log the retrieved call information
-                    Log.d(TAG, "Contact ID: " + contactInfoId + ", Name: " + contactInfoName + ", Phone Number: " + phoneNumber);
-                    Log.d(TAG, "Datetime in Millis / in String): " + dateInMillis + " / " + dateInString + ", Duration: " + duration + ", Call Type: " + callType);
-                }
+                    Log.d("log", "Contact ID: " + contactInfoId + ", Name: " + contactInfoName + ", Phone Number: " + phoneNumber);
+                    Log.d("log", "Datetime in Millis / in String): " + dateInMillis + " / " + dateInString + ", Duration: " + duration + ", Call Type: " + callType);
+
+                //}
             }
             // Update the last retrieval date to the latest call log date
             if (cursor.moveToFirst()) {
@@ -323,7 +326,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //for retrieving additional call log (not for now)
+    //for retrieving additional call log
     @Override
     protected void onResume() {
         super.onResume();
