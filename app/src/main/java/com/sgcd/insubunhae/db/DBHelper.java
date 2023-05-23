@@ -1,19 +1,53 @@
 package com.sgcd.insubunhae.db;
 
+import static android.content.ContentValues.TAG;
 import static com.sgcd.insubunhae.db.DBContract.ARRAY_LENGTH;
 import static com.sgcd.insubunhae.db.DBContract.SQL_CREATE_TABLE_ARRAY;
 import static com.sgcd.insubunhae.db.DBContract.TABLE_NAME_ARRAY;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
+import android.provider.CallLog;
+import android.provider.ContactsContract;
 import android.util.Log;
 
+import android.widget.Toast;
+
+import java.util.Calendar;
+
 public class DBHelper extends SQLiteOpenHelper  {
+    private static Context context;
+    private ContactsList contacts_list = new ContactsList();
+    int i = 0;
+    private long lastRetrievalDate = 0L; // Store the timestamp of the last retrieval
+
+    int lastCallLogId=0;
 
     public DBHelper(Context context) {
         super(context, DBContract.DATABASE_NAME, null, DBContract.DATABASE_VERSION);
+        DBHelper.context = context;
         Log.d("Database Operations", "Database created...");
+
+        dbDeleteForTest();
+    }
+
+    // Delete the database file(for test)
+    public void dbDeleteForTest(){
+        String databaseName = "i_contacts.db";
+        boolean isDeleted = context.deleteDatabase(databaseName);
+
+        if (isDeleted) {
+            Log.d(TAG, "Database deleted successfully");
+        } else {
+            Log.d(TAG, "Failed to delete the database");
+        }
     }
 
     @Override
@@ -24,6 +58,12 @@ public class DBHelper extends SQLiteOpenHelper  {
             db.execSQL(SQL_CREATE_TABLE_ARRAY[i]);
             Log.d("Database Operations", "Table : " + TABLE_NAME_ARRAY[i] + " created...");
         }
+
+        contacts_list.getContacts(context);
+        contacts_list.dbInsert(db);
+
+        smsFromDeviceToDB(db);
+        callLogFromDeviceToDB(db);
     }
 
     @Override
@@ -39,5 +79,309 @@ public class DBHelper extends SQLiteOpenHelper  {
             Log.d("Database Operations", "Table : " + TABLE_NAME_ARRAY[i] + " dropped...");
         }
         onCreate(db);
+    }
+    public void callLogFromDeviceToDB(SQLiteDatabase db) {
+        new Thread(() -> {
+            int callLogId = DBContract.CallLog.call_log_cnt;        // Call log ID
+            int contactId = 0;        // Contact ID
+            long callDatetime = DBContract.CallLog.last_updated;    // Call date and time
+            String contactName;  // Contact name
+            String contactPhone = ""; // Contact phone number
+            int callType = 0;         // Call type
+            int callDuration = 0;     // Call duration
+
+            String selection=null;
+            String[] selectionArgs=null;
+            final String sortOrder = CallLog.Calls.DATE + " DESC";
+            final long refreshRate = 24*60*60*1000L;// 24 hours
+
+            String[] projection = {
+                    CallLog.Calls._ID,
+                    CallLog.Calls.CACHED_NAME,
+                    CallLog.Calls.NUMBER,
+                    CallLog.Calls.DATE,
+                    CallLog.Calls.TYPE,
+                    CallLog.Calls.DURATION
+            };
+
+            //cursor start.
+            Cursor cursor = context.getContentResolver().query(
+                    CallLog.Calls.CONTENT_URI,
+                    projection,
+                    selection,
+                    selectionArgs,
+                    sortOrder
+            );
+
+            if(callLogId==0){
+                //Toast.makeText(context, "Retrieving All CallLog", Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "Retrieving All CallLog..");
+            }
+            else if(System.currentTimeMillis() - callDatetime >= refreshRate) {
+                selection = CallLog.Calls.DATE + " > ?";
+                selectionArgs = new String[]{String.valueOf(DBContract.CallLog.last_updated)};
+                //Toast.makeText(context, "Retrieving Additional CallLog..", Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "Retrieving Additional CallLog from " + callDatetime);
+            }
+            else {
+                //Toast.makeText(context, "Not much CallLog to retrieve yet..", Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "Not much CallLog to retrieve yet..");
+
+                return;
+            }
+
+            int phoneIndex = cursor.getColumnIndex(CallLog.Calls.NUMBER);
+            int datetimeIndex = cursor.getColumnIndex(CallLog.Calls.DATE);
+            int typeIndex = cursor.getColumnIndex(CallLog.Calls.TYPE);
+            int durationIndex = cursor.getColumnIndex(CallLog.Calls.DURATION);
+
+
+
+            if (cursor == null) {
+                Log.d("callLogFromDeviceToDB", "cursor is null.. FYI, selection: " + selection);
+                return;// is it safe???
+            }
+            // Start the transaction
+            db.beginTransaction();
+
+            try {
+                for(callLogId+=1; cursor.moveToNext(); ){
+
+                    // first, get phone number to know if this is saved number
+                    if (phoneIndex >= 0) {
+                        contactPhone = cursor.getString(phoneIndex);
+                    }
+
+                    ContactInfo contactInfo = getContactInfo(contactPhone);
+
+                    // if number is not saved, contactName will be "null"
+                    contactName = contactInfo.getName();
+                    contactId = contactInfo.getId();
+
+                    //don't insert callLog if name is null
+                    if (contactName == null) {
+                        Log.d("skip", "    <skip> number is not saved in contacts list");
+                        continue;
+                    }
+                    else{
+                        callLogId++;
+                    }
+
+                    //if number is saved, let's start inserting the call log
+
+                    if (datetimeIndex >= 0) {
+                        callDatetime = cursor.getLong(datetimeIndex);
+                    }
+
+                    if (typeIndex >= 0) {
+                        callType = cursor.getInt(typeIndex);
+                    }
+
+                    if (durationIndex >= 0) {
+                        callDuration = cursor.getInt(durationIndex);
+                    }
+
+                    Log.d("callLogFromDeviceToDB", "callLogId: " + callLogId + "\t\t\t contactID: " + contactId + "\t name: " + contactName + "\t phone: " + contactPhone);
+                    Log.d("callLogFromDeviceToDB", "datetime: " + callDatetime + "\t type: " + callType + "\t\t duration: " + callDuration);
+
+                    /* Insert call log to DB */
+                    ContentValues values = new ContentValues();
+                    values.put(DBContract.CallLog.HISTORY_ID, callLogId);
+                    values.put(DBContract.CallLog.KEY_CONTACT_ID, contactId);
+                    values.put(DBContract.CallLog.DATETIME, callDatetime);
+                    values.put(DBContract.CallLog.NAME, contactName);
+                    values.put(DBContract.CallLog.PHONE, contactPhone);
+                    values.put(DBContract.CallLog.TYPE, callType);
+                    values.put(DBContract.CallLog.DURATION, callDuration);
+
+                    db.insert(DBContract.CallLog.TABLE_NAME, null, values);
+                }
+                // Mark the transaction as successful
+                db.setTransactionSuccessful();
+            } finally {
+                // End the transaction
+                db.endTransaction();
+            }
+
+            //update last retrieval datetime and callLogId
+            DBContract.CallLog.last_updated = callDatetime;
+            DBContract.CallLog.call_log_cnt = callLogId;
+            Log.d("Updated last_updated", "datetime " + callDatetime + " callLogID "+ callLogId);
+
+            cursor.close();
+
+            // Perform UI-related operations or post updates to the main thread
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.post(() -> {
+                // Update UI or perform any required operations on the main thread
+                Toast.makeText(context, "CallLog Retrieval finished, lastCallLogId: " + lastCallLogId, Toast.LENGTH_SHORT).show();
+                // For example, you can notify the user that the task is completed or update UI elements based on the retrieved data
+            });
+        }).start();
+    }
+
+
+    // MESSENGER_HISTORY data 추가 메소드
+    public void insertMessengerHistory(int historyId, int contactId, String datetime, String day, String type, int count) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("history_id", historyId);
+        values.put("contact_id", contactId);
+        values.put("datetime", datetime);
+        values.put("day", day);
+        values.put("type", type);
+        values.put("count", count);
+        db.insert("MESSENGER_HISTORY", null, values);
+        Log.d("Database Operations", "Data inserted...");
+        db.close();
+    }
+
+
+    public void smsFromDeviceToDB(SQLiteDatabase db) {
+        int smsHistoryId = 0;   //기록 번호
+        int smsContactId = 0;   //연락처 고유 아이디
+        long smsDatetime = 0;    //연락 날짜
+        String smsDay = "";     //연락 요일
+        String smsType = "";    //연락 수단
+        int smsCount = 0;       //일 연락 횟수(동일 연락 수단)
+
+        Uri messagesUri = Uri.parse("content://sms/inbox");
+        Cursor cursor = context.getContentResolver().query(messagesUri, null, null, null, null);
+
+        if (cursor == null) Log.d("getSmsFromDevice", "cursor is null..");
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                /* get sms from device */
+                smsHistoryId = i++;
+                int senderIndex = cursor.getColumnIndex("address");
+                if (senderIndex >= 0) {
+                    String smsSender = cursor.getString(senderIndex);
+                }
+                smsContactId = 1234;
+                int dateIndex = cursor.getColumnIndex("date");
+                if (dateIndex >= 0) {
+                    smsDatetime = cursor.getLong(dateIndex);
+                }
+                smsDay = getDayOfDatetime(smsDatetime);
+                //smsDay = "Monday"; //연락 요일
+                smsType = "Sms"; //연락 수단
+                smsCount = 0; //일 연락 횟수(동일 연락 수단)
+
+                Log.d("getSmsFromDevice", "datetime : " + smsDatetime);
+                Log.d("getSmsFromDevice", "day : " + smsDay);
+                Log.d("getSmsFromDevice", "type : " + smsType);
+                Log.d("getSmsFromDevice", "count : " + smsCount);
+
+
+                /* insert sms to db */
+                ContentValues values = new ContentValues();
+                values.put("history_id", smsHistoryId);
+                values.put("contact_id", smsContactId);
+                values.put("datetime", smsDatetime);
+                values.put("day", smsDay);
+                values.put("type", smsType);
+                values.put("count", smsCount);
+                db.insert("MESSENGER_HISTORY", null, values);
+
+            } while (cursor.moveToNext());
+        }
+
+        if (cursor != null) {
+            cursor.close();
+        }
+    }
+
+    public void checkIfUpdateNeeded() {
+
+        SharedPreferences preferences = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        long lastRefreshTimestamp = preferences.getLong("last_refresh_timestamp", 0);
+        long currentTimestamp = System.currentTimeMillis();
+        long refreshInterval = 24 * 60 * 60 * 1000; // 24 hours
+
+        boolean updateNeeded = currentTimestamp - lastRefreshTimestamp >= refreshInterval;
+
+        if (updateNeeded) {
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putLong("last_refresh_timestamp", currentTimestamp);
+            editor.apply();
+
+            //fetchAdditionalCallLog();
+        }
+    }
+
+
+    // from here, some additional methods..
+    private static ContactInfo getContactInfo(String phoneNumber) {
+        ContactInfo contactInfo = new ContactInfo();
+        Cursor contactCursor = null;
+
+        try {
+            Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phoneNumber));
+            contactCursor = context.getContentResolver().query(uri, new String[]{ContactsContract.PhoneLookup._ID, ContactsContract.PhoneLookup.DISPLAY_NAME}, null, null, null);
+
+            if (contactCursor != null && contactCursor.moveToFirst()) {
+                int idIndex = contactCursor.getColumnIndex(ContactsContract.PhoneLookup._ID);
+                int nameIndex = contactCursor.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME);
+
+                if (idIndex >= 0) {
+                    contactInfo.setId(contactCursor.getInt(idIndex));
+                }
+
+                if (nameIndex >= 0) {
+                    contactInfo.setName(contactCursor.getString(nameIndex));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (contactCursor != null) {
+                contactCursor.close();
+            }
+        }
+
+        return contactInfo;
+    }
+
+    public static class ContactInfo {
+        private int id;
+        private String name;
+        public int getId() {
+            return id;
+        }
+        public void setId(int id) {
+            this.id = id;
+        }
+        public String getName() {
+            return name;
+        }
+        public void setName(String name) {
+            this.name = name;
+        }
+    }
+
+    public String getDayOfDatetime(long timestamp) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timestamp);
+
+        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+
+        switch (dayOfWeek) {
+            case Calendar.SUNDAY:
+                return "Sun";
+            case Calendar.MONDAY:
+                return "Mon";
+            case Calendar.TUESDAY:
+                return "Tue";
+            case Calendar.WEDNESDAY:
+                return "Wed";
+            case Calendar.THURSDAY:
+                return "Thu";
+            case Calendar.FRIDAY:
+                return "Fri";
+            case Calendar.SATURDAY:
+                return "Sat";
+            default:
+                return "";
+        }
     }
 }

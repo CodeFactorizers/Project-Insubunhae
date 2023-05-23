@@ -12,12 +12,13 @@ public class DBContract {
     /*
      * public static final String NOT_NULL = "NOT NULL";
      * public static final String COMMA = ",";
-    */
+     */
     public static final String AUTHORITY = "com.sgcd.insubunhae";
     public static final String SCHEME = "content://";
     public static final String SLASH = "/";
 
     public static final int ARRAY_LENGTH = 8;
+
     /* An array list of all the SQL create table statements */
     public static final String[] SQL_CREATE_TABLE_ARRAY = {
             MainContacts.CREATE_TABLE,
@@ -52,12 +53,17 @@ public class DBContract {
         public static final String NAME = "name";
         public static final String FIRST_CHAR = "first_char";
         public static final String PHONE1 = "phone_number1";
+        public static final String PHONE_TYPE1 = "phone_number_type1";
         public static final String PHONE2 = "phone_number2";
-        public static final String PHONE3 = "phobe_number3";
+        public static final String PHONE_TYPE2 = "phone_number_type2";
+        public static final String PHONE3 = "phone_number3";
+        public static final String PHONE_TYPE3 = "phone_number_type3";
         public static final String IS_GROUPED = "is_grouped";
         public static final String GROUP_CNT = "group_count";
-        public static final String ADDRESS = "address";
-        public static final String ADDR2 = "address2";
+        public static final String ADDRESS = "address1";
+        public static final String ADDRESS_TYPE1 = "address_type1";
+        public static final String ADDRESS2 = "address2";
+        public static final String ADDRESS_TYPE2 = "address_type2";
         public static final String EMAIL = "email";
         public static final String EMAIL2 = "sub_email";
         public static final String WORK = "work";
@@ -79,19 +85,24 @@ public class DBContract {
         public static final String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " ("
                 + KEY_CONTACT_ID + " INTEGER,"
                 + NAME + " VARCHAR(30) NOT NULL,"
-                + FIRST_CHAR + " CHARACTER(1),"
+                + FIRST_CHAR + " TEXT,"
                 + PHONE1 + " VARCHAR(15),"
+                + PHONE_TYPE1 + " TEXT,"
                 + PHONE2 + " VARCHAR(15),"
+                + PHONE_TYPE2 + " TEXT,"
                 + PHONE3 + " VARCHAR(15),"
+                + PHONE_TYPE3 + " TEXT,"
                 + IS_GROUPED + " INTEGER NOT NULL,"
                 + GROUP_CNT + " INTEGER,"
                 + ADDRESS + " VARCHAR(50),"
-                + ADDR2 + " VARCHAR(30),"
+                + ADDRESS_TYPE1 + " TEXT,"
+                + ADDRESS2 + " VARCHAR(30),"
+                + ADDRESS_TYPE2 + " TEXT,"
                 + EMAIL + " VARCHAR(30) CHECK (" + EMAIL + " like '%@%'),"
                 + EMAIL2 + " VARCHAR(30) CHECK (" + EMAIL2 + " like '%@%'),"
                 + WORK + " VARCHAR(20),"
                 + SNS_ID + " VARCHAR(20),"
-                + UPDATED_DATE + " INTEGER,"
+                + UPDATED_DATE + " INTEGER DEFAULT 0,"
                 + "PRIMARY KEY(" + KEY_CONTACT_ID + ")"
                 + ");";
 
@@ -104,12 +115,17 @@ public class DBContract {
                 NAME,
                 FIRST_CHAR,
                 PHONE1,
+                PHONE_TYPE1,
                 PHONE2,
+                PHONE_TYPE2,
                 PHONE3,
+                PHONE_TYPE3,
                 IS_GROUPED,
                 GROUP_CNT,
                 ADDRESS,
-                ADDR2,
+                ADDRESS_TYPE1,
+                ADDRESS2,
+                ADDRESS_TYPE2,
                 EMAIL,
                 EMAIL2,
                 WORK,
@@ -213,7 +229,6 @@ public class DBContract {
         }
         public static final String TABLE_NAME = "MESSENGER_HISTORY";
         public static final String FK_TABLE_NAME = "MAIN_CONTACTS";
-
         public static final String HISTORY_ID = "history_id";
         public static final String KEY_CONTACT_ID = "contact_id";
         public static final String DATETIME = "datetime";
@@ -258,6 +273,9 @@ public class DBContract {
         };
     }
     public static final class CallLog implements BaseColumns {
+        public static long last_updated = 0L;// to check if callLog update needed. note that it's last_update'd'
+        public static int call_log_cnt = 0;
+
         /* Do not allow this class to be instantiated */
         private CallLog() {
         }
@@ -284,15 +302,17 @@ public class DBContract {
         //The default sort order for this table
         public static final String DEFAULT_SORT_ORDER = HISTORY_ID + " ASC";
 
+
+
         public static final String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " ("
-                + HISTORY_ID + " INTEGER,"
+                + HISTORY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + KEY_CONTACT_ID + " INTEGER NOT NULL,"
                 + DATETIME + " INTEGER NOT NULL,"
                 + NAME + " VARCHAR(30),"
                 + PHONE + " VARCHAR(15) NOT NULL,"
                 + TYPE + " INTEGER NOT NULL,"
                 + DURATION + " INTEGER NOT NULL,"
-                + "PRIMARY KEY(" + HISTORY_ID + "),"
+                //+ "PRIMARY KEY(" + HISTORY_ID + "),"
                 + "FOREIGN KEY(" + KEY_CONTACT_ID + ") REFERENCES " + FK_TABLE_NAME + " (" + KEY_CONTACT_ID + ")"
                 + ");";
 
