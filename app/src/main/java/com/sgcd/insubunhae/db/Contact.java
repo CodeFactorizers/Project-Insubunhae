@@ -4,6 +4,8 @@ package com.sgcd.insubunhae.db;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+
 import java.util.ArrayList;
 
 public class Contact implements Parcelable {
@@ -25,10 +27,60 @@ public class Contact implements Parcelable {
     public Contact() {
     }
 
+    protected Contact(Parcel in) {
+        id = in.readString();
+        phoneNumber = in.createStringArrayList();
+        numberType = in.createStringArrayList();
+        name = in.readString();
+        label = in.readString();
+        email = in.createStringArrayList();
+        address = in.createStringArrayList();
+        addressType = in.createStringArrayList();
+        groupName = in.readString();
+        groupId = in.createStringArrayList();
+        company = in.readString();
+        department = in.readString();
+        title = in.readString();
+        snsId = in.readString();
+        isSelect = in.readByte() != 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
+        dest.writeStringList(phoneNumber);
+        dest.writeStringList(numberType);
+        dest.writeString(name);
+        dest.writeString(label);
+        dest.writeStringList(email);
+        dest.writeStringList(address);
+        dest.writeStringList(addressType);
+        dest.writeString(groupName);
+        dest.writeStringList(groupId);
+        dest.writeString(company);
+        dest.writeString(department);
+        dest.writeString(title);
+        dest.writeString(snsId);
+        dest.writeByte((byte) (isSelect ? 1 : 0));
+    }
+
     @Override
     public int describeContents() {
         return 0;
     }
+
+    public static final Creator<Contact> CREATOR = new Creator<Contact>() {
+        @Override
+        public Contact createFromParcel(Parcel in) {
+            return new Contact(in);
+        }
+
+        @Override
+        public Contact[] newArray(int size) {
+            return new Contact[size];
+        }
+    };
+
     public void setId(String id){
         this.id = id;
     }
@@ -90,28 +142,4 @@ public class Contact implements Parcelable {
     public void setSnsId(String snsId) { this.snsId = snsId;}
     public String getSnsId() { return this.snsId;}
 
-
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.name);
-        dest.writeByte(this.isSelect ? (byte) 1 : (byte) 0);
-    }
-
-    protected Contact(Parcel in) {
-        this.name = in.readString();
-        this.isSelect = in.readByte() != 0;
-    }
-
-    public static final Creator<Contact> CREATOR = new Creator<Contact>() {
-        @Override
-        public Contact createFromParcel(Parcel source) {
-            return new Contact(source);
-        }
-
-        @Override
-        public Contact[] newArray(int size) {
-            return new Contact[size];
-        }
-    };
 }

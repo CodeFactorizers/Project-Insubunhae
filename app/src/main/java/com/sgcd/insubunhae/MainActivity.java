@@ -4,7 +4,6 @@ import static android.content.ContentValues.TAG;
 
 import java.util.Date;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Locale;
 import android.Manifest;
 import android.content.Intent;
@@ -37,7 +36,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CalendarView;
 import android.widget.Toast;
 
 import com.sgcd.insubunhae.databinding.ActivityMainBinding;
@@ -46,7 +44,6 @@ import com.sgcd.insubunhae.db.DBHelper;
 import com.sgcd.insubunhae.ui.contacts_viewer.FragmentContactsObjectViewer;
 
 public class MainActivity extends AppCompatActivity {
-
     private ActivityMainBinding binding;
 
     // DB 관련
@@ -96,7 +93,10 @@ public class MainActivity extends AppCompatActivity {
         //contacts viewer
         fragmentManager = getSupportFragmentManager();
         fragmentContactsObjectViewer = new FragmentContactsObjectViewer();
-
+        final Bundle bundle = new Bundle();
+        //bundle.putParcelable("contactsList", dbHelper.getContactsList());
+        bundle.putParcelableArrayList("contactsList", dbHelper.getContactsList().getContactsList());
+        fragmentContactsObjectViewer.setArguments(bundle);
 
 
         // Passing each menu ID as a set of Ids because each

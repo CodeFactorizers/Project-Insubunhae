@@ -32,6 +32,9 @@ import java.text.SimpleDateFormat;
 public class DBHelper extends SQLiteOpenHelper  {
     private static Context context;
     private ContactsList contacts_list = new ContactsList();
+    public ContactsList getContactsList(){
+        return contacts_list;
+    }
     int i = 1; //MESSENGER_HISTORY history_id는 1부터 시작.
 
     int lastCallLogId=0;

@@ -7,8 +7,12 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.provider.ContactsContract;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -16,10 +20,39 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ContactsList {
+public class ContactsList implements Parcelable {
     private ArrayList<Contact> contacts_list = new ArrayList<Contact>();
+    public ArrayList<Contact> getContactsList(){
+        return contacts_list;
+    }
     private Map<String, Group> group_map = new HashMap<String, Group>();
     public ContactsList(){}
+
+    protected ContactsList(Parcel in) {
+        contacts_list = in.createTypedArrayList(Contact.CREATOR);
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeTypedList(contacts_list);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<ContactsList> CREATOR = new Creator<ContactsList>() {
+        @Override
+        public ContactsList createFromParcel(Parcel in) {
+            return new ContactsList(in);
+        }
+
+        @Override
+        public ContactsList[] newArray(int size) {
+            return new ContactsList[size];
+        }
+    };
 
     @SuppressLint("Range")
     public ArrayList<Contact> getContacts(Context context) {
@@ -42,14 +75,13 @@ public class ContactsList {
             Group group = new Group();
             group.setGroupName(groupName);
             group.setGroupId(groupId);
-            Log.d("group", groupName);
-            Log.d("group", groupId);
+            //Log.d("group", groupName);
+            //Log.d("group", groupId);
             group_map.put(groupId, group);
         }
 
         //contact
         if (cursor != null) {
-            Log.d("getContacts", "in if -------------");
             //각 연락처
             while (cursor.moveToNext()) {
                 Contact contact = new Contact();
@@ -145,24 +177,6 @@ public class ContactsList {
                     contact.setTitle(title);
                     contact.setDepartment(department);
                 }
-
-                // im address
-//                Cursor imCursor = resolver.query(
-//                        ContactsContract.Data.CONTENT_URI,
-//                        null,
-//                        ContactsContract.CommonDataKinds.Im.CONTACT_ID + " = ? ",
-//                        new String[]{contactId},
-//                        null);
-//
-//                if (imCursor != null && imCursor.moveToFirst()) {
-//                    do {
-//                        int imType = imCursor.getInt(imCursor.getColumnIndex(ContactsContract.CommonDataKinds.Im.TYPE));
-//                        String imName = imCursor.getString(imCursor.getColumnIndex(ContactsContract.CommonDataKinds.Im.DATA));
-//                        // IM 주소 정보 처리
-//                    } while (imCursor.moveToNext());
-//                    imCursor.close();
-//                }
-
                 contacts_list.add(contact);
             }
 
@@ -238,5 +252,4 @@ public class ContactsList {
         }
 
     }
-
 }
