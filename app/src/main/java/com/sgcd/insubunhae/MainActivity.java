@@ -1,6 +1,5 @@
 package com.sgcd.insubunhae;
 
-// [통계] 미니 캘린더
 import static android.content.ContentValues.TAG;
 
 import java.util.Date;
@@ -59,8 +58,6 @@ public class MainActivity extends AppCompatActivity {
     private long lastRetrievalDate = 0L; // Store the timestamp of the last retrieval
 
 
-    // [통계] 미니 캘린더 관련
-    private CalendarView calendarView;
     
     // 연락처 연동
     private ContactsList contacts_list = new ContactsList();
@@ -74,34 +71,16 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        getPermission(); //sms 접근권한 받는 메소드(contacts, call log도 이 메소드 내에 추가하면 될듯!)
+        if(getPermission()) { //sms 접근권한 받는 메소드(contacts, call log도 이 메소드 내에 추가하면 될듯!)
 
-        // Create new helper
-        dbHelper = new DBHelper(this);
-        // Get the database. If it does not exist, this is where it will
-        // also be created.
-        idb = dbHelper.getWritableDatabase();
+            // Create new helper
+            dbHelper = new DBHelper(this);
+            // Get the database. If it does not exist, this is where it will
+            // also be created.
+            idb = dbHelper.getWritableDatabase();
+        }
 
         //dbHelper.callLogFromDeviceToDB(idb);
-
-        /* MESSENGER_HISTORY data 추가
-        dbHelper.insertMessengerHistory(1, 1000, "2022-01-01 10:30:00", "SAT", "msg", 10);
-        dbHelper.insertMessengerHistory(2, 1000, "2022-01-01 10:40:00", "SAT", "katalk", 5);
-        dbHelper.insertMessengerHistory(3, 1001, "2022-01-02 10:30:00", "SUN", "msg", 10);
-        dbHelper.insertMessengerHistory(4, 1002, "2022-01-03 10:30:00", "MON", "msg", 10);
-        dbHelper.insertMessengerHistory(5, 1002, "2022-01-03 10:30:00", "MON", "msg", 10);
-        dbHelper.insertMessengerHistory(6, 1002, "2022-01-04 10:30:00", "TUE", "msg", 10);
-        dbHelper.insertMessengerHistory(7, 1004, "2022-01-04 10:30:00", "TUE", "msg", 10);
-        dbHelper.insertMessengerHistory(8, 1004, "2022-01-04 10:30:00", "TUE", "msg", 10);
-        dbHelper.insertMessengerHistory(9, 1005, "2022-01-05 10:30:00", "WED", "msg", 10);
-        dbHelper.insertMessengerHistory(10, 1005, "2022-01-05 10:31:00", "WED", "msg", 10);
-        dbHelper.insertMessengerHistory(11, 1005, "2022-01-05 10:32:00", "WED", "msg", 10);
-        dbHelper.insertMessengerHistory(12, 1005, "2022-01-05 10:33:00", "WED", "msg", 10);
-        dbHelper.insertMessengerHistory(13, 1005, "2022-01-05 10:34:00", "WED", "msg", 10);
-        */
-
-        calendarView = findViewById(R.id.calendarView);
-        paintMiniCalendar();
 
         //contacts_list.getContacts(getApplicationContext());
         //contacts_list.dbInsert(idb, dbHelper);
@@ -139,76 +118,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    // [통계] 미니 캘린더 구현
-    public void paintMiniCalendar() {
-        int calc_fam = 0; // 친밀도(계산값)
-        int content_score = 1; // 최근 연락내용(점수 1~5점)
-        int user_fam = 1; // 친밀도(유저 입력)
-        int how_long_month = -1; // 알고 지낸 시간(월)
-        int recent_days = -1; // 최근 연락일 ~ 현재(일)
-        int recent_score = -1; // 최근 연락일(점수 1~5점)
-
-        // DB에서 data 추출할 예정
-        String recent_contact = "23-05-09 13:30:00";
-        String first_contact = "23-05-08 13:30:00";
-
-        // currentTimestamp = 현재 시간(yy-MM-dd HH:mm:ss) ---------------------------------*/
-        Date currentDate = new Date();
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(currentDate);
-
-        String currentTimestamp = dateFormat.format(calendar.getTime());
-        Log.d("Calendar", "currentTimestamp : " + currentTimestamp);
-        //-------------------------------------------------------------------------------*/
-
-        // how_long_month, recent_days, recent_score 계산 --------------------------------*/
-        try {
-            Date date1 = dateFormat.parse(recent_contact);
-            Date date2 = dateFormat.parse(currentTimestamp);
-
-            long milliseconds = date2.getTime() - date1.getTime();
-
-            how_long_month = (int) (milliseconds / (30 * 24 * 60 * 60 * 1000));
-            Log.d("Calendar", "how_long_month : " + how_long_month);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        try {
-            Date date1 = dateFormat.parse(first_contact);
-            Date date2 = dateFormat.parse(currentTimestamp);
-
-            long milliseconds = date2.getTime() - date1.getTime();
-
-            recent_days = (int) (milliseconds / (24 * 60 * 60 * 1000));
-            Log.d("Calendar", "recent_days : " + recent_days);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        if (recent_days >= 0 && recent_days <= 3) {
-            recent_score = 5;
-        }
-        else if (recent_days >= 4 && recent_days <= 7) {
-            recent_score = 4;
-        }
-        else if (recent_days >= 8 && recent_days <= 30) {
-            recent_score = 3;
-        }
-        else if (recent_days >= 31 && recent_days <= 180) {
-            recent_score = 2;
-        }
-        else if (recent_days >= 180) {
-            recent_score = 1;
-        }
-        Log.d("Calendar", "recent_score : " + recent_score);
-        //-------------------------------------------------------------------------------*/
-
-    }
-
     // Inflating the menu items from the menu_items.xml file
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -237,15 +146,17 @@ public class MainActivity extends AppCompatActivity {
     /*
     Below: Permission Related Methods & Log Process Methods
      */
-    private void getPermission() {
+    private boolean getPermission() {
         Log.d("getPermission", "getPermission");
 
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.READ_CONTACTS}, MY_PERMISSIONS_REQUEST_READ_CONTACTS);
             Log.d("getPermission", "in if");
+            return false;
         } else {
             showToast("Contacts permission already granted.");
             requestCallLogPermission();// If contacts permission is granted, request call log permission
+            return true;
         }
     }
 
@@ -299,14 +210,14 @@ public class MainActivity extends AppCompatActivity {
 
     private void processCallLog(Cursor cursor) {
         if (cursor != null && cursor.moveToFirst()) {
-            int nameColumnIndex = cursor.getColumnIndex(CallLog.Calls.CACHED_NAME);
+            //int nameColumnIndex = cursor.getColumnIndex(CallLog.Calls.CACHED_NAME);
             int numberColumnIndex = cursor.getColumnIndex(CallLog.Calls.NUMBER);
             int dateColumnIndex = cursor.getColumnIndex(CallLog.Calls.DATE);
             int durationColumnIndex = cursor.getColumnIndex(CallLog.Calls.DURATION);
             int typeColumnIndex = cursor.getColumnIndex(CallLog.Calls.TYPE);
 
             while (cursor.moveToNext()) {
-                String Name = cursor.getString(nameColumnIndex);
+                //String Name = cursor.getString(nameColumnIndex);
                 String phoneNumber = cursor.getString(numberColumnIndex);
                 int callType = cursor.getInt(typeColumnIndex);
                 int duration = cursor.getInt(durationColumnIndex);
@@ -321,13 +232,11 @@ public class MainActivity extends AppCompatActivity {
                 String contactInfoName = contactInfo.getName();
                 String contactInfoId = contactInfo.getId();
 
-                //Log.d(TAG, ", Name: " + Name + ", Phone Number: " + phoneNumber);
-                //Log.d(TAG, "Datetime in Millis / in String): " + dateInMillis + " / " + dateInString + ", Duration: " + duration + ", Call Type: " + callType);
-                //if (!contactInfoName.isEmpty()) {
+                if (!contactInfoName.isEmpty()) {
                     // Log the retrieved call information
-                    Log.d("log", "Contact ID: " + contactInfoId + ", Name: " + contactInfoName + ", Phone Number: " + phoneNumber);
-                    Log.d("log", "Datetime in Millis / in String): " + dateInMillis + " / " + dateInString + ", Duration: " + duration + ", Call Type: " + callType);
-
+                    Log.d(TAG, "Contact ID: " + contactInfoId + ", Name: " + contactInfoName + ", Phone Number: " + phoneNumber);
+                    Log.d(TAG, "Datetime in Millis / in String): " + dateInMillis + " / " + dateInString + ", Duration: " + duration + ", Call Type: " + callType);
+                }
                 //}
             }
             // Update the last retrieval date to the latest call log date
@@ -414,7 +323,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //for retrieving additional call log
+    //for retrieving additional call log (not for now)
     @Override
     protected void onResume() {
         super.onResume();
@@ -442,6 +351,7 @@ public class MainActivity extends AppCompatActivity {
         }
         return isRefreshed;
     }
+
 
     public ContactInfo getContactInfo(String phoneNumber) {
         ContactInfo contactInfo = new ContactInfo();
