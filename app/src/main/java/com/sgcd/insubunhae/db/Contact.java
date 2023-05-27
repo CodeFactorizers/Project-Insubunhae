@@ -19,12 +19,16 @@ public class Contact implements Parcelable {
     private ArrayList<String> addressType = new ArrayList<String>();
     private String groupName;
     private ArrayList<String> groupId = new ArrayList<String>();
+    private int isGrouped;
+    private int groupCount;
     private String company;
     private String department;
     private String title;
     private String snsId;
     private boolean isSelect;
     public Contact() {
+        isGrouped = 0;
+        groupCount = 0;
     }
 
     protected Contact(Parcel in) {
@@ -133,6 +137,10 @@ public class Contact implements Parcelable {
     public ArrayList<String> getGroupId(){
         return this.groupId;
     }
+    public void setIsGrouped(int isGrouped){ this.isGrouped = isGrouped;}
+    public int getIsGrouped(){return this.isGrouped;}
+    public void setGroupCount(int groupCount){ this.groupCount = groupCount;}
+    public int getGroupCount(){return this.groupCount;}
     public void setCompany(String company) { this.company = company;}
     public String getCompany() { return this.company;}
     public void setDepartment(String department) { this.department = department;}

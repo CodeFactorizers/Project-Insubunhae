@@ -55,7 +55,7 @@ public class ContactsList implements Parcelable {
     };
 
     @SuppressLint("Range")
-    public ArrayList<Contact> getContacts(Context context) {
+    public ArrayList<Contact> getContacts(Context context, DBHelper dbHelper, SQLiteDatabase db) {
         Log.d("getContacts", "enter getContacts -------------");
         ContentResolver resolver = context.getContentResolver();
         Cursor cursor = resolver.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
@@ -151,6 +151,10 @@ public class ContactsList implements Parcelable {
                     contact.setGroupId(groupRowId);
                     group_map.get(groupRowId).setMemberList(id);
                 }
+                contact.setGroupCount(contact.getGroupId().size());
+                if(contact.getGroupCount() != 0){
+                    contact.setIsGrouped(1);
+                }
                 if (groupMemberCursor != null) {
                     groupMemberCursor.close();
                 }
@@ -185,6 +189,37 @@ public class ContactsList implements Parcelable {
         Log.d("getContacts", "exit getContacts -------------");
 
         return this.contacts_list;
+    }
+
+    public void getContactsFromAppDB(SQLiteDatabase db){
+        Cursor cursor = db.rawQuery("SELECT * FROM MAIN_CONTACTS", null);
+
+        while(cursor.moveToNext()){
+            Contact contact = new Contact();
+            contact.setId(cursor.getString(0));
+            contact.setName(cursor.getString(1));
+            //if(!cursor.isNull(3))
+                contact.setPhoneNumber(cursor.getString(3));
+            //if(!cursor.isNull(5))
+                contact.setPhoneNumber(cursor.getString(5));
+            //if(!cursor.isNull(7))
+                contact.setPhoneNumber(cursor.getString(7));
+            contact.setIsGrouped(cursor.getInt(9));
+            contact.setGroupCount(cursor.getInt(10));
+            //if(!cursor.isNull(11))
+                contact.setAddress(cursor.getString(11));
+            //if(!cursor.isNull(13))
+                contact.setAddress(cursor.getString(13));
+            //if(!cursor.isNull(15))
+                contact.setEmail(cursor.getString(15));
+            //if(!cursor.isNull(16))
+                contact.setEmail(cursor.getString(16));
+            contact.setCompany(cursor.getString(17));
+            contact.setSnsId(cursor.getString(18));
+            //Log.d("getContactsFromAppDB", cursor.getInt(0) + " : " + cursor.getString(1) + ", " + cursor.getString(3));
+            contacts_list.add(contact);
+        }
+        cursor.close();
     }
 
     public void dbInsert(SQLiteDatabase db){

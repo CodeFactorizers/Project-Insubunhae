@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,6 +19,7 @@ import com.sgcd.insubunhae.db.Contact;
 import com.sgcd.insubunhae.db.ContactsList;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class FragmentContactsObjectViewer extends Fragment {
     private FragmentContactsObjectViewerBinding binding;
@@ -35,14 +37,27 @@ public class FragmentContactsObjectViewer extends Fragment {
         ArrayList<Contact> tmp_list = this.getArguments().getParcelableArrayList("contactsList");
         Contact tmp = tmp_list.get(0);
         binding.setName(tmp.getName());
-        ArrayList<String> tmp_phone_num = tmp.getPhoneNumber();
-        binding.setPhoneNumber1(tmp_phone_num.get(0));
-        binding.setPhoneNumber2(tmp_phone_num.get(1));
-        binding.setPhoneNumber3(tmp_phone_num.get(2));
-        if(tmp.getGroupId().size() != 0){
-            binding.setIsGrouped(1);
+        ArrayList<String> db_phone_num = tmp.getPhoneNumber();
+        ArrayList<String> tmp_phone_num = new ArrayList<String>();
+        for(int i = 0; i < 3;i++){
+                if(db_phone_num.size() > i && db_phone_num.get(i) != null){
+                    tmp_phone_num.add(db_phone_num.get(i));
+                }
+                else{
+                    tmp_phone_num.add(" ");
+                }
         }
-        binding.setGroupCount(tmp.getGroupId().size());
+        binding.setPhoneNumber(tmp_phone_num);
+        if(tmp.getGroupId().size() != 0){
+            binding.setIsGrouped(Integer.toString(1));
+        }
+        binding.setGroupCount(Integer.toString(tmp.getGroupCount()));
+        if(tmp.getAddress().size() > 0) binding.setAddress(tmp.getAddress().get(0));
+        if(tmp.getAddress().size() > 1) binding.setAddress2(tmp.getAddress().get(1));
+        if(tmp.getEmail().size() > 0) binding.setEmail(tmp.getEmail().get(0));
+        if(tmp.getEmail().size() > 1)binding.setEmail2(tmp.getEmail().get(1));
+        binding.setWork(tmp.getCompany());
+        binding.setSNSID(tmp.getSnsId());
 
         //return inflater.inflate(R.layout.fragment_contacts_object_viewer, container, false);
         return root;

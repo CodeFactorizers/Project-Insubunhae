@@ -32,6 +32,7 @@ import java.text.SimpleDateFormat;
 public class DBHelper extends SQLiteOpenHelper  {
     private static Context context;
     private ContactsList contacts_list = new ContactsList();
+    private int isDBExist;
     public ContactsList getContactsList(){
         return contacts_list;
     }
@@ -61,14 +62,13 @@ public class DBHelper extends SQLiteOpenHelper  {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-
         // Create tables
         for(int i=0; i<ARRAY_LENGTH; i++) {
             db.execSQL(SQL_CREATE_TABLE_ARRAY[i]);
             Log.d("Database Operations", "Table : " + TABLE_NAME_ARRAY[i] + " created...");
         }
 
-        contacts_list.getContacts(context);
+        contacts_list.getContacts(context, this, db);
         contacts_list.dbInsert(db);
 
         smsFromDeviceToDB(db);
@@ -78,6 +78,13 @@ public class DBHelper extends SQLiteOpenHelper  {
 
     @Override
     public void onOpen(SQLiteDatabase db) {
+        // DB exist check
+        Cursor c = db.rawQuery("SELECT name FROM sqlite_master WHERE type='table'", null);
+        if(c.getCount() != 0){
+            //if exist, get contacts list from app DB
+            contacts_list.getContactsFromAppDB(db);
+        }
+        c.close();
 
     }
 
