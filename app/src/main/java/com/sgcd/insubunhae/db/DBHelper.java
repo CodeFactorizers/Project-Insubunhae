@@ -518,6 +518,36 @@ public class DBHelper extends SQLiteOpenHelper  {
         return attributeValues;
     }
 
+    public List<Integer> getContactIds() {
+        List<Integer> contact_id_list = new ArrayList<>();
+
+        SQLiteDatabase idb = getWritableDatabase();
+        Cursor dbCursor = null;
+
+        try {
+            String query = "SELECT contact_id FROM MAIN_CONTACTS";
+            dbCursor = idb.rawQuery(query, null);
+            Log.d("StatisticsFragment", "query : " + query);
+
+            if (dbCursor != null) {
+                while (dbCursor.moveToNext()) {
+                    int columnIndex = dbCursor.getColumnIndex("contact_id");
+                    int contact_id_single = dbCursor.getInt(columnIndex);
+                    contact_id_list.add(contact_id_single);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (dbCursor != null) {
+                dbCursor.close();
+            }
+        }
+        idb.close();
+
+        return contact_id_list;
+    }
+
     // DB 집계함수-SUM
     public int getSumOfAttribute() {
         int sum = 0;

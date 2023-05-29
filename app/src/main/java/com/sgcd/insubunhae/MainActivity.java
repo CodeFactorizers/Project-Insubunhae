@@ -95,8 +95,8 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
         // call Log retrive button, in home UI
-        Button callLogRetrieveButton = findViewById(R.id.callLogRetrieveButton);
-        callLogRetrieveButton.setOnClickListener(new View.OnClickListener() {
+        //Button callLogRetrieveButton = findViewById(R.id.callLogRetrieveButton);
+        /*callLogRetrieveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Call log permission check again
@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
                     ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.READ_CALL_LOG}, MY_PERMISSIONS_REQUEST_READ_CALL_LOG);
                 }
             }
-        });
+        });*/
     }
 
     // Inflating the menu items from the menu_items.xml file

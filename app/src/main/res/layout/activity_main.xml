@@ -5,8 +5,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
     android:id="@+id/container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingTop="?attr/actionBarSize">
+    android:layout_height="match_parent" >
+    <!--android:paddingTop="?attr/actionBarSize"-->
 
     <fragment
         android:id="@+id/nav_host_fragment_activity_main"
@@ -35,7 +35,7 @@
         app:menu="@menu/bottom_nav_menu" />
 
     <!-- Add the button to fetch call logs -->
-    <Button
+    <!--Button
         android:id="@+id/callLogRetrieveButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -45,7 +45,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp"
         android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp" />
+        android:layout_marginEnd="16dp" /-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

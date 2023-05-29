@@ -9,6 +9,7 @@ import java.util.List;
 
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 
+import android.content.DialogInterface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 
@@ -37,10 +38,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
@@ -60,7 +63,7 @@ public class StatisticsFragment extends Fragment {
     private Context context;
     DBHelper dbHelper;
 
-    int cur_contact_id = 2; //현재 인물(임의로 2 대입)
+    int cur_contact_id = 1; //현재 인물(임의로 1 대입)
 
     //onAttach : activity의 context 저장
     @Override
@@ -108,8 +111,14 @@ public class StatisticsFragment extends Fragment {
         BarChart barChart = binding.barchart;
         drawBarChart(barChart);
 
-        //final TextView textView = binding.textStatistics;
-        //statisticsViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+        // 인물 변경하기 버튼
+        Button button = binding.button;
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showContactIdSelectionDialog();
+            }
+        });
 
         return root;
     }
@@ -118,6 +127,33 @@ public class StatisticsFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    // 인물 변경하기 버튼
+    public void showContactIdSelectionDialog() {
+        List<Integer> contactIds = dbHelper.getContactIds();
+
+        // contact_id 목록을 문자열로 변환
+        String[] contactIdArray = new String[contactIds.size()];
+        for (int i = 0; i < contactIds.size(); i++) {
+            contactIdArray[i] = String.valueOf(contactIds.get(i));
+        }
+
+        // 다이얼로그
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Select contact_id")
+                .setItems(contactIdArray, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //cur_contact_id = contactIds.get(which);
+                        cur_contact_id = which + 1;
+                        Log.d("paintMiniCal", "cur_contact_id : " + cur_contact_id);
+
+                        MaterialCalendarView calendarView = binding.calendarView;
+                        paintMiniCalendar(calendarView);
+                    }
+                })
+                .show();
     }
 
     // 친밀도 계산
@@ -206,10 +242,12 @@ public class StatisticsFragment extends Fragment {
 
     // [통계] 미니 캘린더 색칠
     public void paintMiniCalendar(MaterialCalendarView calendarView) {
+        Log.d("paintMiniCal", "let's paint!");
 
-        //우선 SMS만, 2번 인물만.
+        //우선 SMS만.
         List<Long> contactedDates = dbHelper.getLongFromTable("MESSENGER_HISTORY",
-                "datetime", "contact_id = 2");
+                "datetime", "contact_id = " + cur_contact_id);
+        Log.d("paintMiniCal", "paint this dates : " + contactedDates);
 
         List<CalendarDay> paintedDates = new ArrayList<>();
         for (Long paintingDate : contactedDates) {
@@ -222,6 +260,7 @@ public class StatisticsFragment extends Fragment {
 
             paintedDates.add(calendarDay);
         }
+        Log.d("paintMiniCal", "paint this dates 2 : " + paintedDates);
 
         DayViewDecorator decorator = new DayViewDecorator() {
             @Override
@@ -235,6 +274,7 @@ public class StatisticsFragment extends Fragment {
             }
         };
 
+        calendarView.removeDecorators();
         calendarView.addDecorator(decorator);
     }
 
