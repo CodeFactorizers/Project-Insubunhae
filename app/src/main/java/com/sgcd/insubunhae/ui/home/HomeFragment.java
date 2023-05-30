@@ -236,10 +236,16 @@ public class HomeFragment extends Fragment {
         TreeModel<Animal> treeModel = new TreeModel<>(root);
 
         //child nodes
+        NodeModel<Animal> capdi1_insubunhae = new NodeModel<>(new Animal(R.drawable.ic_05,"캡디1\n인수분해 팀"));
+        NodeModel<Animal> honghyoen_17 = new NodeModel<>(new Animal(R.drawable.ic_14,"17유홍현"));
+        NodeModel<Animal> sehee_17 = new NodeModel<>(new Animal(R.drawable.ic_15,"17조세희"));
+        NodeModel<Animal> junsu_18 = new NodeModel<>(new Animal(R.drawable.ic_08,"18김준수"));
+        NodeModel<Animal> sumin_19 = new NodeModel<>(new Animal(R.drawable.ic_09,"19임수민"));
+
+
         NodeModel<Animal> sub0 = new NodeModel<>(new Animal(R.drawable.ic_02,"소공"));
         NodeModel<Animal> sub1 = new NodeModel<>(new Animal(R.drawable.ic_03,"sub01"));
-        NodeModel<Animal> sub2 = new NodeModel<>(new Animal(R.drawable.ic_04,"."));
-        NodeModel<Animal> sub3 = new NodeModel<>(new Animal(R.drawable.ic_05,"캡디1\n인수분해 팀"));
+        NodeModel<Animal> sub2 = new NodeModel<>(new Animal(R.drawable.ic_04,"안녕"));
         NodeModel<Animal> sub4 = new NodeModel<>(new Animal(R.drawable.ic_06,"동아리"));
         NodeModel<Animal> sub5 = new NodeModel<>(new Animal(R.drawable.ic_07,"sub05000"));
         NodeModel<Animal> sub6 = new NodeModel<>(new Animal(R.drawable.ic_08,"17학번"));
@@ -248,52 +254,24 @@ public class HomeFragment extends Fragment {
         NodeModel<Animal> sub9 = new NodeModel<>(new Animal(R.drawable.ic_11,"ㄱㄴㄷ"));
         NodeModel<Animal> sub10 = new NodeModel<>(new Animal(R.drawable.ic_12,"ㄱㄴㄷ"));
         NodeModel<Animal> sub11 = new NodeModel<>(new Animal(R.drawable.ic_13,"sub11000"));
-        NodeModel<Animal> sub12 = new NodeModel<>(new Animal(R.drawable.ic_14,"17유홍현"));
-        NodeModel<Animal> sub13 = new NodeModel<>(new Animal(R.drawable.ic_15,"조교"));
         NodeModel<Animal> sub14 = new NodeModel<>(new Animal(R.drawable.ic_13,".000000"));
         NodeModel<Animal> sub15 = new NodeModel<>(new Animal(R.drawable.ic_14,".000000"));
         NodeModel<Animal> sub16 = new NodeModel<>(new Animal(R.drawable.ic_15,"sub16000"));
-        NodeModel<Animal> sub17 = new NodeModel<>(new Animal(R.drawable.ic_08,"sub17000"));
-        NodeModel<Animal> sub18 = new NodeModel<>(new Animal(R.drawable.ic_09,"sub18000"));
-        NodeModel<Animal> sub19 = new NodeModel<>(new Animal(R.drawable.ic_10,"sub19000"));
-        NodeModel<Animal> sub20 = new NodeModel<>(new Animal(R.drawable.ic_02,"sub20000"));
-        NodeModel<Animal> sub21 = new NodeModel<>(new Animal(R.drawable.ic_03,"sub21000"));
-        NodeModel<Animal> sub22 = new NodeModel<>(new Animal(R.drawable.ic_04,"sub22000"));
-        NodeModel<Animal> sub23 = new NodeModel<>(new Animal(R.drawable.ic_05,"sub23000"));
-        NodeModel<Animal> sub24 = new NodeModel<>(new Animal(R.drawable.ic_06,"sub24000"));
-        NodeModel<Animal> sub25 = new NodeModel<>(new Animal(R.drawable.ic_07,"sub25000"));
-        NodeModel<Animal> sub26 = new NodeModel<>(new Animal(R.drawable.ic_08,"sub26000"));
-        NodeModel<Animal> sub27 = new NodeModel<>(new Animal(R.drawable.ic_09,"sub27000"));
-        NodeModel<Animal> sub28 = new NodeModel<>(new Animal(R.drawable.ic_10,"sub28000"));
-        NodeModel<Animal> sub29 = new NodeModel<>(new Animal(R.drawable.ic_11,"sub29000"));
-        NodeModel<Animal> sub30 = new NodeModel<>(new Animal(R.drawable.ic_02,"sub30000"));
-        NodeModel<Animal> sub31 = new NodeModel<>(new Animal(R.drawable.ic_03,"sub31000"));
-        NodeModel<Animal> sub32 = new NodeModel<>(new Animal(R.drawable.ic_04,"sub32000"));
-        NodeModel<Animal> sub33 = new NodeModel<>(new Animal(R.drawable.ic_05,"sub33000"));
         NodeModel<Animal> sub34 = new NodeModel<>(new Animal(R.drawable.ic_06,"1(멘토)"));
-        NodeModel<Animal> sub35 = new NodeModel<>(new Animal(R.drawable.ic_07,"sub35000"));
-        NodeModel<Animal> sub36 = new NodeModel<>(new Animal(R.drawable.ic_08,"sub36"));
-        NodeModel<Animal> sub37 = new NodeModel<>(new Animal(R.drawable.ic_09,"18김준수"));
         NodeModel<Animal> sub38 = new NodeModel<>(new Animal(R.drawable.ic_10,"2(멘토)"));
         NodeModel<Animal> sub39 = new NodeModel<>(new Animal(R.drawable.ic_11,"조장"));
         NodeModel<Animal> sub40 = new NodeModel<>(new Animal(R.drawable.ic_02,"아무개"));
-        NodeModel<Animal> sub41 = new NodeModel<>(new Animal(R.drawable.ic_03,"sub41000"));
-        NodeModel<Animal> sub42 = new NodeModel<>(new Animal(R.drawable.ic_04,"sub42000"));
-        NodeModel<Animal> sub43 = new NodeModel<>(new Animal(R.drawable.ic_05,"sub43000"));
-        NodeModel<Animal> sub44 = new NodeModel<>(new Animal(R.drawable.ic_06,"sub44000"));
-        NodeModel<Animal> sub45 = new NodeModel<>(new Animal(R.drawable.ic_07,"sub45000"));
-        NodeModel<Animal> sub46 = new NodeModel<>(new Animal(R.drawable.ic_08,"sub46000"));
         NodeModel<Animal> sub47 = new NodeModel<>(new Animal(R.drawable.ic_09,"나"));
         NodeModel<Animal> sub48 = new NodeModel<>(new Animal(R.drawable.ic_10,"sub48000"));
         NodeModel<Animal> sub49 = new NodeModel<>(new Animal(R.drawable.ic_11,"sub49000"));
-        NodeModel<Animal> sub50 = new NodeModel<>(new Animal(R.drawable.ic_05,"김철수(조교)"));
-        NodeModel<Animal> sub51 = new NodeModel<>(new Animal(R.drawable.ic_07,"sub51000"));
         NodeModel<Animal> sub52 = new NodeModel<>(new Animal(R.drawable.ic_07,"팀장1"));
         NodeModel<Animal> sub53 = new NodeModel<>(new Animal(R.drawable.ic_07,"팀장2"));
 
         //build relationship
-        treeModel.addNode(root,sub0,sub1,sub3,sub4);
-        treeModel.addNode(sub3,sub12,sub13);
+        treeModel.addNode(root,sub0,sub1,capdi1_insubunhae,sub4);
+        treeModel.addNode(capdi1_insubunhae,honghyoen_17,sehee_17);
+        treeModel.addNode(capdi1_insubunhae,junsu_18);
+        treeModel.addNode(capdi1_insubunhae,sumin_19);
         treeModel.addNode(sub1,sub2);
         treeModel.addNode(sub0,sub34,sub5,sub38,sub39);
         treeModel.addNode(sub4,sub6);
@@ -302,16 +280,10 @@ public class HomeFragment extends Fragment {
         treeModel.addNode(sub11,sub14,sub15);
         treeModel.addNode(sub10,sub40);
         treeModel.addNode(sub40,sub16);
-        //treeModel.addNode(sub8,sub17,sub18,sub19,sub20,sub21,sub22,sub23,sub41,sub42,sub43,sub44);
         treeModel.addNode(sub9,sub47,sub48);
-        //treeModel.addNode(sub16,sub24,sub25,sub26,sub27,sub28,sub29,sub30,sub46,sub45);
         treeModel.addNode(sub47,sub49);
-        treeModel.addNode(sub12,sub37);
-        treeModel.addNode(sub0,sub36);
         treeModel.addNode(sub39,sub52,sub53);
 
-        //treeModel.addNode(sub15,sub31,sub32,sub33,sub34,sub35,sub36,sub37);
-        //treeModel.addNode(sub2,sub40,sub41,sub42,sub43,sub44,sub45,sub46);
         //mark
         parentToRemoveChildren = sub0;
         targetNode = sub1;
