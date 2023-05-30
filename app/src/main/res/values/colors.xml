@@ -7,4 +7,15 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+<!--    for treeview(mindmap)-->
+    <color name="colorPrimary">#6200EE</color>
+    <color name="colorPrimaryDark">#3700B3</color>
+    <color name="colorAccent">#03DAC5</color>
+    <color name="colorMindmapBackground">#EFFCFC</color>
+    <color name="textColor">#055287</color>
+    <color name="transparentBlue">#DD9BC8ED</color>
+    <color name="LineColor2">#F06292</color>
+    <color name="RedColor2">#F1286C</color>
+    <color name="percentColor">#80055287</color>
 </resources>
