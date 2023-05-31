@@ -37,6 +37,17 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <Button
+            android:id="@+id/contactChangeButton"
+            android:layout_width="215dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="16dp"
+            android:backgroundTint="#CA4E4E"
+            android:text="Change Contact ID"
+            app:layout_constraintStart_toEndOf="@id/textView"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <com.github.mikephil.charting.charts.PieChart
             android:id="@+id/piechart1"
             android:layout_width="400dp"

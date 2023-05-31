@@ -96,7 +96,7 @@ public class DBHelper extends SQLiteOpenHelper {
             int callLogId = DBContract.CallLog.call_log_cnt;        // Call log ID
             int contactId = 0;        // Contact ID
             long callDatetime = DBContract.CallLog.last_updated;    // Call date and time
-            String contactName;  // Contact name
+            String contactName = "";  // Contact name
             String contactPhone = ""; // Contact phone number
             int callType = 0;         // Call type
             int callDuration = 0;     // Call duration
@@ -215,9 +215,11 @@ public class DBHelper extends SQLiteOpenHelper {
                     }
                     // Mark the transaction as successful
                     db.setTransactionSuccessful();
-                } finally {
+                }
+                finally {
                     // End the transaction
                     db.endTransaction();
+                }
             }
 
             //update last retrieval datetime and callLogId

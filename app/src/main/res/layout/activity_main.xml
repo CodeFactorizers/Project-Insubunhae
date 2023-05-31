@@ -34,7 +34,7 @@
             app:layout_constraintRight_toRightOf="parent"
             app:menu="@menu/bottom_nav_menu" />
 
-        <!-- Add the button to fetch call logs -->
+        <!-- Add the button to fetch call logs
         <Button
             android:id="@+id/callLogRetrieveButton"
             android:layout_width="wrap_content"
@@ -46,6 +46,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
+        -->
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

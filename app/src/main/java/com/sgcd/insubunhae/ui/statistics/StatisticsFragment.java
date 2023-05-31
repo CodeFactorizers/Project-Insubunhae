@@ -16,7 +16,6 @@ import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.DayViewDecorator;
 import com.prolificinteractive.materialcalendarview.DayViewFacade;
 
-
 // [통계] 차트
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.PieChart;
@@ -112,7 +111,7 @@ public class StatisticsFragment extends Fragment {
         drawBarChart(barChart);
 
         // 인물 변경하기 버튼
-        Button button = binding.button;
+        Button button = binding.contactChangeButton;
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

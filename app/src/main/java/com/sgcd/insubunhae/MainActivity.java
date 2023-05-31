@@ -71,8 +71,7 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        if(getPermission()) { //sms 접근권한 받는 메소드(contacts, call log도 이 메소드 내에 추가하면 될듯!)
-
+        if (getPermission()) { //sms 접근권한 받는 메소드(contacts, call log도 이 메소드 내에 추가하면 될듯!)
             // Create new helper
             dbHelper = new DBHelper(this);
             // Get the database. If it does not exist, this is where it will
@@ -96,7 +95,9 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(binding.navView, navController);
         // call Log retrive button, in home UI
         //Button callLogRetrieveButton = findViewById(R.id.callLogRetrieveButton);
-        /*callLogRetrieveButton.setOnClickListener(new View.OnClickListener() {
+        /*
+        callLogRetrieveButton.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
                 // Call log permission check again
@@ -115,8 +116,9 @@ public class MainActivity extends AppCompatActivity {
                     ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.READ_CALL_LOG}, MY_PERMISSIONS_REQUEST_READ_CALL_LOG);
                 }
             }
-        });*/
-
+        });
+        */
+    }
     // Inflating the menu items from the menu_items.xml file
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
