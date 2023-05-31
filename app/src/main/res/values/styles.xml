@@ -11,5 +11,8 @@
         <item name="android:windowContentOverlay">@null</item>
         -->
     </style>
-
+    <style name="ToggleStyle">
+        <item name="android:paddingEnd">4dp</item>
+        <item name="android:textSize">14sp</item>
+    </style>
 </resources>
