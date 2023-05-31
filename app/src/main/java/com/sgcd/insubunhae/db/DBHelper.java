@@ -18,11 +18,10 @@ import android.provider.CallLog;
 import android.provider.ContactsContract;
 import android.util.Log;
 
-import com.sgcd.insubunhae.MainActivity;
-
 import android.content.ContentResolver;
 import android.widget.Toast;
 
+import com.sgcd.insubunhae.MainActivity;
 import com.sgcd.insubunhae.db.ContactsList;
 
 import java.util.ArrayList;
@@ -31,9 +30,10 @@ import java.util.List;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 
-public class DBHelper extends SQLiteOpenHelper  {
+public class DBHelper extends SQLiteOpenHelper {
     private static Context context;
     private ContactsList contacts_list = new ContactsList();
+
     int i = 1; //MESSENGER_HISTORY history_id는 1부터 시작.
     private long lastRetrievalDate = 0L; // Store the timestamp of the last retrieval
 
@@ -96,7 +96,7 @@ public class DBHelper extends SQLiteOpenHelper  {
             int callLogId = DBContract.CallLog.call_log_cnt;        // Call log ID
             int contactId = 0;        // Contact ID
             long callDatetime = DBContract.CallLog.last_updated;    // Call date and time
-            String contactName;  // Contact name
+            String contactName = "";  // Contact name
             String contactPhone = ""; // Contact phone number
             int callType = 0;         // Call type
             int callDuration = 0;     // Call duration
@@ -146,72 +146,80 @@ public class DBHelper extends SQLiteOpenHelper  {
             int typeIndex = cursor.getColumnIndex(CallLog.Calls.TYPE);
             int durationIndex = cursor.getColumnIndex(CallLog.Calls.DURATION);
 
-
-
-            if (cursor == null) {
-                Log.d("callLogFromDeviceToDB", "cursor is null.. FYI, selection: " + selection);
-                return;// is it safe???
+            //don't insert calllog if name is null
+            if (contactName == null) {
+                Log.d("skip", "    <skip> number is not saved in contacts list");
             }
-            // Start the transaction
-            db.beginTransaction();
+            //if number is saved, let's insert the call log
+            else {
+                callLogId++;
 
-            try {
-                for(callLogId+=1; cursor.moveToNext(); ){
-
-                    // first, get phone number to know if this is saved number
-                    if (phoneIndex >= 0) {
-                        contactPhone = cursor.getString(phoneIndex);
-                    }
-
-                    ContactInfo contactInfo = getContactInfo(contactPhone);
-
-                    // if number is not saved, contactName will be "null"
-                    contactName = contactInfo.getName();
-                    contactId = contactInfo.getId();
-
-                    //don't insert callLog if name is null
-                    if (contactName == null) {
-                        Log.d("skip", "    <skip> number is not saved in contacts list");
-                        continue;
-                    }
-                    else{
-                        callLogId++;
-                    }
-
-                    //if number is saved, let's start inserting the call log
-
-                    if (datetimeIndex >= 0) {
-                        callDatetime = cursor.getLong(datetimeIndex);
-                    }
-
-                    if (typeIndex >= 0) {
-                        callType = cursor.getInt(typeIndex);
-                    }
-
-                    if (durationIndex >= 0) {
-                        callDuration = cursor.getInt(durationIndex);
-                    }
-
-                    Log.d("callLogFromDeviceToDB", "callLogId: " + callLogId + "\t\t\t contactID: " + contactId + "\t name: " + contactName + "\t phone: " + contactPhone);
-                    Log.d("callLogFromDeviceToDB", "datetime: " + callDatetime + "\t type: " + callType + "\t\t duration: " + callDuration);
-
-                    /* Insert call log to DB */
-                    ContentValues values = new ContentValues();
-                    values.put(DBContract.CallLog.HISTORY_ID, callLogId);
-                    values.put(DBContract.CallLog.KEY_CONTACT_ID, contactId);
-                    values.put(DBContract.CallLog.DATETIME, callDatetime);
-                    values.put(DBContract.CallLog.NAME, contactName);
-                    values.put(DBContract.CallLog.PHONE, contactPhone);
-                    values.put(DBContract.CallLog.TYPE, callType);
-                    values.put(DBContract.CallLog.DURATION, callDuration);
-
-                    db.insert(DBContract.CallLog.TABLE_NAME, null, values);
+                if (cursor == null) {
+                    Log.d("callLogFromDeviceToDB", "cursor is null.. FYI, selection: " + selection);
+                    return;// is it safe???
                 }
-                // Mark the transaction as successful
-                db.setTransactionSuccessful();
-            } finally {
-                // End the transaction
-                db.endTransaction();
+                // Start the transaction
+                db.beginTransaction();
+
+                try {
+                    for(callLogId+=1; cursor.moveToNext(); ){
+
+                        // first, get phone number to know if this is saved number
+                        if (phoneIndex >= 0) {
+                            contactPhone = cursor.getString(phoneIndex);
+                        }
+
+                        ContactInfo contactInfo = getContactInfo(contactPhone);
+
+                        // if number is not saved, contactName will be "null"
+                        contactName = contactInfo.getName();
+                        contactId = contactInfo.getId();
+
+                        //don't insert callLog if name is null
+                        if (contactName == null) {
+                            Log.d("skip", "    <skip> number is not saved in contacts list");
+                            continue;
+                        }
+                        else{
+                            callLogId++;
+                        }
+
+                        //if number is saved, let's start inserting the call log
+
+                        if (datetimeIndex >= 0) {
+                            callDatetime = cursor.getLong(datetimeIndex);
+                        }
+
+                        if (typeIndex >= 0) {
+                            callType = cursor.getInt(typeIndex);
+                        }
+
+                        if (durationIndex >= 0) {
+                            callDuration = cursor.getInt(durationIndex);
+                        }
+
+                        Log.d("callLogFromDeviceToDB", "callLogId: " + callLogId + "\t\t\t contactID: " + contactId + "\t name: " + contactName + "\t phone: " + contactPhone);
+                        Log.d("callLogFromDeviceToDB", "datetime: " + callDatetime + "\t type: " + callType + "\t\t duration: " + callDuration);
+
+                        /* Insert call log to DB */
+                        ContentValues values = new ContentValues();
+                        values.put(DBContract.CallLog.HISTORY_ID, callLogId);
+                        values.put(DBContract.CallLog.KEY_CONTACT_ID, contactId);
+                        values.put(DBContract.CallLog.DATETIME, callDatetime);
+                        values.put(DBContract.CallLog.NAME, contactName);
+                        values.put(DBContract.CallLog.PHONE, contactPhone);
+                        values.put(DBContract.CallLog.TYPE, callType);
+                        values.put(DBContract.CallLog.DURATION, callDuration);
+
+                        db.insert(DBContract.CallLog.TABLE_NAME, null, values);
+                    }
+                    // Mark the transaction as successful
+                    db.setTransactionSuccessful();
+                }
+                finally {
+                    // End the transaction
+                    db.endTransaction();
+                }
             }
 
             //update last retrieval datetime and callLogId
@@ -220,6 +228,7 @@ public class DBHelper extends SQLiteOpenHelper  {
             Log.d("Updated last_updated", "datetime " + callDatetime + " callLogID "+ callLogId);
 
             cursor.close();
+
 
             // Perform UI-related operations or post updates to the main thread
             Handler handler = new Handler(Looper.getMainLooper());
@@ -230,7 +239,6 @@ public class DBHelper extends SQLiteOpenHelper  {
             });
         }).start();
     }
-
 
     // MESSENGER_HISTORY data 추가 메소드
     public void insertMessengerHistory(int historyId, int contactId, String datetime, String day, String type, int count) {
@@ -247,7 +255,6 @@ public class DBHelper extends SQLiteOpenHelper  {
         db.close();
     }
 
-
     public void smsFromDeviceToDB(SQLiteDatabase db) {
         //Log.d("smsFromDeviceToDB", "sms 1");
         int smsHistoryId = 0;   //기록 번호
@@ -262,6 +269,7 @@ public class DBHelper extends SQLiteOpenHelper  {
 
         Cursor cursor1 = null;
         Cursor cursor2 = null;
+
         if (cursor == null) Log.d("getSmsFromDeviceToDB", "cursor is null..");
         if (cursor != null) {
             if (cursor.moveToFirst()) {
@@ -418,15 +426,19 @@ public class DBHelper extends SQLiteOpenHelper  {
     public static class ContactInfo {
         private int id;
         private String name;
+
         public int getId() {
             return id;
         }
+
         public void setId(int id) {
             this.id = id;
         }
+
         public String getName() {
             return name;
         }
+
         public void setName(String name) {
             this.name = name;
         }

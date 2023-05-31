@@ -70,8 +70,7 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        if(getPermission()) { //sms 접근권한 받는 메소드(contacts, call log도 이 메소드 내에 추가하면 될듯!)
-
+        if (getPermission()) { //sms 접근권한 받는 메소드(contacts, call log도 이 메소드 내에 추가하면 될듯!)
             // Create new helper
             dbHelper = new DBHelper(this);
             // Get the database. If it does not exist, this is where it will also be created.
@@ -90,7 +89,6 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(binding.navView, navController);
 
     }
-
     // Inflating the menu items from the menu_items.xml file
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
