@@ -1,6 +1,5 @@
 package com.sgcd.insubunhae.ui.statistics;
 // [통계] 미니 캘린더
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.text.SimpleDateFormat;
@@ -62,8 +61,9 @@ public class StatisticsFragment extends Fragment {
     private FragmentStatisticsBinding binding;
     private Context context;
     DBHelper dbHelper;
-
-    int cur_contact_id = 1; //현재 인물(임의로 1 대입)
+  
+    //int cur_contact_id = 1; //현재 인물(임의로 1 대입)
+    int cur_contact_id = 2; //현재 인물(임의로 2 대입)
 
     //onAttach : activity의 context 저장
     @Override
@@ -120,6 +120,10 @@ public class StatisticsFragment extends Fragment {
             }
         });
 
+        //final TextView textView = binding.textStatistics;
+        //statisticsViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+
+
         return root;
     }
 
@@ -129,7 +133,6 @@ public class StatisticsFragment extends Fragment {
         binding = null;
     }
 
-    // 인물 변경하기 버튼
     public void showContactIdSelectionDialog() {
         List<Integer> contactIds = dbHelper.getContactIds();
 
@@ -196,7 +199,6 @@ public class StatisticsFragment extends Fragment {
         String currentTimestamp = dateFormat.format(calendar.getTime());
 
         //-------------------------------------------------------------------------------*/
-
         // how_long_month, recent_days, recent_score 계산 --------------------------------*/
         try {
             //Date date1 = dateFormat.parse(recent_contact);
@@ -235,19 +237,14 @@ public class StatisticsFragment extends Fragment {
         } else if (recent_days >= 180) {
             recent_score = 1;
         }
-
         //-------------------------------------------------------------------------------*/
-
     }
 
     // [통계] 미니 캘린더 색칠
     public void paintMiniCalendar(MaterialCalendarView calendarView) {
-        Log.d("paintMiniCal", "let's paint!");
-
-        //우선 SMS만.
+        //우선 SMS만, 2번 인물만.
         List<Long> contactedDates = dbHelper.getLongFromTable("MESSENGER_HISTORY",
-                "datetime", "contact_id = " + cur_contact_id);
-        Log.d("paintMiniCal", "paint this dates : " + contactedDates);
+                "datetime", "contact_id = 2");
 
         List<CalendarDay> paintedDates = new ArrayList<>();
         for (Long paintingDate : contactedDates) {
@@ -260,7 +257,6 @@ public class StatisticsFragment extends Fragment {
 
             paintedDates.add(calendarDay);
         }
-        Log.d("paintMiniCal", "paint this dates 2 : " + paintedDates);
 
         DayViewDecorator decorator = new DayViewDecorator() {
             @Override
@@ -274,8 +270,7 @@ public class StatisticsFragment extends Fragment {
             }
         };
 
-        calendarView.removeDecorators();
-        calendarView.addDecorator(decorator);
+        //calendarView.removeDecorators();//충돌 해결하면서 삭제(hh)
     }
 
     public void drawPieChart(PieChart pieChart) {
@@ -304,7 +299,6 @@ public class StatisticsFragment extends Fragment {
         pieChart.setData(data); // chart에 data설정
         pieChart.invalidate(); // chart 그리기
     }
-
 
     public void drawBarChart(BarChart barChart) {
 

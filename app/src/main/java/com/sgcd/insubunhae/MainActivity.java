@@ -116,7 +116,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });*/
-    }
 
     // Inflating the menu items from the menu_items.xml file
     @Override
