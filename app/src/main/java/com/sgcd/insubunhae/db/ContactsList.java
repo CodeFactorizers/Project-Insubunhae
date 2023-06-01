@@ -79,6 +79,7 @@ public class ContactsList implements Parcelable {
             //Log.d("group", groupId);
             group_map.put(groupId, group);
         }
+        groupCursor.close();
 
         //contact
         if (cursor != null) {
@@ -181,6 +182,7 @@ public class ContactsList implements Parcelable {
                     contact.setTitle(title);
                     contact.setDepartment(department);
                 }
+                orgCursor.close();
                 contacts_list.add(contact);
             }
 

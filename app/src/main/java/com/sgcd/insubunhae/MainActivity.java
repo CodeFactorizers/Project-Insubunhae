@@ -13,6 +13,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.provider.CallLog;
 import android.provider.ContactsContract;
 import android.util.Log;
@@ -70,6 +71,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //resource failed to call close 해결 위한 로그 설정
+//        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder(StrictMode.getVmPolicy())
+//                .detectLeakedClosableObjects()
+//                .build());
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
