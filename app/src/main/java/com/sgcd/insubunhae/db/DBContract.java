@@ -18,6 +18,7 @@ public class DBContract {
     public static final String SLASH = "/";
 
     public static final int ARRAY_LENGTH = 8;
+
     /* An array list of all the SQL create table statements */
     public static final String[] SQL_CREATE_TABLE_ARRAY = {
             MainContacts.CREATE_TABLE,
@@ -102,7 +103,7 @@ public class DBContract {
                 + EMAIL2 + " VARCHAR(30) CHECK (" + EMAIL2 + " like '%@%'),"
                 + WORK + " VARCHAR(20),"
                 + SNS_ID + " VARCHAR(20),"
-                + UPDATED_DATE + " INTEGER,"
+                + UPDATED_DATE + " INTEGER DEFAULT 0,"
                 + "PRIMARY KEY(" + KEY_CONTACT_ID + ")"
                 + ");";
 
@@ -229,7 +230,6 @@ public class DBContract {
         }
         public static final String TABLE_NAME = "MESSENGER_HISTORY";
         public static final String FK_TABLE_NAME = "MAIN_CONTACTS";
-
         public static final String HISTORY_ID = "history_id";
         public static final String KEY_CONTACT_ID = "contact_id";
         public static final String DATETIME = "datetime";
@@ -274,6 +274,9 @@ public class DBContract {
         };
     }
     public static final class CallLog implements BaseColumns {
+        public static long last_updated = 0L;// to check if callLog update needed. note that it's last_update'd'
+        public static int call_log_cnt = 0;
+
         /* Do not allow this class to be instantiated */
         private CallLog() {
         }
@@ -299,6 +302,8 @@ public class DBContract {
 
         //The default sort order for this table
         public static final String DEFAULT_SORT_ORDER = HISTORY_ID + " ASC";
+
+
 
         public static final String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " ("
                 + HISTORY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"

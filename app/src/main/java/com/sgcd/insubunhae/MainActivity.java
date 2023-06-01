@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int MY_PERMISSIONS_REQUEST_READ_SMS = 3;
 
     private long lastRetrievalDate = 0L; // Store the timestamp of the last retrieval
-    
+
     // 연락처 연동
     private ContactsList contacts_list = new ContactsList();
 
@@ -74,19 +74,13 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        if(getPermission()) { //sms 접근권한 받는 메소드(contacts, call log도 이 메소드 내에 추가하면 될듯!)
-
+        if (getPermission()) { //sms 접근권한 받는 메소드(contacts, call log도 이 메소드 내에 추가하면 될듯!)
             // Create new helper
             dbHelper = new DBHelper(this);
-            // Get the database. If it does not exist, this is where it will
-            // also be created.
+            // Get the database. If it does not exist, this is where it will also be created.
             idb = dbHelper.getWritableDatabase();
         }
 
-        //dbHelper.callLogFromDeviceToDB(idb);
-
-        //contacts_list.getContacts(getApplicationContext());
-        //contacts_list.dbInsert(idb, dbHelper);
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
 
@@ -107,31 +101,8 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
-        // call Log retrive button, in home UI
-        Button callLogRetrieveButton = findViewById(R.id.callLogRetrieveButton);
-        callLogRetrieveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Call log permission check again
-                if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_CALL_LOG) == PackageManager.PERMISSION_GRANTED) {
-                    if (lastRetrievalDate == 0L) {
-                        // First retrieval, fetch all call log
-                        Toast.makeText(MainActivity.this, "Fetching All Call Log...", Toast.LENGTH_SHORT).show();
-                        fetchAllCallLog();
-                    } else {
-                        Toast.makeText(MainActivity.this, "Fetching Additional Call Log...", Toast.LENGTH_SHORT).show();
-                        // Fetch additional call log since the last retrieval
-                        // fetchAdditionalCallLog();
-                    }
-                    // Call log permission not granted, request the permission
-                } else {
-                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.READ_CALL_LOG}, MY_PERMISSIONS_REQUEST_READ_CALL_LOG);
-                }
-            }
-        });
+
     }
-
-
     // Inflating the menu items from the menu_items.xml file
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -254,6 +225,7 @@ public class MainActivity extends AppCompatActivity {
                     Log.d(TAG, "Contact ID: " + contactInfoId + ", Name: " + contactInfoName + ", Phone Number: " + phoneNumber);
                     Log.d(TAG, "Datetime in Millis / in String): " + dateInMillis + " / " + dateInString + ", Duration: " + duration + ", Call Type: " + callType);
                 }
+                //}
             }
             // Update the last retrieval date to the latest call log date
             if (cursor.moveToFirst()) {
@@ -367,6 +339,7 @@ public class MainActivity extends AppCompatActivity {
         }
         return isRefreshed;
     }
+
 
     public ContactInfo getContactInfo(String phoneNumber) {
         ContactInfo contactInfo = new ContactInfo();
