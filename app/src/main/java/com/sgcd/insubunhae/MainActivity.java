@@ -4,7 +4,6 @@ import static android.content.ContentValues.TAG;
 
 import java.util.Date;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Locale;
 import android.Manifest;
 import android.content.Intent;
@@ -14,6 +13,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.provider.CallLog;
 import android.provider.ContactsContract;
 import android.util.Log;
@@ -25,6 +25,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -35,15 +37,14 @@ import android.database.sqlite.SQLiteDatabase;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CalendarView;
 import android.widget.Toast;
 
 import com.sgcd.insubunhae.databinding.ActivityMainBinding;
 import com.sgcd.insubunhae.db.ContactsList;
 import com.sgcd.insubunhae.db.DBHelper;
+import com.sgcd.insubunhae.ui.contacts_viewer.FragmentContactsObjectViewer;
 
 public class MainActivity extends AppCompatActivity {
-
     private ActivityMainBinding binding;
 
     // DB 관련
@@ -57,15 +58,24 @@ public class MainActivity extends AppCompatActivity {
 
     private long lastRetrievalDate = 0L; // Store the timestamp of the last retrieval
 
-
     // 연락처 연동
     private ContactsList contacts_list = new ContactsList();
 
     //PR test comment2
 
+    //about fragment
+    private FragmentManager fragmentManager;
+    private FragmentTransaction transaction;
+    private FragmentContactsObjectViewer fragmentContactsObjectViewer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //resource failed to call close 해결 위한 로그 설정
+//        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder(StrictMode.getVmPolicy())
+//                .detectLeakedClosableObjects()
+//                .build());
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -79,6 +89,16 @@ public class MainActivity extends AppCompatActivity {
 
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
+
+        //contacts viewer
+        fragmentManager = getSupportFragmentManager();
+        fragmentContactsObjectViewer = new FragmentContactsObjectViewer();
+        final Bundle bundle = new Bundle();
+        //bundle.putParcelable("contactsList", dbHelper.getContactsList());
+        bundle.putParcelableArrayList("contactsList", dbHelper.getContactsList().getContactsList());
+        fragmentContactsObjectViewer.setArguments(bundle);
+
+
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
@@ -101,13 +121,16 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Switching on the item id of the menu item
         switch (item.getItemId()) {
+            case R.id.menu_btn1:
+                transaction = fragmentManager.beginTransaction();
+                //View view = getLayoutInflater().from(this).inflate(R.layout.activity_main, null);
+                //int id = view.getId();
+                transaction.replace(R.id.nav_host_fragment_activity_main, fragmentContactsObjectViewer).commitAllowingStateLoss();
+                break;
             case R.id.menu_btn2:
                 Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
                 startActivity(intent);
                 break;
-            case R.id.menu_btn1:
-                break;
-
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -381,5 +404,7 @@ public class MainActivity extends AppCompatActivity {
     private void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
+
+
     // some additional functions end
 }
