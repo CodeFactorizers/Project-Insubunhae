@@ -6,5 +6,20 @@
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
+    <color name="mainBlue">#CC3B5FC2</color>
+    <color name="transparentBlack">#CC000000</color>
+    <color name="transparentWhite">#DDFFFFFF</color>
+    <color name="transparentBlue">#EE9BC8ED</color>
+    <color name="transparentMint">#DD9FFFF4</color>
     <color name="white">#FFFFFFFF</color>
+
+<!--    for treeview(mindmap)-->
+    <color name="colorPrimary">#6200EE</color>
+    <color name="colorPrimaryDark">#3700B3</color>
+    <color name="colorAccent">#DD9FFFF4</color>
+    <color name="colorMindmapBackground">#F8FEFF</color>
+    <color name="textColor">#055287</color>
+    <color name="LineColor2">#9BDDDC</color>
+    <color name="RedColor2">#F1286C</color>
+    <color name="percentColor">#80055287</color>
 </resources>

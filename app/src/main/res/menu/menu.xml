@@ -4,9 +4,11 @@
 
     <item android:id="@+id/menu_btn1"
         android:title="@string/menu_button1"
+        android:textStyle="bold"
         app:showAsAction="ifRoom" />
     <item android:id="@+id/menu_btn2"
         android:title="@string/menu_button2"
+        android:textStyle="bold"
         app:showAsAction="always" />
     <item android:id="@+id/menu_btn3"
         android:title="@string/menu_button3"
