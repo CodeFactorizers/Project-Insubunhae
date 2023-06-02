@@ -5,7 +5,9 @@
     <data>
         <import type="java.util.ArrayList"/>
         <variable name= "name" type= "String" />
-        <variable name= "phone_number" type= "ArrayList&lt;String>"/>
+        <variable name= "phone_number1" type= "String"/>
+        <variable name= "phone_number2" type= "String"/>
+        <variable name= "phone_number3" type= "String"/>
         <variable name= "is_grouped" type= "String" />
         <variable name= "group_count" type= "String" />
         <variable name= "address" type= "String" />
@@ -18,15 +20,18 @@
     </data>
 
     <ScrollView
+        android:id="@+id/contacts_viewer_scroll"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
         <androidx.constraintlayout.widget.ConstraintLayout
             xmlns:app="http://schemas.android.com/apk/res-auto"
             xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/contacts_viewer_constLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:padding="20dp">
+
+
 
             <TextView
                 android:id="@+id/contacts_viewer_const_name"
@@ -60,7 +65,7 @@
                 android:id="@+id/contacts_viewer_phoneNumber1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@{phone_number.get(0)}"
+                android:text="@{phone_number1}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/contacts_viewer_const_phoneNumber" />
@@ -69,7 +74,7 @@
                 android:id="@+id/contacts_viewer_phoneNumber2"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@{phone_number.get(1)}"
+                android:text="@{phone_number2}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/contacts_viewer_phoneNumber1" />
@@ -78,7 +83,7 @@
                 android:id="@+id/contacts_viewer_phoneNumber3"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@{phone_number.get(2)}"
+                android:text="@{phone_number3}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/contacts_viewer_phoneNumber2" />
@@ -174,14 +179,21 @@
                 app:layout_constraintTop_toBottomOf="@id/contacts_viewer_const_work" />
 
             <TextView
-                android:id="@+id/contacts_viewer_sns_id"
+                android:id="@+id/contacts_viewer_const_sns_id"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="SNS_ID"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/contacts_viewer_work" />
-
+            <TextView
+                android:id="@+id/contacts_viewer_sns_id"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@{SNS_ID}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/contacts_viewer_sns_id" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 </layout>
