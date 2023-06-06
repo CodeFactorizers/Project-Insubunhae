@@ -1,6 +1,7 @@
 package com.sgcd.insubunhae.ui.statistics;
 
 // [통계] 미니 캘린더
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.text.SimpleDateFormat;
@@ -151,6 +152,7 @@ public class StatisticsFragment extends Fragment {
             contactIdArray[i] = String.valueOf(contactIds.get(i));
             contactNameArray[i] = dbHelper.getNameFromContactID(Integer.parseInt(contactIdArray[i]));
             //Log.d("showContactIdSelectionDialog", "name of this contact_id : " + contactNameArray[i]);
+
         }
 
         // 다이얼로그
@@ -207,7 +209,6 @@ public class StatisticsFragment extends Fragment {
         Date date_first_contact = new Date(first_contact);
         SimpleDateFormat dateFormat_first_contact = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
         String timestamp_first_contact = dateFormat_first_contact.format(date_first_contact);
-
 
         // currentTimestamp = 현재 시간(yy-MM-dd HH:mm:ss) ---------------------------------*/
         Date date_current = new Date();
@@ -303,7 +304,6 @@ public class StatisticsFragment extends Fragment {
             paintedDates.add(calendarDay);
         }
         //Log.d("paintMiniCal", "paint sms+call dates again : " + paintedDates);
-
         DayViewDecorator decorator = new DayViewDecorator() {
             @Override
             public boolean shouldDecorate(CalendarDay day) {
