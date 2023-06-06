@@ -25,6 +25,7 @@ public class ContactsList implements Parcelable {
     public ArrayList<Contact> getContactsList(){
         return contacts_list;
     }
+    public Contact getContact(int idx){ return contacts_list.get(idx);}
     private Map<String, Group> group_map = new HashMap<String, Group>();
     public ContactsList(){}
 
@@ -53,6 +54,12 @@ public class ContactsList implements Parcelable {
             return new ContactsList[size];
         }
     };
+
+    public void updateContacts(int idx, Contact contact){
+        Contact tmp = this.contacts_list.get(idx);
+        tmp.setName(contact.getName());
+    }
+
 
     @SuppressLint("Range")
     public ArrayList<Contact> getContacts(Context context, DBHelper dbHelper, SQLiteDatabase db) {
