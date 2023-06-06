@@ -232,40 +232,40 @@ public class HomeFragment extends Fragment {
 
     private void setData(AnimalTreeViewAdapter adapter){
         //root
-        NodeModel<Animal> root = new NodeModel<>(new Animal(R.drawable.ic_01,"root"));
+        NodeModel<Animal> root = new NodeModel<>(new Animal(R.drawable.btn_radio_off_mtrl,"root"));
         TreeModel<Animal> treeModel = new TreeModel<>(root);
 
         //child nodes
-        NodeModel<Animal> capdi1_insubunhae = new NodeModel<>(new Animal(R.drawable.ic_05,"캡디1\n인수분해 팀"));
-        NodeModel<Animal> honghyoen_17 = new NodeModel<>(new Animal(R.drawable.ic_14,"17유홍현"));
-        NodeModel<Animal> sehee_17 = new NodeModel<>(new Animal(R.drawable.ic_15,"17조세희"));
-        NodeModel<Animal> junsu_18 = new NodeModel<>(new Animal(R.drawable.ic_08,"18김준수"));
-        NodeModel<Animal> sumin_19 = new NodeModel<>(new Animal(R.drawable.ic_09,"19임수민"));
+        NodeModel<Animal> capdi1_insubunhae = new NodeModel<>(new Animal(R.drawable.btn_radio_on_to_off_mtrl_animation,"캡디1\n인수분해 팀"));
+        NodeModel<Animal> honghyoen_17 = new NodeModel<>(new Animal(R.drawable.icon_user_5,"17유홍현"));
+        NodeModel<Animal> sehee_17 = new NodeModel<>(new Animal(R.drawable.icon_user_5,"17조세희"));
+        NodeModel<Animal> junsu_18 = new NodeModel<>(new Animal(R.drawable.icon_user_5,"18김준수"));
+        NodeModel<Animal> sumin_19 = new NodeModel<>(new Animal(R.drawable.icon_user_5,"19임수민"));
 
 
-        NodeModel<Animal> sub0 = new NodeModel<>(new Animal(R.drawable.ic_02,"소공"));
-        NodeModel<Animal> sub1 = new NodeModel<>(new Animal(R.drawable.ic_03,"sub01"));
-        NodeModel<Animal> sub2 = new NodeModel<>(new Animal(R.drawable.ic_04,"안녕"));
-        NodeModel<Animal> sub4 = new NodeModel<>(new Animal(R.drawable.ic_06,"동아리"));
-        NodeModel<Animal> sub5 = new NodeModel<>(new Animal(R.drawable.ic_07,"sub05000"));
-        NodeModel<Animal> sub6 = new NodeModel<>(new Animal(R.drawable.ic_08,"17학번"));
-        NodeModel<Animal> sub7 = new NodeModel<>(new Animal(R.drawable.ic_09,"sub07000"));
-        NodeModel<Animal> sub8 = new NodeModel<>(new Animal(R.drawable.ic_10,"sub08000"));
-        NodeModel<Animal> sub9 = new NodeModel<>(new Animal(R.drawable.ic_11,"ㄱㄴㄷ"));
-        NodeModel<Animal> sub10 = new NodeModel<>(new Animal(R.drawable.ic_12,"ㄱㄴㄷ"));
-        NodeModel<Animal> sub11 = new NodeModel<>(new Animal(R.drawable.ic_13,"sub11000"));
-        NodeModel<Animal> sub14 = new NodeModel<>(new Animal(R.drawable.ic_13,".000000"));
-        NodeModel<Animal> sub15 = new NodeModel<>(new Animal(R.drawable.ic_14,".000000"));
-        NodeModel<Animal> sub16 = new NodeModel<>(new Animal(R.drawable.ic_15,"sub16000"));
-        NodeModel<Animal> sub34 = new NodeModel<>(new Animal(R.drawable.ic_06,"1(멘토)"));
-        NodeModel<Animal> sub38 = new NodeModel<>(new Animal(R.drawable.ic_10,"2(멘토)"));
-        NodeModel<Animal> sub39 = new NodeModel<>(new Animal(R.drawable.ic_11,"조장"));
-        NodeModel<Animal> sub40 = new NodeModel<>(new Animal(R.drawable.ic_02,"아무개"));
-        NodeModel<Animal> sub47 = new NodeModel<>(new Animal(R.drawable.ic_09,"나"));
-        NodeModel<Animal> sub48 = new NodeModel<>(new Animal(R.drawable.ic_10,"sub48000"));
-        NodeModel<Animal> sub49 = new NodeModel<>(new Animal(R.drawable.ic_11,"sub49000"));
-        NodeModel<Animal> sub52 = new NodeModel<>(new Animal(R.drawable.ic_07,"팀장1"));
-        NodeModel<Animal> sub53 = new NodeModel<>(new Animal(R.drawable.ic_07,"팀장2"));
+        NodeModel<Animal> sub0 = new NodeModel<>(new Animal(R.drawable.btn_radio_on_to_off_mtrl_animation,"소공"));
+        NodeModel<Animal> sub1 = new NodeModel<>(new Animal(R.drawable.icon_user_5,"sub01"));
+        NodeModel<Animal> sub2 = new NodeModel<>(new Animal(R.drawable.icon_user_5,"안녕"));
+        NodeModel<Animal> sub4 = new NodeModel<>(new Animal(R.drawable.btn_radio_on_to_off_mtrl_animation,"동아리"));
+        NodeModel<Animal> sub5 = new NodeModel<>(new Animal(R.drawable.icon_user_5,"sub05000"));
+        NodeModel<Animal> sub6 = new NodeModel<>(new Animal(R.drawable.btn_radio_on_to_off_mtrl_animation,"17학번"));
+        NodeModel<Animal> sub7 = new NodeModel<>(new Animal(R.drawable.icon_user_5,"sub07000"));
+        NodeModel<Animal> sub8 = new NodeModel<>(new Animal(R.drawable.icon_user_5,"sub08000"));
+        NodeModel<Animal> sub9 = new NodeModel<>(new Animal(R.drawable.icon_user_5,"팀원1"));
+        NodeModel<Animal> sub10 = new NodeModel<>(new Animal(R.drawable.icon_user_5,"팀원2"));
+        NodeModel<Animal> sub11 = new NodeModel<>(new Animal(R.drawable.icon_user_5,"sub11000"));
+        NodeModel<Animal> sub14 = new NodeModel<>(new Animal(R.drawable.icon_user_5,".000000"));
+        NodeModel<Animal> sub15 = new NodeModel<>(new Animal(R.drawable.icon_user_5,".000000"));
+        NodeModel<Animal> sub16 = new NodeModel<>(new Animal(R.drawable.icon_user_5,"sub16000"));
+        NodeModel<Animal> sub34 = new NodeModel<>(new Animal(R.drawable.icon_user_5,"1(멘토)"));
+        NodeModel<Animal> sub38 = new NodeModel<>(new Animal(R.drawable.icon_user_5,"2(멘토)"));
+        NodeModel<Animal> sub39 = new NodeModel<>(new Animal(R.drawable.icon_user_5,"조장"));
+        NodeModel<Animal> sub40 = new NodeModel<>(new Animal(R.drawable.icon_user_5,"친구2"));
+        NodeModel<Animal> sub47 = new NodeModel<>(new Animal(R.drawable.icon_user_5,"친구1"));
+        NodeModel<Animal> sub48 = new NodeModel<>(new Animal(R.drawable.icon_user_5,"sub48000"));
+        NodeModel<Animal> sub49 = new NodeModel<>(new Animal(R.drawable.icon_user_5,"sub49000"));
+        NodeModel<Animal> sub52 = new NodeModel<>(new Animal(R.drawable.icon_user_5,"팀장1"));
+        NodeModel<Animal> sub53 = new NodeModel<>(new Animal(R.drawable.icon_user_5,"팀장2"));
 
         //build relationship
         treeModel.addNode(root,sub0,sub1,capdi1_insubunhae,sub4);
