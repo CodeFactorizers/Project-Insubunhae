@@ -59,12 +59,12 @@ public class FragmentContactsObjectViewer extends Fragment implements MainActivi
         Button btn_edit = root.findViewById(R.id.btn_edit);
         btn_edit.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                activity.toEditor(FragmentContactsEditor.newInstance());
+                activity.toEditor(FragmentContactsEditor.newInstance(), 0);
             }
         });
 
         //연락처 정보 출력
-        contacts_list = this.getArguments().getParcelableArrayList("contactsList");
+        contacts_list = this.getArguments().getParcelableArrayList("contactsListToViewer");
         Contact tmp = contacts_list.get(0);
         binding.setName(tmp.getName());
         //전화번호

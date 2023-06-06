@@ -106,6 +106,8 @@ public class Contact implements Parcelable {
     public void setPhoneNumber(String number){
         this.phoneNumber.add(number);
     }
+    public void updatePhoneNumber(int idx, String str){ this.phoneNumber.set(idx, str);}
+    public void clearPhoneNumber(){this.phoneNumber.clear();}
     public ArrayList<String> getPhoneNumber(){
         return phoneNumber;
     }
@@ -120,6 +122,8 @@ public class Contact implements Parcelable {
         this.email.add(email);
     }
     public ArrayList<String> getEmail(){ return this.email;}
+    public void updateEmail(int idx, String str){ this.email.set(idx, str);}
+    public void clearEmail(){this.email.clear();}
     public void setAddress(String address){
         this.address.add(address);
     }
@@ -128,6 +132,8 @@ public class Contact implements Parcelable {
         this.addressType.add(addressType);
     }
     public ArrayList<String> getAddressType(){ return this.addressType;}
+    public void updateAddress(int idx, String str){ this.address.set(idx, str);}
+    public void clearAddress(){this.address.clear();}
 
     public void setGroupName(String groupName){
         this.groupName = groupName;

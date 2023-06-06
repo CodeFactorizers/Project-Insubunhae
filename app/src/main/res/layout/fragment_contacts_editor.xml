@@ -60,11 +60,11 @@
                 app:layout_constraintTop_toTopOf="parent"
                 android:layout_marginTop="100dp"/>
 
-            <TextView
+            <EditText
                 android:id="@+id/contacts_editor_name"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@{name}"
+                android:text="@={name}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/contacts_editor_const_name" />
@@ -78,28 +78,31 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/contacts_editor_name" />
 
-            <TextView
+            <EditText
                 android:id="@+id/contacts_editor_phoneNumber1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:hint="010-1234-5678"
                 android:text="@{phone_number1}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/contacts_editor_const_phoneNumber" />
 
-            <TextView
+            <EditText
                 android:id="@+id/contacts_editor_phoneNumber2"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:hint="010-1234-5678"
                 android:text="@{phone_number2}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/contacts_editor_phoneNumber1" />
 
-            <TextView
+            <EditText
                 android:id="@+id/contacts_editor_phoneNumber3"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:hint="010-1234-5678"
                 android:text="@{phone_number3}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -132,19 +135,21 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/contacts_editor_group_count" />
 
-            <TextView
+            <EditText
                 android:id="@+id/contacts_editor_address1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:hint="서울시 마포구 신수동"
                 android:text="@{address}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/contacts_editor_const_address" />
 
-            <TextView
+            <EditText
                 android:id="@+id/contacts_editor_address2"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:hint="서울시 마포구 신수동"
                 android:text="@{address2}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -159,19 +164,21 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/contacts_editor_address2" />
 
-            <TextView
+            <EditText
                 android:id="@+id/contacts_editor_email"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:hint="example@gmail.com"
                 android:text="@{email}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/contacts_editor_const_email" />
 
-            <TextView
+            <EditText
                 android:id="@+id/contacts_editor_sub_email"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:hint="example@gmail.com"
                 android:text="@{email2}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -186,10 +193,11 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/contacts_editor_sub_email" />
 
-            <TextView
+            <EditText
                 android:id="@+id/contacts_editor_work"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:hint="Samsung"
                 android:text="@{work}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -203,14 +211,15 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/contacts_editor_work" />
-            <TextView
+            <EditText
                 android:id="@+id/contacts_editor_sns_id"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="@{SNS_ID}"
+                android:hint="sns"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/contacts_editor_sns_id" />
+                app:layout_constraintTop_toBottomOf="@id/contacts_editor_const_sns_id" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 </layout>
