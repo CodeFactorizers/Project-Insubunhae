@@ -4,6 +4,7 @@ import static android.content.ContentValues.TAG;
 
 import java.util.Date;
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.Locale;
 import android.Manifest;
 import android.content.Intent;
@@ -12,6 +13,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.provider.CallLog;
@@ -22,9 +24,11 @@ import android.view.Menu;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
@@ -40,39 +44,52 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.sgcd.insubunhae.databinding.ActivityMainBinding;
+import com.sgcd.insubunhae.db.Contact;
 import com.sgcd.insubunhae.db.ContactsList;
 import com.sgcd.insubunhae.db.DBHelper;
+import com.sgcd.insubunhae.ui.contacts_viewer.FragmentContactsEditor;
 import com.sgcd.insubunhae.ui.contacts_viewer.FragmentContactsObjectViewer;
 
 public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
 
     // DB 관련
-    DBHelper dbHelper;
+    public static DBHelper dbHelper;
     SQLiteDatabase idb = null;
     private Cursor dbCursor;
 
     private static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1;
     private static final int MY_PERMISSIONS_REQUEST_READ_CALL_LOG = 2;
     private static final int MY_PERMISSIONS_REQUEST_READ_SMS = 3;
+    private static final int MY_PERMISSIONS_REQUEST_POST_NOTIFICATION = 4;
 
     private long lastRetrievalDate = 0L; // Store the timestamp of the last retrieval
-
-    // 연락처 연동
-    private ContactsList contacts_list = new ContactsList();
 
     //PR test comment2
 
     //about fragment
     private FragmentManager fragmentManager;
-    private FragmentTransaction transaction;
+    public FragmentManager myGetFragmentManager(){
+        return fragmentManager;
+    }
+
+    private FragmentTransaction fragmentTransaction;
     private FragmentContactsObjectViewer fragmentContactsObjectViewer;
+    private FragmentContactsEditor fragmentContactsEditor;
+    private ContactsList contactsList;
+    public ContactsList getContactsList(){ return this.contactsList;}
+
+    private static MainActivity instance;
+
+    public static MainActivity getInstance() {
+        return instance;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //resource failed to call close 해결 위한 로그 설정
+        //resource failed to call close 해결 위한 로그 설정(다른 메모리 누수도 감지하는듯?)
 //        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder(StrictMode.getVmPolicy())
 //                .detectLeakedClosableObjects()
 //                .build());
@@ -85,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
             dbHelper = new DBHelper(this);
             // Get the database. If it does not exist, this is where it will also be created.
             idb = dbHelper.getWritableDatabase();
+            contactsList = dbHelper.getContactsList();
         }
 
 
@@ -93,10 +111,10 @@ public class MainActivity extends AppCompatActivity {
         //contacts viewer
         fragmentManager = getSupportFragmentManager();
         fragmentContactsObjectViewer = new FragmentContactsObjectViewer();
-        final Bundle bundle = new Bundle();
-        //bundle.putParcelable("contactsList", dbHelper.getContactsList());
-        bundle.putParcelableArrayList("contactsList", dbHelper.getContactsList().getContactsList());
-        fragmentContactsObjectViewer.setArguments(bundle);
+        fragmentContactsEditor = new FragmentContactsEditor();
+//        final Bundle bundle = new Bundle();
+//        bundle.putParcelableArrayList("contactsList", dbHelper.getContactsList().getContactsList());
+//        fragmentContactsObjectViewer.setArguments(bundle);
 
 
         // Passing each menu ID as a set of Ids because each
@@ -107,6 +125,24 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
+
+    }
+
+    //contacts viewer 뒤로가기 인터페이스
+    public interface onBackPressedListner{
+        public void onBackPressed();
+    }
+    //contacts viewer 뒤로가기
+    @Override
+    public void onBackPressed(){
+        Log.d("MainActivity", "onBackPressed activity\n");
+        List<Fragment>  fragmentList = fragmentManager.getFragments();
+        for(Fragment fragment : fragmentList){
+            if(fragment instanceof onBackPressedListner){
+                ((onBackPressedListner)fragment).onBackPressed();
+                return;
+            }
+        }
 
     }
     // Inflating the menu items from the menu_items.xml file
@@ -122,10 +158,13 @@ public class MainActivity extends AppCompatActivity {
         // Switching on the item id of the menu item
         switch (item.getItemId()) {
             case R.id.menu_btn1:
-                transaction = fragmentManager.beginTransaction();
+                final Bundle bundle = new Bundle();
+                bundle.putParcelableArrayList("contactsListToViewer", dbHelper.getContactsList().getContactsList());
+                fragmentContactsObjectViewer.setArguments(bundle);
+                fragmentTransaction = fragmentManager.beginTransaction();
                 //View view = getLayoutInflater().from(this).inflate(R.layout.activity_main, null);
                 //int id = view.getId();
-                transaction.replace(R.id.nav_host_fragment_activity_main, fragmentContactsObjectViewer).commitAllowingStateLoss();
+                fragmentTransaction.replace(R.id.nav_host_fragment_activity_main, fragmentContactsObjectViewer).commitAllowingStateLoss();
                 break;
             case R.id.menu_btn2:
                 Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
@@ -168,8 +207,21 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.READ_SMS}, MY_PERMISSIONS_REQUEST_READ_SMS);
         } else {
             showToast("SMS permission already granted.");
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                requestNotificationPermission();
+            }
         }
     }
+
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
+    private void requestNotificationPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, MY_PERMISSIONS_REQUEST_POST_NOTIFICATION);
+        } else {
+            showToast("Notification permission already granted.");
+        }
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -405,6 +457,16 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
-
+    //연락처 뷰어의 편집버튼 눌렀을 때 편집창으로 넘어감
+    public void toEditor(Fragment fragment, int idx){
+        final Bundle bundle = new Bundle();
+        Contact tmp = dbHelper.getContactsList().getContact(idx);
+        bundle.putParcelableArrayList("contactsListToEditor", dbHelper.getContactsList().getContactsList());
+        bundle.putInt("toEditorIdx", idx);
+        fragmentContactsEditor.setArguments(bundle);
+        fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.nav_host_fragment_activity_main, fragmentContactsEditor).addToBackStack("editor").commit();
+        //fragmentTransaction.add(fragment, "editor").commit();
+    }
     // some additional functions end
 }
