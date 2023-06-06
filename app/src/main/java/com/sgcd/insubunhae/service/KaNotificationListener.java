@@ -38,4 +38,11 @@ public class KaNotificationListener extends NotificationListenerService {
     public void onNotificationRemoved(StatusBarNotification sbn) {
         Toast.makeText(this, "KaNotificationListner 2", Toast.LENGTH_SHORT).show();
     }
+
+    public void kaFromNotificationToDB() {
+
+
+
+        
+    }
 }

@@ -159,7 +159,6 @@ public class StatisticsFragment extends Fragment {
             contactIdArray[i] = String.valueOf(contactIds.get(i));
             contactNameArray[i] = dbHelper.getNameFromContactID(Integer.parseInt(contactIdArray[i]));
             //Log.d("showContactIdSelectionDialog", "name of this contact_id : " + contactNameArray[i]);
-
         }
 
         // 다이얼로그
