@@ -13,7 +13,17 @@ public class Animal {
     public String name;
     public Animal(int headId, String name) {
         this.headId = headId;
-        this.name = name;
+
+        StringBuilder modifiedName = new StringBuilder();
+        String[] words = name.split(" ");
+        for (String word : words) {
+            if (word.length() > 7) {
+                modifiedName.append(word.replace(' ', '\n')).append(" ");
+            } else {
+                modifiedName.append(word).append(" ");
+            }
+        }
+        this.name = modifiedName.toString().trim();
     }
 
     @Override
