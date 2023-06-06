@@ -2,13 +2,16 @@ package com.sgcd.insubunhae.ui.contacts_viewer;
 
 import static androidx.constraintlayout.widget.ConstraintSet.GONE;
 
+import android.app.Activity;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -18,6 +21,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 
+import com.sgcd.insubunhae.MainActivity;
 import com.sgcd.insubunhae.R;
 import com.sgcd.insubunhae.databinding.FragmentContactsObjectViewerBinding;
 import com.sgcd.insubunhae.db.Contact;
@@ -26,40 +30,45 @@ import com.sgcd.insubunhae.db.ContactsList;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FragmentContactsObjectViewer extends Fragment {
+public class FragmentContactsObjectViewer extends Fragment implements MainActivity.onBackPressedListner {
     private FragmentContactsObjectViewerBinding binding;
     private Context context;
-    private ContactsList contacts_list;
+    private MainActivity activity;
+    private ArrayList<Contact> contacts_list;
+
+    public static FragmentContactsObjectViewer newInstance(){
+        return new FragmentContactsObjectViewer();
+    }
+
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         this.context = context;
+        this.activity = (MainActivity)getActivity();
     }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
 
         //data binding
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_contacts_object_viewer, container,false);
         View root = binding.getRoot();
 
-        //dynamic add view
-        ConstraintLayout constLayout = (ConstraintLayout) root.findViewById(R.id.contacts_viewer_constLayout);
+        //편집 버튼
+        Button btn_edit = root.findViewById(R.id.btn_edit);
+        btn_edit.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                activity.toEditor(FragmentContactsEditor.newInstance(), 0);
+            }
+        });
 
-        ArrayList<Contact> tmp_list = this.getArguments().getParcelableArrayList("contactsList");
-        Contact tmp = tmp_list.get(0);
+        //연락처 정보 출력
+        contacts_list = this.getArguments().getParcelableArrayList("contactsListToViewer");
+        Contact tmp = contacts_list.get(0);
         binding.setName(tmp.getName());
         //전화번호
         ArrayList<String> db_phone_num = tmp.getPhoneNumber();
-//        ArrayList<String> tmp_phone_num = new ArrayList<String>();
-//        for(int i = 0; i < 3;i++){
-//                if(db_phone_num.size() > i && db_phone_num.get(i) != null){
-//                    tmp_phone_num.add(db_phone_num.get(i));
-//                }
-//                else{
-//                    root.findViewById(R.id.contacts_viewer_phoneNumber1);
-//                    tmp_phone_num.add(" ");
-//                }
-//        }
         if(db_phone_num.size() > 0 && db_phone_num.get(0) != null){
             binding.setPhoneNumber1(db_phone_num.get(0));
         }
@@ -117,5 +126,11 @@ public class FragmentContactsObjectViewer extends Fragment {
         else root.findViewById(R.id.contacts_viewer_sns_id).setVisibility(View.GONE);
 
         return root;
+    }
+
+    @Override
+    public void onBackPressed() {
+        Log.d("contactsviewer", "onBackPressed fragment\n");
+        activity.myGetFragmentManager().beginTransaction().remove(this).commit();
     }
 }
