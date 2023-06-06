@@ -55,8 +55,10 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.sgcd.insubunhae.MainActivity;
 import com.sgcd.insubunhae.R;
 import com.sgcd.insubunhae.databinding.FragmentStatisticsBinding;
+import com.sgcd.insubunhae.db.Contact;
 import com.sgcd.insubunhae.db.DBHelper;
 import com.sgcd.insubunhae.ui.statistics.StatisticsViewModel;
 
@@ -150,16 +152,11 @@ public class StatisticsFragment extends Fragment {
 
     // 인물 변경하기 버튼
     public void showContactIdSelectionDialog() {
-        List<Integer> contactIds = dbHelper.getContactIds();
+        ArrayList<Contact> contactsList = ((MainActivity)getActivity()).getContactsList().getContactsList();
 
-        // contact_id 목록을 문자열로 변환
-        String[] contactIdArray = new String[contactIds.size()];
-        String[] contactNameArray = new String[contactIds.size()];
-        for (int i = 0; i < contactIds.size(); i++) {
-            contactIdArray[i] = String.valueOf(contactIds.get(i));
-            contactNameArray[i] = dbHelper.getNameFromContactID(Integer.parseInt(contactIdArray[i]));
-            //Log.d("showContactIdSelectionDialog", "name of this contact_id : " + contactNameArray[i]);
-
+        String[] contactNameArray = new String[contactsList.size()];
+        for (int i = 0; i < contactsList.size(); i++) {
+            contactNameArray[i] = contactsList.get(i).getName();
         }
 
         // 다이얼로그

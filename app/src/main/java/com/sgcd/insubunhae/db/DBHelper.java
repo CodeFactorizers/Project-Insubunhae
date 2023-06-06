@@ -523,6 +523,33 @@ public class DBHelper extends SQLiteOpenHelper {
         return name;
     }
 
+    public Integer getIdFromContactName(String name) {
+        Integer id = null;
+
+        SQLiteDatabase idb = getWritableDatabase();
+        Cursor dbCursor = null;
+        try {
+            String query = "SELECT contact_id FROM MAIN_CONTACTS WHERE name = '" + name + "'";
+            dbCursor = idb.rawQuery(query, null);
+
+            if (dbCursor != null) {
+                while (dbCursor.moveToNext()) {
+                    int columnIndex = dbCursor.getColumnIndex("contact_id");
+                    id = dbCursor.getInt(columnIndex);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (dbCursor != null) {
+                dbCursor.close();
+            }
+        }
+        //idb.close();
+
+        return id;
+    }
+
     public List<Long> getLongFromTable(String tableName, String attributeName, String condition) {
         List<Long> attributeValues = new ArrayList<>();
 

@@ -8,7 +8,7 @@
         android:layout_height="match_parent"
         tools:context=".ui.notifications.NotificationsFragment">
 
-        <TextView
+        <!--TextView
             android:id="@+id/text_notifications"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -20,7 +20,76 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent" /-->
+
+        <ScrollView
+            android:id="@+id/notification_scrollView"
+            android:layout_width="match_parent"
+            android:layout_height="500dp"
+            android:layout_marginTop="200dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+
+                <!-- 연락 캘린더 -->
+
+                <!-- 연락 알림 큐 -->
+                <TextView
+                    android:id="@+id/queue_head"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="#FF9800"
+                    android:gravity="center"
+                    android:text="head"
+                    android:textColor="@android:color/black"
+                    app:layout_constraintBottom_toTopOf="@+id/queue_1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/queue_1"
+                    android:layout_width="300dp"
+                    android:layout_height="70dp"
+                    android:layout_weight="1"
+                    android:background="#2196F3"
+                    android:gravity="center"
+                    android:text="queue_1"
+                    android:textColor="@android:color/black"
+                    app:layout_constraintBottom_toTopOf="@+id/queue_2"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/queue_head" />
+
+                <TextView
+                    android:id="@+id/queue_2"
+                    android:layout_width="300dp"
+                    android:layout_height="70dp"
+                    android:layout_weight="1"
+                    android:background="#2196F3"
+                    android:gravity="center"
+                    android:text="queue_2"
+                    android:textColor="@android:color/black"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.504"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/queue_1" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </ScrollView>
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
