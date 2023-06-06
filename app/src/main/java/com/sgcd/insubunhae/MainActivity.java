@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
 
     // DB 관련
-    DBHelper dbHelper;
+    public static DBHelper dbHelper;
     SQLiteDatabase idb = null;
     private Cursor dbCursor;
 
@@ -78,6 +78,12 @@ public class MainActivity extends AppCompatActivity {
     private FragmentContactsEditor fragmentContactsEditor;
     private ContactsList contactsList;
     public ContactsList getContactsList(){ return this.contactsList;}
+
+    private static MainActivity instance;
+
+    public static MainActivity getInstance() {
+        return instance;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
