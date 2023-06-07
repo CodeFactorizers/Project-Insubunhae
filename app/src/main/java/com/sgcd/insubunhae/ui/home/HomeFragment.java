@@ -32,7 +32,10 @@ import androidx.navigation.NavController;
 import android.widget.Toast;
 
 import com.gyso.treeview.TreeViewEditor;
+import com.sgcd.insubunhae.db.Contact;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -283,6 +286,24 @@ public class HomeFragment extends Fragment {
         treeModel.addNode(sub9,sub47,sub48);
         treeModel.addNode(sub47,sub49);
         treeModel.addNode(sub39,sub52,sub53);
+
+        //sehee's try
+        Log.d("0608", "home frag");
+        ArrayList<Contact> contactsList = ((MainActivity)getActivity()).getContactsList().getContactsList();
+
+        String[] contactNameArray = new String[contactsList.size()];
+        ArrayList<NodeModel<Animal>> nodeList = new ArrayList<>();
+        String[] contactIdArray = new String[contactsList.size()];
+        int[] contactIdIntArray = new int[contactIdArray.length];
+        for (int i = 0; i < contactsList.size(); i++) {
+            contactNameArray[i] = contactsList.get(i).getName();
+            contactIdArray[i] = contactsList.get(i).getId();
+            contactIdIntArray[i] = Integer.parseInt(contactIdArray[i]);
+
+            nodeList.add(new NodeModel<>(new Animal(R.drawable.icon_user_5, contactNameArray[i])));
+            treeModel.addNode(root, sub0, sub1, nodeList.get(i));
+        }
+
 
         //mark
         parentToRemoveChildren = sub0;

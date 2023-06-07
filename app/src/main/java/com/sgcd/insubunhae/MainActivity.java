@@ -105,9 +105,7 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-
-
-
+        Log.d("0608", "main activity");
         BottomNavigationView navView = findViewById(R.id.nav_view);
 
         //contacts viewer
