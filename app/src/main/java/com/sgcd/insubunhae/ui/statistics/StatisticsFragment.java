@@ -2,6 +2,8 @@ package com.sgcd.insubunhae.ui.statistics;
 
 // [통계] 미니 캘린더
 
+import static com.sgcd.insubunhae.BR.statisticsViewModel;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.text.SimpleDateFormat;
@@ -101,6 +103,8 @@ public class StatisticsFragment extends Fragment {
         //final TextView textView = binding.textStatistics;
         //statisticsViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
 
+        statisticsViewModel.setText(String.valueOf(cur_contact_id));
+
         //현재 인물의 CALL_LOG에서 data받아오기 : datetime, duration
         List<String> c_dt = new ArrayList<>();
         c_dt = dbHelper.getAttributeValueFromTable("CALL_LOG",
@@ -168,6 +172,9 @@ public class StatisticsFragment extends Fragment {
                         //cur_contact_id = contactIds.get(which);
                         cur_contact_id = which + 1;
                         //Log.d("paintMiniCal", "cur_contact_id : " + cur_contact_id);
+
+                        // name tag
+                        //statisticsViewModel.setText(String.valueOf(cur_contact_id));
 
                         // [Draw Again] bar chart
                         BarChart barChart = binding.barchart;
@@ -318,7 +325,54 @@ public class StatisticsFragment extends Fragment {
             values.put("first_contact", timestamp_first_contact);
             db.insert("ANALYSIS", null, values);
 
+
         }
+    }
+
+    public void drawPieChart(PieChart pieChart) {
+        // contact_id list 가져오기
+        ArrayList<Contact> contactsList = ((MainActivity)getActivity()).getContactsList().getContactsList();
+
+        String[] contactNameArray = new String[contactsList.size()];
+        String[] contactIdArray = new String[contactsList.size()];
+        int[] contactIdIntArray = new int[contactIdArray.length];
+        for (int i = 0; i < contactsList.size(); i++) {
+            contactNameArray[i] = contactsList.get(i).getName();
+            contactIdArray[i] = contactsList.get(i).getId();
+            contactIdIntArray[i] = Integer.parseInt(contactIdArray[i]);
+        }
+
+        int[] calc_fam_list = new int[contactIdArray.length];
+        for (int i = 0; i < contactsList.size(); i++) {
+            calc_fam_list[i] = dbHelper.getIntFromTable("ANALYSIS", "calc_fam", "contact_id = " + contactIdIntArray[i]);
+        }
+
+        pieChart.setDrawHoleEnabled(true);
+        pieChart.setHoleColor(Color.WHITE);
+        pieChart.setTransparentCircleRadius(61f);
+        pieChart.getDescription().setEnabled(false);
+        pieChart.getLegend().setEnabled(false);
+        pieChart.setEntryLabelColor(Color.BLACK);
+
+        List<PieEntry> entries = new ArrayList<>();
+//        entries.add(new PieEntry(10.0f, "Green"));
+//        entries.add(new PieEntry(20.0f, "Yellow"));
+//        entries.add(new PieEntry(30.0f, "Red"));
+//        entries.add(new PieEntry(40.0f, "Blue"));
+        for (int i = 0; i < calc_fam_list.length; i++) {
+            entries.add(new PieEntry(calc_fam_list[i], contactNameArray[i]));
+        }
+
+        PieDataSet dataSet = new PieDataSet(entries, "LabelPie");
+
+        dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
+        dataSet.setValueTextSize(12f);
+        dataSet.setValueTextColor(Color.BLACK);
+
+        PieData data = new PieData(dataSet);
+
+        pieChart.setData(data); // chart에 data설정
+        pieChart.invalidate(); // chart 그리기
     }
 
     // [통계] 미니 캘린더 색칠
@@ -376,33 +430,6 @@ public class StatisticsFragment extends Fragment {
         calendarView.addDecorator(decorator);
         calendarView.invalidateDecorators();
         //Log.d("paintMiniCal", "painting end");
-    }
-
-    public void drawPieChart(PieChart pieChart) {
-        pieChart.setDrawHoleEnabled(true);
-        pieChart.setHoleColor(Color.WHITE);
-        pieChart.setTransparentCircleRadius(61f);
-        pieChart.getDescription().setEnabled(false);
-        pieChart.getLegend().setEnabled(false);
-        pieChart.setEntryLabelColor(Color.BLACK);
-
-        List<PieEntry> entries = new ArrayList<>();
-        entries.add(new PieEntry(10.0f, "Green"));
-        entries.add(new PieEntry(20.0f, "Yellow"));
-        entries.add(new PieEntry(30.0f, "Red"));
-        entries.add(new PieEntry(40.0f, "Blue"));
-
-
-        PieDataSet dataSet = new PieDataSet(entries, "LabelPie");
-
-        dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
-        dataSet.setValueTextSize(12f);
-        dataSet.setValueTextColor(Color.BLACK);
-
-        PieData data = new PieData(dataSet);
-
-        pieChart.setData(data); // chart에 data설정
-        pieChart.invalidate(); // chart 그리기
     }
 
     // [SMS only]
