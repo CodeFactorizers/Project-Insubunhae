@@ -81,12 +81,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         //resource failed to call close 해결 위한 로그 설정(다른 메모리 누수도 감지하는듯?)
-//        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder(StrictMode.getVmPolicy())
-//                .detectLeakedClosableObjects()
-//                .build());
-
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder(StrictMode.getVmPolicy())
+                .detectLeakedClosableObjects()
+                .build());
 
         if (getPermission()) { //sms 접근권한 받는 메소드(contacts, call log도 이 메소드 내에 추가하면 될듯!)
             // Create new helper
@@ -95,6 +92,11 @@ public class MainActivity extends AppCompatActivity {
             idb = dbHelper.getWritableDatabase();
             contactsList = dbHelper.getContactsList();
         }
+
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+
+
 
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
@@ -120,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //contacts viewer 뒤로가기 인터페이스
-    public interface onBackPressedListner{
+    public interface onBackPressedListener{
         public void onBackPressed();
     }
     //contacts viewer 뒤로가기
@@ -129,12 +131,11 @@ public class MainActivity extends AppCompatActivity {
         Log.d("MainActivity", "onBackPressed activity\n");
         List<Fragment>  fragmentList = fragmentManager.getFragments();
         for(Fragment fragment : fragmentList){
-            if(fragment instanceof onBackPressedListner){
-                ((onBackPressedListner)fragment).onBackPressed();
+            if(fragment instanceof onBackPressedListener){
+                ((onBackPressedListener)fragment).onBackPressed();
                 return;
             }
         }
-
     }
     // Inflating the menu items from the menu_items.xml file
     @Override
@@ -155,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
                 fragmentTransaction = fragmentManager.beginTransaction();
                 //View view = getLayoutInflater().from(this).inflate(R.layout.activity_main, null);
                 //int id = view.getId();
-                fragmentTransaction.replace(R.id.nav_host_fragment_activity_main, fragmentContactsObjectViewer).commitAllowingStateLoss();
+                fragmentTransaction.replace(R.id.container, fragmentContactsObjectViewer).commitAllowingStateLoss();
                 break;
             case R.id.menu_btn2:
                 Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
@@ -443,7 +444,7 @@ public class MainActivity extends AppCompatActivity {
         bundle.putInt("toEditorIdx", idx);
         fragmentContactsEditor.setArguments(bundle);
         fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.nav_host_fragment_activity_main, fragmentContactsEditor).addToBackStack("editor").commit();
+        fragmentTransaction.replace(R.id.container, fragmentContactsEditor).addToBackStack("editor").commit();
         //fragmentTransaction.add(fragment, "editor").commit();
     }
     // some additional functions end
