@@ -6,6 +6,7 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+import java.sql.Array;
 import java.util.ArrayList;
 
 public class Contact implements Parcelable {
@@ -17,7 +18,7 @@ public class Contact implements Parcelable {
     private ArrayList<String> email = new ArrayList<String>();
     private ArrayList<String> address = new ArrayList<String>();
     private ArrayList<String> addressType = new ArrayList<String>();
-    private String groupName;
+    private ArrayList<String> groupName = new ArrayList<>();
     private ArrayList<String> groupId = new ArrayList<String>();
     private int isGrouped;
     private int groupCount;
@@ -26,6 +27,22 @@ public class Contact implements Parcelable {
     private String title;
     private String snsId;
     private boolean isSelect;
+
+    public void cpyContact(Contact contact){
+        this.id = contact.getId();
+        this.phoneNumber = (ArrayList<String>)contact.getPhoneNumber().clone();
+        this.name = contact.getName();
+        this.label = contact.getLabel();
+        this.email = (ArrayList<String>)contact.getEmail().clone();
+        this.address = (ArrayList<String>)contact.getAddress().clone();
+        this.groupName = (ArrayList<String>)contact.getGroupName().clone();
+        this.groupId = (ArrayList<String>)contact.getGroupId().clone();
+        this.isGrouped = contact.getIsGrouped();
+        this.groupCount = contact.getGroupCount();
+        this.company = contact.getCompany();
+        this.snsId = contact.getSnsId();
+    }
+
     public Contact() {
         isGrouped = 0;
         groupCount = 0;
@@ -40,7 +57,7 @@ public class Contact implements Parcelable {
         email = in.createStringArrayList();
         address = in.createStringArrayList();
         addressType = in.createStringArrayList();
-        groupName = in.readString();
+        groupName = in.createStringArrayList();
         groupId = in.createStringArrayList();
         company = in.readString();
         department = in.readString();
@@ -59,7 +76,7 @@ public class Contact implements Parcelable {
         dest.writeStringList(email);
         dest.writeStringList(address);
         dest.writeStringList(addressType);
-        dest.writeString(groupName);
+        dest.writeStringList(groupName);
         dest.writeStringList(groupId);
         dest.writeString(company);
         dest.writeString(department);
@@ -136,9 +153,9 @@ public class Contact implements Parcelable {
     public void clearAddress(){this.address.clear();}
 
     public void setGroupName(String groupName){
-        this.groupName = groupName;
+        this.groupName.add(groupName);
     }
-    public String getGroupName(){ return this.groupName; }
+    public ArrayList<String> getGroupName(){ return this.groupName; }
     public void setGroupId(String groupId){this.groupId.add(groupId); }
     public ArrayList<String> getGroupId(){
         return this.groupId;

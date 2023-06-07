@@ -286,6 +286,7 @@ public class DBHelper extends SQLiteOpenHelper {
                             if (cursor1 != null) {
                                 if (cursor1.moveToFirst()) {
                                     int columnIndex = cursor1.getColumnIndex("contact_id");
+
                                     if (columnIndex >= 0) {
                                         smsContactId = cursor1.getInt(columnIndex);
                                     }
