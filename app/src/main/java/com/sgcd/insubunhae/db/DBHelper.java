@@ -580,6 +580,35 @@ public class DBHelper extends SQLiteOpenHelper {
         return attributeValues;
     }
 
+    public Integer getIntFromTable(String tableName, String attributeName, String condition) {
+        Integer result = null;
+
+        SQLiteDatabase idb = getWritableDatabase();
+        Cursor dbCursor = null;
+
+        try {
+            String query = "SELECT " + attributeName + " FROM " + tableName + " WHERE " + condition;
+            dbCursor = idb.rawQuery(query, null);
+            //Log.d("StatisticsFragment", "query : " + query);
+
+            if (dbCursor != null) {
+                while (dbCursor.moveToNext()) {
+                    int columnIndex = dbCursor.getColumnIndex(attributeName);
+                    result = dbCursor.getInt(columnIndex);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (dbCursor != null) {
+                dbCursor.close();
+            }
+        }
+        //idb.close();
+
+        return result;
+    }
+
     public List<Integer> getContactIds() {
         List<Integer> contact_id_list = new ArrayList<>();
 
