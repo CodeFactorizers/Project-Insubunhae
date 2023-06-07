@@ -14,6 +14,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,7 +26,11 @@ public class ContactsList implements Parcelable {
     public ArrayList<Contact> getContactsList(){
         return contacts_list;
     }
+    public Contact getContact(int idx){ return contacts_list.get(idx);}
     private Map<String, Group> group_map = new HashMap<String, Group>();
+    public Map<String, Group> getGroupMap(){
+        return group_map;
+    }
     public ContactsList(){}
 
     protected ContactsList(Parcel in) {
@@ -53,6 +58,22 @@ public class ContactsList implements Parcelable {
             return new ContactsList[size];
         }
     };
+
+    public void updateContacts(int idx, Contact contact){
+        Contact tmp = this.contacts_list.get(idx);
+        tmp.setName(contact.getName());
+    }
+
+    private void groupIdToName(Contact contact){
+        ArrayList<String> groupId = contact.getGroupId();
+        if(groupId.isEmpty()){}
+        else{
+            for(String id : groupId) {
+                contact.setGroupName(group_map.get(id).getGroupName());
+            }
+        }
+
+    }
 
     @SuppressLint("Range")
     public ArrayList<Contact> getContacts(Context context, DBHelper dbHelper, SQLiteDatabase db) {
@@ -135,7 +156,7 @@ public class ContactsList implements Parcelable {
 
                     contact.setAddress(address);
                     contact.setAddressType(addressType);
-                    Log.d("getContacts", "address : " + address + " type : " + addressType);
+                    //Log.d("getContacts", "address : " + address + " type : " + addressType);
                 }
                 addressCursor.close();
                 //}
@@ -194,10 +215,21 @@ public class ContactsList implements Parcelable {
     }
 
     public void getContactsFromAppDB(SQLiteDatabase db){
+        Cursor groupInfoCursor = db.rawQuery("SELECT * FROM GROUP_INFO", null);
+        while(groupInfoCursor.moveToNext()){
+            Group group= new Group();
+            String groupId = groupInfoCursor.getString(0);
+            group.setGroupId(groupId);
+            group.setGroupName(groupInfoCursor.getString(1));
+            group_map.put(groupId,group);
+        }
+        groupInfoCursor.close();
+
         Cursor cursor = db.rawQuery("SELECT * FROM MAIN_CONTACTS", null);
 
         while(cursor.moveToNext()){
             Contact contact = new Contact();
+            String id = cursor.getString(0);
             contact.setId(cursor.getString(0));
             contact.setName(cursor.getString(1));
             //if(!cursor.isNull(3))
@@ -219,9 +251,24 @@ public class ContactsList implements Parcelable {
             contact.setCompany(cursor.getString(17));
             contact.setSnsId(cursor.getString(18));
             //Log.d("getContactsFromAppDB", cursor.getInt(0) + " : " + cursor.getString(1) + ", " + cursor.getString(3));
+
+            Cursor groupCursor = db.rawQuery("SELECT * FROM GROUP_MEMBER WHERE contact_id == " + id, null);
+            while(groupCursor.moveToNext()){
+                //Log.d("getdbfromapp", id + "가 속한 그룹 테이블 : " + groupCursor.getString(0) + " " + groupCursor.getString(1) + " " + groupCursor.getString((2)));
+                contact.setGroupId(groupCursor.getString(2));
+            }
+            groupIdToName(contact);
+            if(!contact.getGroupId().isEmpty()) {
+                //Log.d("getdbfromapp", contact.getGroupName().toString());
+                contact.setIsGrouped(1);
+                contact.setGroupCount(contact.getGroupId().size());
+            }
+            groupCursor.close();
+
             contacts_list.add(contact);
         }
         cursor.close();
+
     }
 
     public void dbInsert(SQLiteDatabase db){
@@ -292,6 +339,5 @@ public class ContactsList implements Parcelable {
         } finally{
             db.endTransaction();
         }
-
     }
 }
