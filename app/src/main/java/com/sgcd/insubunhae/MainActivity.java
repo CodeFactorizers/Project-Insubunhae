@@ -94,9 +94,6 @@ public class MainActivity extends AppCompatActivity {
 //                .detectLeakedClosableObjects()
 //                .build());
 
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-
         if (getPermission()) { //sms 접근권한 받는 메소드(contacts, call log도 이 메소드 내에 추가하면 될듯!)
             // Create new helper
             dbHelper = new DBHelper(this);
@@ -105,7 +102,10 @@ public class MainActivity extends AppCompatActivity {
             contactsList = dbHelper.getContactsList();
         }
 
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
+        Log.d("0608", "main activity");
         BottomNavigationView navView = findViewById(R.id.nav_view);
 
         //contacts viewer
