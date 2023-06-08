@@ -3,6 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+        <variable
+            name="statisticsViewModel"
+            type="com.sgcd.insubunhae.ui.statistics.StatisticsViewModel" />
+    </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -32,7 +38,7 @@
             android:layout_marginTop="16dp"
             android:background="@color/purple_700"
             android:gravity="center"
-            android:text="유홍현"
+            android:text="인물 이름"
             android:textColor="@color/white"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -47,6 +53,18 @@
             android:text="Change Contact ID"
             app:layout_constraintStart_toEndOf="@id/textView"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textView_pieTitle"
+            android:layout_width="150dp"
+            android:layout_height="30dp"
+            android:background="@color/purple_700"
+            android:gravity="center"
+            android:text="전체 인물의 친밀도"
+            android:textColor="@color/white"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/contactChangeButton"
+            app:layout_constraintBottom_toTopOf="@+id/piechart1" />
 
         <com.github.mikephil.charting.charts.PieChart
             android:id="@+id/piechart1"

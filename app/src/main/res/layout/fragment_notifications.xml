@@ -22,14 +22,28 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" /-->
 
+        <!-- 연락 캘린더 -->
+
+        <CalendarView
+            android:id="@+id/calendarView_notification"
+            android:layout_width="332dp"
+            android:layout_height="300dp"
+            android:background="#FFFFFF"
+            app:layout_constraintBottom_toTopOf="@+id/notification_scrollView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.493"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0" />
+
         <ScrollView
             android:id="@+id/notification_scrollView"
             android:layout_width="match_parent"
-            android:layout_height="500dp"
-            android:layout_marginTop="200dp"
+            android:layout_height="400dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent">
+            app:layout_constraintTop_toBottomOf="@id/calendarView_notification"
+            app:layout_constraintVertical_bias="1.0">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -40,18 +54,18 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-
-                <!-- 연락 캘린더 -->
-
                 <!-- 연락 알림 큐 -->
                 <TextView
                     android:id="@+id/queue_head"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="30dp"
                     android:layout_weight="1"
-                    android:background="#FF9800"
+                    android:background="#33CC66"
                     android:gravity="center"
-                    android:text="head"
+                    android:padding="10dp"
+                    android:text="연락 알림 QUEUE"
                     android:textColor="@android:color/black"
                     app:layout_constraintBottom_toTopOf="@+id/queue_1"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -61,9 +75,10 @@
                 <TextView
                     android:id="@+id/queue_1"
                     android:layout_width="300dp"
-                    android:layout_height="70dp"
+                    android:layout_height="130dp"
+                    android:layout_marginBottom="15dp"
                     android:layout_weight="1"
-                    android:background="#2196F3"
+                    android:background="#99FFCC"
                     android:gravity="center"
                     android:text="queue_1"
                     android:textColor="@android:color/black"
@@ -75,9 +90,26 @@
                 <TextView
                     android:id="@+id/queue_2"
                     android:layout_width="300dp"
-                    android:layout_height="70dp"
+                    android:layout_height="130dp"
+                    android:layout_marginBottom="15dp"
                     android:layout_weight="1"
-                    android:background="#2196F3"
+                    android:background="#99FFCC"
+                    android:gravity="center"
+                    android:text="queue_2"
+                    android:textColor="@android:color/black"
+                    app:layout_constraintBottom_toTopOf="@+id/queue_3"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.504"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/queue_1" />
+
+                <TextView
+                    android:id="@+id/queue_3"
+                    android:layout_width="300dp"
+                    android:layout_height="130dp"
+                    android:layout_marginBottom="30dp"
+                    android:layout_weight="1"
+                    android:background="#99FFCC"
                     android:gravity="center"
                     android:text="queue_2"
                     android:textColor="@android:color/black"
@@ -85,7 +117,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.504"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/queue_1" />
+                    app:layout_constraintTop_toBottomOf="@+id/queue_2" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </ScrollView>

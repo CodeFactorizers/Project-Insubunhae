@@ -22,6 +22,7 @@ import com.gyso.treeview.listener.TreeViewControlListener;
 import com.gyso.treeview.model.NodeModel;
 import com.gyso.treeview.model.TreeModel;
 
+import com.sgcd.insubunhae.MainActivity;
 import com.sgcd.insubunhae.R;
 import com.sgcd.insubunhae.base.Animal;
 import com.sgcd.insubunhae.base.AnimalTreeViewAdapter;
@@ -33,8 +34,11 @@ import androidx.navigation.NavController;
 import android.widget.Toast;
 
 import com.gyso.treeview.TreeViewEditor;
-import com.sgcd.insubunhae.db.Group;
 
+import com.sgcd.insubunhae.db.Contact;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -57,7 +61,6 @@ public class HomeFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
 //        HomeViewModel homeViewModel =
 //                new ViewModelProvider(this).get(HomeViewModel.class);
-
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
@@ -290,6 +293,24 @@ public class HomeFragment extends Fragment {
         //treeModel.addNode(Insu,insu_4);
         treeModel.addNode(Dongari,dong_1,dong_2,dong_3,dong_4,dong_5,dong_6,dong_7,dong_8,dong_9,dong_10,dong_11);
         treeModel.addNode(Sogong_10_people,sogong_1,sogong_2,sogong_3,sogong_4, sogong_5, sogong_6, sogong_7, sogong_8, sogong_9, sogong_10);
+
+
+        //sehee's try
+        Log.d("0608", "home frag");
+        ArrayList<Contact> contactsList = ((MainActivity)getActivity()).getContactsList().getContactsList();
+
+        String[] contactNameArray = new String[contactsList.size()];
+        ArrayList<NodeModel<Animal>> nodeList = new ArrayList<>();
+        String[] contactIdArray = new String[contactsList.size()];
+        int[] contactIdIntArray = new int[contactIdArray.length];
+        for (int i = 0; i < contactsList.size(); i++) {
+            contactNameArray[i] = contactsList.get(i).getName();
+            contactIdArray[i] = contactsList.get(i).getId();
+            contactIdIntArray[i] = Integer.parseInt(contactIdArray[i]);
+
+            nodeList.add(new NodeModel<>(new Animal(R.drawable.icon_user_5, contactNameArray[i])));
+            //treeModel.addNode(root, sub0, sub1, nodeList.get(i));
+        }
 
 
         //mark

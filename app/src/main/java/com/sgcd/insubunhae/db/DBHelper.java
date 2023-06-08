@@ -286,6 +286,7 @@ public class DBHelper extends SQLiteOpenHelper {
                             if (cursor1 != null) {
                                 if (cursor1.moveToFirst()) {
                                     int columnIndex = cursor1.getColumnIndex("contact_id");
+
                                     if (columnIndex >= 0) {
                                         smsContactId = cursor1.getInt(columnIndex);
                                     }
@@ -578,6 +579,35 @@ public class DBHelper extends SQLiteOpenHelper {
         //idb.close();
 
         return attributeValues;
+    }
+
+    public Integer getIntFromTable(String tableName, String attributeName, String condition) {
+        Integer result = null;
+
+        SQLiteDatabase idb = getWritableDatabase();
+        Cursor dbCursor = null;
+
+        try {
+            String query = "SELECT " + attributeName + " FROM " + tableName + " WHERE " + condition;
+            dbCursor = idb.rawQuery(query, null);
+            //Log.d("StatisticsFragment", "query : " + query);
+
+            if (dbCursor != null) {
+                while (dbCursor.moveToNext()) {
+                    int columnIndex = dbCursor.getColumnIndex(attributeName);
+                    result = dbCursor.getInt(columnIndex);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (dbCursor != null) {
+                dbCursor.close();
+            }
+        }
+        //idb.close();
+
+        return result;
     }
 
     public List<Integer> getContactIds() {
