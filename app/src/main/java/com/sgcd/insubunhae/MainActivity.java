@@ -49,6 +49,7 @@ import com.sgcd.insubunhae.db.ContactsList;
 import com.sgcd.insubunhae.db.DBHelper;
 import com.sgcd.insubunhae.ui.contacts_viewer.FragmentContactsEditor;
 import com.sgcd.insubunhae.ui.contacts_viewer.FragmentContactsObjectViewer;
+import com.sgcd.insubunhae.ui.home.HomeFragment;
 
 public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
@@ -104,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
 
         Log.d("0608", "main activity");
         BottomNavigationView navView = findViewById(R.id.nav_view);

@@ -31,6 +31,7 @@ import java.util.Date;
 import java.text.SimpleDateFormat;
 
 public class DBHelper extends SQLiteOpenHelper {
+
     private static Context context;
     private ContactsList contacts_list = new ContactsList();
     private int isDBExist;
