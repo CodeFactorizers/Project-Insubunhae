@@ -1,5 +1,6 @@
 package com.sgcd.insubunhae.ui.home;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -62,13 +63,21 @@ public class HomeFragment extends Fragment {
     private NodeModel<Animal> targetNode;
     private AtomicInteger atomicInteger = new AtomicInteger();
     private Handler handler = new Handler();
+
     private NodeModel<Animal> parentToRemoveChildren = null;
+    private MainActivity activity;
 
     public boolean na_flag = false;
 
     int space_count = 10;
     int space_20dp = 20;
     int space_30dp = 30;
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        activity = (MainActivity) getActivity();
+    }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -123,8 +132,8 @@ public class HomeFragment extends Fragment {
 
     private void initWidgets() {
         // 1 customs adapter
-        AnimalTreeViewAdapter adapter = new AnimalTreeViewAdapter();
-        //ContactTreeViewAdapter adapter = new ContactTreeViewAdapter();
+//        AnimalTreeViewAdapter adapter = new AnimalTreeViewAdapter();
+        ContactTreeViewAdapter adapter = new ContactTreeViewAdapter();
 
         // 2 configure layout manager; unit dp
         TreeLayoutManager treeLayoutManager = getTreeLayoutManager();
@@ -144,7 +153,7 @@ public class HomeFragment extends Fragment {
 
 
     void doYourOwnJobs(TreeViewEditor editor, AnimalTreeViewAdapter adapter) {
-//    void doYourOwnJobs(TreeViewEditor editor, ContactTreeViewAdapter adapter) {
+
         // drag to move node
         binding.dragEditModeRd.setOnCheckedChangeListener((v, isChecked) -> {
             editor.requestMoveNodeByDragging(isChecked);
@@ -183,8 +192,78 @@ public class HomeFragment extends Fragment {
         adapter.setOnItemListener((item, node) -> {
             Animal animal = node.getValue();
             Toast.makeText(requireContext(), "선택: " + animal, Toast.LENGTH_SHORT).show();
-//            Contact contact = node.getValue();
-//            Toast.makeText(requireContext(), "선택: " + contact, Toast.LENGTH_SHORT).show();
+        });
+
+        // treeView control listener
+        final Object token = new Object();
+        Runnable dismissRun = () -> {
+            binding.scalePercent.setVisibility(View.GONE);
+        };
+
+
+        binding.baseTreeView.setTreeViewControlListener(new TreeViewControlListener() {
+            @Override
+            public void onScaling(int state, int percent) {
+                Log.e(TAG, "onScaling: " + state + "  " + percent);
+                binding.scalePercent.setVisibility(View.VISIBLE);
+                if (state == TreeViewControlListener.MAX_SCALE) {
+                    binding.scalePercent.setText("MAX");
+                } else if (state == TreeViewControlListener.MIN_SCALE) {
+                    binding.scalePercent.setText("MIN");
+                } else {
+                    binding.scalePercent.setText(percent + "%");
+                }
+                handler.removeCallbacksAndMessages(token);
+                handler.postAtTime(dismissRun, token, SystemClock.uptimeMillis() + 2000);
+            }
+
+            @Override
+            public void onDragMoveNodesHit(NodeModel<?> draggingNode, NodeModel<?> hittingNode, View draggingView, View hittingView) {
+                Log.e(TAG, "onDragMoveNodesHit: draging[" + draggingNode + "]hittingNode[" + hittingNode + "]");
+            }
+        });
+    }
+
+    void doYourOwnJobs(TreeViewEditor editor, ContactTreeViewAdapter adapter) {
+        // drag to move node
+        binding.dragEditModeRd.setOnCheckedChangeListener((v, isChecked) -> {
+            editor.requestMoveNodeByDragging(isChecked);
+        });
+
+        // focus, means that tree view fill center in your window viewport
+        binding.viewCenterBt.setOnClickListener(v -> editor.focusMidLocation());
+
+        // add some nodes
+        binding.addNodesBt.setOnClickListener(v -> {
+            if (targetNode == null) {
+                Toast.makeText(requireContext(), /*"Ohs, your targetNode is null"*/"타겟 노드 없음", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            NodeModel<Animal> a = new NodeModel<>(new Animal(R.drawable.ic_10, "add-" + atomicInteger.getAndIncrement()));
+            NodeModel<Animal> b = new NodeModel<>(new Animal(R.drawable.ic_11, "add-" + atomicInteger.getAndIncrement()));
+            NodeModel<Animal> c = new NodeModel<>(new Animal(R.drawable.ic_14, "add-" + atomicInteger.getAndIncrement()));
+            editor.addChildNodes(targetNode, a, b, c);
+
+            // add to remove demo cache
+            removeCache.push(targetNode);
+            targetNode = b;
+        });
+
+        // remove node
+        binding.removeNodeBt.setOnClickListener(v -> {
+            if (removeCache.isEmpty()) {
+                Toast.makeText(requireContext(), /*"Ohs, demo removeCache is empty now!! Try to add some nodes firstly!!"*/"제거 캐시 없음", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            NodeModel<Animal> toRemoveNode = removeCache.pop();
+            targetNode = toRemoveNode.getParentNode();
+            editor.removeNode(toRemoveNode);
+        });
+
+        adapter.setOnItemListener((item, node) -> {
+            Contact contact = node.getValue();
+            Toast.makeText(requireContext(), "선택: " + contact.getName(), Toast.LENGTH_SHORT).show();
+            activity.moveToViewer(contact.getId());
         });
 
         // treeView control listener
@@ -261,7 +340,7 @@ public class HomeFragment extends Fragment {
     }
 
     public void setData(AnimalTreeViewAdapter adapter) {
-        ArrayList<Contact> contactsList = ((MainActivity) getActivity()).getContactsList().getContactsList();
+        ArrayList<Contact> contactsList = activity.getContactsList().getContactsList();
         //contactsList = MainActivity.getContactsList();
         //Map<String, Group> groupMap = contactsList.getGroupMap();
         //group
@@ -400,7 +479,7 @@ public class HomeFragment extends Fragment {
     }
 
     public void setData(ContactTreeViewAdapter adapter) {
-        ArrayList<Contact> contactsList = ((MainActivity)getActivity()).getContactsList().getContactsList();
+        ArrayList<Contact> contactsList = activity.getContactsList().getContactsList();
         ArrayList<NodeModel<Contact>> nodeList = new ArrayList<>();
 
         Contact rootContact = new Contact();

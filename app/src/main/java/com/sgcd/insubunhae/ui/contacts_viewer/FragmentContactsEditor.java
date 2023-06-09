@@ -165,7 +165,7 @@ public class FragmentContactsEditor extends Fragment implements MainActivity.onB
     @Override
     public void onBackPressed() {
         Log.d("editor", "onBackPressed");
-        activity.myGetFragmentManager().popBackStack();
+//        activity.myGetFragmentManager().popBackStack();
     }
 
     private static boolean isValid(String str){
@@ -212,7 +212,7 @@ public class FragmentContactsEditor extends Fragment implements MainActivity.onB
         }
         else{
             binding.setGroupList(" ");
-            View tmpView = root.findViewById((R.id.contacts_viewer_group_list));
+            View tmpView = root.findViewById((R.id.contacts_editor_group_list));
             tmpView.setVisibility(View.GONE);
         }
         //주소
