@@ -25,6 +25,7 @@ import com.prolificinteractive.materialcalendarview.DayViewFacade;
 
 // [통계] 차트
 import androidx.core.util.Pair;
+
 import java.util.Comparator;
 
 import com.github.mikephil.charting.charts.BarChart;
@@ -75,7 +76,7 @@ public class StatisticsFragment extends Fragment {
 
     private FragmentStatisticsBinding binding;
     private Context context;
-    DBHelper dbHelper;
+    static DBHelper dbHelper;
 
     int cur_contact_id = 1; //현재 인물(임의로 1 대입)
     private DayViewDecorator decorator;
@@ -160,12 +161,15 @@ public class StatisticsFragment extends Fragment {
 
     // 인물 변경하기 버튼
     public void showContactIdSelectionDialog() {
-        ArrayList<Contact> contactsList = ((MainActivity)getActivity()).getContactsList().getContactsList();
+        ArrayList<Contact> contactsList = ((MainActivity) getActivity()).getContactsList().getContactsList();
 
         String[] contactNameArray = new String[contactsList.size()];
+        //List<Integer> contact_id_list_int = new ArrayList<>();
         for (int i = 0; i < contactsList.size(); i++) {
             contactNameArray[i] = contactsList.get(i).getName();
+            //contact_id_list_int.set(i, Integer.parseInt(contactsList.get(i).getId()));
         }
+        int start_index = Integer.parseInt(contactsList.get(0).getId());
 
         // 다이얼로그
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -174,7 +178,8 @@ public class StatisticsFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         //cur_contact_id = contactIds.get(which);
-                        cur_contact_id = which + 1;
+                        cur_contact_id = which + start_index + 1;
+                        //cur_contact_id =
                         //Log.d("paintMiniCal", "cur_contact_id : " + cur_contact_id);
 
                         // name tag
@@ -335,7 +340,7 @@ public class StatisticsFragment extends Fragment {
 
     public void drawPieChart(PieChart pieChart) {
         // contact_id list 가져오기
-        ArrayList<Contact> contactsList = ((MainActivity)getActivity()).getContactsList().getContactsList();
+        ArrayList<Contact> contactsList = ((MainActivity) getActivity()).getContactsList().getContactsList();
 
         String[] contactNameArray = new String[contactsList.size()];
         String[] contactIdArray = new String[contactsList.size()];
@@ -395,7 +400,7 @@ public class StatisticsFragment extends Fragment {
         //SMS
         contactedDates_sms = dbHelper.getLongFromTable("MESSENGER_HISTORY",
                 "datetime", "contact_id = " + cur_contact_id);
-        //Log.d("paintMiniCal", "paint sms dates : " + contactedDates_sms);
+        Log.d("paintMiniCal", "paint sms dates : " + contactedDates_sms);
 
         List<CalendarDay> paintedDates = new ArrayList<>();
         for (Long paintingDate : contactedDates_sms) {
@@ -408,7 +413,7 @@ public class StatisticsFragment extends Fragment {
 
             paintedDates.add(calendarDay);
         }
-        //Log.d("paintMiniCal", "paint sms dates again : " + paintedDates);
+        Log.d("paintMiniCal", "paint sms dates again : " + paintedDates);
 
         //CALL LOG
         contactedDates_call = dbHelper.getLongFromTable("CALL_LOG",
@@ -426,7 +431,7 @@ public class StatisticsFragment extends Fragment {
 
             paintedDates.add(calendarDay);
         }
-        //Log.d("paintMiniCal", "paint sms+call dates again : " + paintedDates);
+        Log.d("paintMiniCal", "paint sms+call dates again : " + paintedDates);
         DayViewDecorator decorator = new DayViewDecorator() {
             @Override
             public boolean shouldDecorate(CalendarDay day) {
@@ -442,7 +447,7 @@ public class StatisticsFragment extends Fragment {
         calendarView.removeDecorators();
         calendarView.addDecorator(decorator);
         calendarView.invalidateDecorators();
-        //Log.d("paintMiniCal", "painting end");
+        Log.d("paintMiniCal", "painting end");
     }
 
     // [SMS only]

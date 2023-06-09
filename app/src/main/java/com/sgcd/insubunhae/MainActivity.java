@@ -133,9 +133,12 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(binding.navView, navController);
 
         // 친밀도 계산
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        calculateFamiliarity(db);
+        //SQLiteDatabase db = dbHelper.getWritableDatabase();
+        //calculateFamiliarity(db);
         //db.close();
+        famThread thread = new famThread();
+        thread.start();
+
 
     }
 
@@ -181,147 +184,6 @@ public class MainActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
         return true;
-    }
-
-    //    // 친밀도 계산 [SMS only]
-    public static void calculateFamiliarity(SQLiteDatabase db) {
-        // MAIN_CONTACTS 에서 contact_id 리스트 가져오기
-        List<String> contact_id_list = new ArrayList<>();
-        contact_id_list = dbHelper.getAttributeValueFromTable("MAIN_CONTACTS", "contact_id", "contact_id >= 0");
-        List<Integer> contact_id_list_int = new ArrayList<>();
-        for (String str : contact_id_list) {
-            int number = Integer.parseInt(str);
-            contact_id_list_int.add(number);
-        }
-        Log.d("CalFam", "contact_id_list_int : " + contact_id_list_int);
-
-        //각 contact_id에 대하여, 친밀도(calc_fam) 계산
-        for (Integer cur_contact_id : contact_id_list_int) {
-
-            int calc_fam = 0; // 친밀도(계산값)
-            int recent_content = 0; //
-            int content_score = 1; // 최근 연락내용(점수 1~5점)
-            int user_fam = cur_contact_id; // 친밀도(유저 입력)
-            int how_long_month = -1; // 알고 지낸 시간(월)
-            int recent_days = -1; // 최근 연락일 ~ 현재(일)
-            int recent_score = -1; // 최근 연락일(점수 1~5점)
-
-            // [DB에서 추출] MESSENGER_HISTORY의 datetime, count
-            List<String> m_dt = new ArrayList<>();
-            m_dt = dbHelper.getAttributeValueFromTable("MESSENGER_HISTORY",
-                    "datetime", "contact_id = " + cur_contact_id);
-            //Log.d("CalFam", "sms_datetime : " + m_dt);
-            List<String> m_cnt = new ArrayList<>();
-            m_cnt = dbHelper.getAttributeValueFromTable("MESSENGER_HISTORY",
-                    "count", "contact_id = " + cur_contact_id);
-            List<Integer> m_cnt_int = new ArrayList<>();
-            for (String str : m_cnt) {
-                int number = Integer.parseInt(str);
-                m_cnt_int.add(number);
-            }
-            //Log.d("CalFam", "sms_cnt : " + m_cnt);
-
-            // [DB에서 추출] recent_contact, first_contact
-            Long recent_contact = dbHelper.getMaxOfAttribute("MESSENGER_HISTORY", "datetime", cur_contact_id);
-            //Log.d("CalFam", "recent_contact : " + recent_contact);
-            Date date_recent_contact = new Date(recent_contact);
-            SimpleDateFormat dateFormat_recent_contact = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
-            String timestamp_recent_contact = dateFormat_recent_contact.format(date_recent_contact);
-
-            Long first_contact = dbHelper.getMinOfAttribute("MESSENGER_HISTORY", "datetime", cur_contact_id);
-            //Log.d("CalFam", "first_contact : " + first_contact);
-            Date date_first_contact = new Date(first_contact);
-            SimpleDateFormat dateFormat_first_contact = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
-            String timestamp_first_contact = dateFormat_first_contact.format(date_first_contact);
-
-            // currentTimestamp = 현재 시간(yy-MM-dd HH:mm:ss) ---------------------------------*/
-            Date date_current = new Date();
-
-            SimpleDateFormat dateFormat_current = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
-
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(date_current);
-
-            String timestamp_current = dateFormat_current.format(calendar.getTime());
-            //-------------------------------------------------------------------------------*/
-
-            // how_long_month, recent_days, recent_score 계산 --------------------------------*/
-            try {
-                Date date1 = dateFormat_recent_contact.parse(timestamp_first_contact);
-                Date date2 = dateFormat_current.parse(timestamp_current);
-
-                double milliseconds = date2.getTime() - date1.getTime();
-
-                how_long_month = (int) (Math.round(milliseconds / (30.0 * 24.0 * 60.0 * 60.0 * 1000.0)));
-            } catch (
-                    Exception e) {
-                e.printStackTrace();
-            }
-
-            try {
-                Date date1 = dateFormat_first_contact.parse(timestamp_recent_contact);
-                Date date2 = dateFormat_current.parse(timestamp_current);
-
-                long milliseconds = date2.getTime() - date1.getTime();
-
-                recent_days = (int) (milliseconds / (24 * 60 * 60 * 1000));
-
-            } catch (
-                    Exception e) {
-                e.printStackTrace();
-            }
-
-            if (recent_days >= 0 && recent_days <= 3) {
-                recent_score = 5;
-            } else if (recent_days >= 4 && recent_days <= 7) {
-                recent_score = 4;
-            } else if (recent_days >= 8 && recent_days <= 30) {
-                recent_score = 3;
-            } else if (recent_days >= 31 && recent_days <= 180) {
-                recent_score = 2;
-            } else if (recent_days >= 180) {
-                recent_score = 1;
-            }
-            //-------------------------------------------------------------------------------*/
-
-            // recent_content
-            for (
-                    int number : m_cnt_int) {
-                recent_content += number;
-            }
-            if (recent_content == 0) {
-                content_score = 1;
-            } else if (recent_content >= 1 && recent_content <= 500) {
-                content_score = 2;
-            } else if (recent_content >= 501 && recent_content <= 1000) {
-                content_score = 3;
-            } else if (recent_content >= 1001 && recent_content <= 9999) {
-                content_score = 4;
-            } else if (recent_content >= 10000) {
-                content_score = 5;
-            }
-
-            // Calculate
-            calc_fam = content_score * user_fam * how_long_month * recent_score;
-
-            // Familiarity Equation Final Check
-            //Log.d("CalFam", "content_score : " + content_score); //최근 연락 내용
-            //Log.d("CalFam", "user_fam : " + user_fam); //친밀도 (유저 입력)
-            //Log.d("CalFam", "how_long_month : " + how_long_month); //알고 지낸 시간(월)
-            //Log.d("CalFam", "recent_score : " + recent_score); //최근 연락일
-            Log.d("CalFam", "contact_id : " + cur_contact_id + " || calc_fam : " + calc_fam); //친밀도(계산값)
-
-            // [DB에 data 추가] cur_contact_id에 대해 user_fam, recent_contact, first_contact, calc_fam 값 추가
-            ContentValues values = new ContentValues();
-            values.put("contact_id", cur_contact_id);
-            values.put("user_fam", user_fam);
-            values.put("calc_fam", calc_fam);
-            values.put("recent_contact", timestamp_recent_contact);
-            values.put("first_contact", timestamp_first_contact);
-            db.insert("ANALYSIS", null, values);
-
-
-        }
     }
 
     /*
@@ -616,4 +478,153 @@ public class MainActivity extends AppCompatActivity {
         //fragmentTransaction.add(fragment, "editor").commit();
     }
     // some additional functions end
+
+
+    public class famThread extends Thread {
+        @Override
+        public void run() {
+            SQLiteDatabase db = dbHelper.getWritableDatabase();
+            calculateFamiliarity(db);
+        }
+    }
+
+    public static void calculateFamiliarity(SQLiteDatabase db) {
+        // MAIN_CONTACTS 에서 contact_id 리스트 가져오기
+        List<String> contact_id_list = new ArrayList<>();
+        contact_id_list = dbHelper.getAttributeValueFromTable("MAIN_CONTACTS", "contact_id", "contact_id >= 0");
+        List<Integer> contact_id_list_int = new ArrayList<>();
+        for (String str : contact_id_list) {
+            int number = Integer.parseInt(str);
+            contact_id_list_int.add(number);
+        }
+        //Log.d("CalFam", "contact_id_list_int : " + contact_id_list_int);
+
+        //각 contact_id에 대하여, 친밀도(calc_fam) 계산
+        for (Integer cur_contact_id : contact_id_list_int) {
+
+            int calc_fam = 0; // 친밀도(계산값)
+            int recent_content = 0; //
+            int content_score = 1; // 최근 연락내용(점수 1~5점)
+            int user_fam = cur_contact_id; // 친밀도(유저 입력)
+            int how_long_month = -1; // 알고 지낸 시간(월)
+            int recent_days = -1; // 최근 연락일 ~ 현재(일)
+            int recent_score = -1; // 최근 연락일(점수 1~5점)
+
+            // [DB에서 추출] MESSENGER_HISTORY의 datetime, count
+            List<String> m_dt = new ArrayList<>();
+            m_dt = dbHelper.getAttributeValueFromTable("MESSENGER_HISTORY",
+                    "datetime", "contact_id = " + cur_contact_id);
+            //Log.d("CalFam", "sms_datetime : " + m_dt);
+            List<String> m_cnt = new ArrayList<>();
+            m_cnt = dbHelper.getAttributeValueFromTable("MESSENGER_HISTORY",
+                    "count", "contact_id = " + cur_contact_id);
+            List<Integer> m_cnt_int = new ArrayList<>();
+            for (String str : m_cnt) {
+                int number = Integer.parseInt(str);
+                m_cnt_int.add(number);
+            }
+            //Log.d("CalFam", "sms_cnt : " + m_cnt);
+
+            // [DB에서 추출] recent_contact, first_contact
+            Long recent_contact = dbHelper.getMaxOfAttribute("MESSENGER_HISTORY", "datetime", cur_contact_id);
+            //Log.d("CalFam", "recent_contact : " + recent_contact);
+            Date date_recent_contact = new Date(recent_contact);
+            SimpleDateFormat dateFormat_recent_contact = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
+            String timestamp_recent_contact = dateFormat_recent_contact.format(date_recent_contact);
+
+            Long first_contact = dbHelper.getMinOfAttribute("MESSENGER_HISTORY", "datetime", cur_contact_id);
+            //Log.d("CalFam", "first_contact : " + first_contact);
+            Date date_first_contact = new Date(first_contact);
+            SimpleDateFormat dateFormat_first_contact = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
+            String timestamp_first_contact = dateFormat_first_contact.format(date_first_contact);
+
+            // currentTimestamp = 현재 시간(yy-MM-dd HH:mm:ss) ---------------------------------*/
+            Date date_current = new Date();
+
+            SimpleDateFormat dateFormat_current = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(date_current);
+
+            String timestamp_current = dateFormat_current.format(calendar.getTime());
+            //-------------------------------------------------------------------------------*/
+
+            // how_long_month, recent_days, recent_score 계산 --------------------------------*/
+            try {
+                Date date1 = dateFormat_recent_contact.parse(timestamp_first_contact);
+                Date date2 = dateFormat_current.parse(timestamp_current);
+
+                double milliseconds = date2.getTime() - date1.getTime();
+
+                how_long_month = (int) (Math.round(milliseconds / (30.0 * 24.0 * 60.0 * 60.0 * 1000.0)));
+            } catch (
+                    Exception e) {
+                e.printStackTrace();
+            }
+
+            try {
+                Date date1 = dateFormat_first_contact.parse(timestamp_recent_contact);
+                Date date2 = dateFormat_current.parse(timestamp_current);
+
+                long milliseconds = date2.getTime() - date1.getTime();
+
+                recent_days = (int) (milliseconds / (24 * 60 * 60 * 1000));
+
+            } catch (
+                    Exception e) {
+                e.printStackTrace();
+            }
+
+            if (recent_days >= 0 && recent_days <= 3) {
+                recent_score = 5;
+            } else if (recent_days >= 4 && recent_days <= 7) {
+                recent_score = 4;
+            } else if (recent_days >= 8 && recent_days <= 30) {
+                recent_score = 3;
+            } else if (recent_days >= 31 && recent_days <= 180) {
+                recent_score = 2;
+            } else if (recent_days >= 180) {
+                recent_score = 1;
+            }
+            //-------------------------------------------------------------------------------*/
+
+            // recent_content
+            for (
+                    int number : m_cnt_int) {
+                recent_content += number;
+            }
+            if (recent_content == 0) {
+                content_score = 1;
+            } else if (recent_content >= 1 && recent_content <= 500) {
+                content_score = 2;
+            } else if (recent_content >= 501 && recent_content <= 1000) {
+                content_score = 3;
+            } else if (recent_content >= 1001 && recent_content <= 9999) {
+                content_score = 4;
+            } else if (recent_content >= 10000) {
+                content_score = 5;
+            }
+
+            // Calculate
+            calc_fam = content_score * user_fam * how_long_month * recent_score;
+
+            // Familiarity Equation Final Check
+            //Log.d("CalFam", "content_score : " + content_score); //최근 연락 내용
+            //Log.d("CalFam", "user_fam : " + user_fam); //친밀도 (유저 입력)
+            //Log.d("CalFam", "how_long_month : " + how_long_month); //알고 지낸 시간(월)
+            //Log.d("CalFam", "recent_score : " + recent_score); //최근 연락일
+            Log.d("CalFam", "contact_id : " + cur_contact_id + " || calc_fam : " + calc_fam); //친밀도(계산값)
+
+            // [DB에 data 추가] cur_contact_id에 대해 user_fam, recent_contact, first_contact, calc_fam 값 추가
+            ContentValues values = new ContentValues();
+            values.put("contact_id", cur_contact_id);
+            values.put("user_fam", user_fam);
+            values.put("calc_fam", calc_fam);
+            values.put("recent_contact", timestamp_recent_contact);
+            values.put("first_contact", timestamp_first_contact);
+            db.insert("ANALYSIS", null, values);
+
+
+        }
+    }
 }

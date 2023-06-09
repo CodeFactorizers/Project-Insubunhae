@@ -556,7 +556,7 @@ public class DBHelper extends SQLiteOpenHelper {
         try {
             String query = "SELECT " + attributeName + " FROM " + tableName + " WHERE " + condition;
             dbCursor = idb.rawQuery(query, null);
-            //Log.d("StatisticsFragment", "query : " + query);
+            Log.d("StatisticsFragment", "query : " + query);
 
             if (dbCursor != null) {
                 while (dbCursor.moveToNext()) {
