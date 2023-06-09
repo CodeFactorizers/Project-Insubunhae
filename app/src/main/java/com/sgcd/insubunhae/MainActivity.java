@@ -481,7 +481,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void moveToEditor(Fragment fragment, int idx){
         final Bundle bundle = new Bundle();
-        bundle.putInt("toViewerIdx", idx);
+        bundle.putInt("toEditorIdx", idx);
         fragment.setArguments(bundle);
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
         navController.navigate(R.id.action_fragmentContactsObjectViewer_to_fragmentContactsEditor, bundle);
