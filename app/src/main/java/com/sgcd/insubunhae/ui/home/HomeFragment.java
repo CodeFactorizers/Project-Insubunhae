@@ -49,6 +49,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
@@ -97,6 +99,7 @@ public class HomeFragment extends Fragment {
 
         initWidgets();
     }
+
 
     public class Node implements Parcelable {
         // Your existing code for the Node class
@@ -157,7 +160,18 @@ public class HomeFragment extends Fragment {
         binding.baseTreeView.setAdapter(adapter);
         binding.baseTreeView.setTreeLayoutManager(treeLayoutManager);
         // 4 nodes data setting
-        setData(adapter);
+
+        class MyTask implements Runnable {
+            @Override
+            public void run() {
+                setData(adapter);
+            }
+        }
+        Executor executor = Executors.newSingleThreadExecutor();
+        executor.execute(new MyTask());
+
+        //setData(adapter);
+
         Log.d("002", "setData(adapter) finished.");
         // 5 get an editor. Note: an adapter must set before get an editor.
         final TreeViewEditor editor = binding.baseTreeView.getEditor();
@@ -280,7 +294,9 @@ public class HomeFragment extends Fragment {
         //return new AngledLine();
     }
 
+
     public void setData(AnimalTreeViewAdapter adapter) {
+
         Log.d("setData() 1", "getContactsList starts");
         ArrayList<Contact> contactsList = ((MainActivity) getActivity()).getContactsList().getContactsList();
         Log.d("setData() 2", "getContactsList finished");
@@ -291,6 +307,8 @@ public class HomeFragment extends Fragment {
         for (int i = 0; i < AnimalArray.length; i++) {
             AnimalArray[i] = new Animal(contactsList.get(i).getName());
         }
+
+
 
         ArrayList<NodeModel<Animal>> AnimalNodes = new ArrayList<>(contactSize);
         AnimalNodes.ensureCapacity(2000);
