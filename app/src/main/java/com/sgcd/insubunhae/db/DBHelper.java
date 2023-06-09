@@ -159,14 +159,14 @@ public class DBHelper extends SQLiteOpenHelper {
 
             //don't insert calllog if name is null
             if (contactName == null) {
-                Log.d("skip", "    <skip> number is not saved in contacts list");
+                //Log.d("skip", "    <skip> number is not saved in contacts list");
             }
             //if number is saved, let's insert the call log
             else {
                 callLogId++;
 
                 if (cursor == null) {
-                    Log.d("callLogFromDeviceToDB", "cursor is null.. FYI, selection: " + selection);
+                    //Log.d("callLogFromDeviceToDB", "cursor is null.. FYI, selection: " + selection);
                     return;// is it safe???
                 }
                 // Start the transaction
@@ -188,7 +188,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
                         //don't insert callLog if name is null
                         if (contactName == null) {
-                            Log.d("skip", "    <skip> number is not saved in contacts list");
+                            //Log.d("skip", "    <skip> number is not saved in contacts list");
                             continue;
                         } else {
                             callLogId++;
@@ -208,8 +208,8 @@ public class DBHelper extends SQLiteOpenHelper {
                             callDuration = cursor.getInt(durationIndex);
                         }
 
-                        Log.d("callLogFromDeviceToDB", "callLogId: " + callLogId + "\t\t\t contactID: " + contactId + "\t name: " + contactName + "\t phone: " + contactPhone);
-                        Log.d("callLogFromDeviceToDB", "datetime: " + callDatetime + "\t type: " + callType + "\t\t duration: " + callDuration);
+                        //Log.d("callLogFromDeviceToDB", "callLogId: " + callLogId + "\t\t\t contactID: " + contactId + "\t name: " + contactName + "\t phone: " + contactPhone);
+                        //Log.d("callLogFromDeviceToDB", "datetime: " + callDatetime + "\t type: " + callType + "\t\t duration: " + callDuration);
 
                         /* Insert call log to DB */
                         ContentValues values = new ContentValues();
@@ -243,7 +243,7 @@ public class DBHelper extends SQLiteOpenHelper {
             Handler handler = new Handler(Looper.getMainLooper());
             handler.post(() -> {
                 // Update UI or perform any required operations on the main thread
-                Toast.makeText(context, "CallLog Retrieval finished, lastCallLogId: " + lastCallLogId, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(context, "CallLog Retrieval finished, lastCallLogId: " + lastCallLogId, Toast.LENGTH_SHORT).show();
                 // For example, you can notify the user that the task is completed or update UI elements based on the retrieved data
             });
         }).start();
@@ -277,6 +277,7 @@ public class DBHelper extends SQLiteOpenHelper {
                     String smsSender = null;
                     if (senderIndex >= 0) {
                         smsSender = cursor.getString(senderIndex);
+                        //Log.d("getSmsFromDeviceToDB", "smsSender : " + smsSender);
                         try {
                             String query = "SELECT contact_id FROM MAIN_CONTACTS WHERE phone_number1 = '"
                                     + smsSender + "'";
@@ -352,8 +353,6 @@ public class DBHelper extends SQLiteOpenHelper {
 
                         //Log.d("smsFromDeviceToDB", "smsCount : " + new_count);
                     }
-
-
                 } while (cursor.moveToNext());
             } else {
                 Log.d("smsFromDeviceToDB", "cursor move to first failed");

@@ -2,6 +2,7 @@ package com.gyso.treeview.layout;
 
 import android.content.Context;
 import android.graphics.Point;
+import android.util.Log;
 import android.view.View;
 
 import com.gyso.treeview.TreeViewContainer;
@@ -119,6 +120,10 @@ public class TableHorizonLeftAndRightLayoutManager extends TableRightTreeLayoutM
             int top = currentNodeView.getTop();
             int currentHeight = currentNodeView.getMeasuredHeight();
             int currentWidth = currentNodeView.getMeasuredWidth();
+
+            //Log.d("currentNodeView", "currentHeight:"+currentHeight+ ", currentWidth:"+currentWidth);
+            Log.d("currentNodeView", "currentTop:" +top + ", currentLeft:"+left);
+            Log.d("spaceParentToChild", ".: "+spaceParentToChild);
             if(count<divider){
                 minA = Math.min(minA,top);
                 maxA = Math.max(maxA, top+currentHeight);

@@ -20,4 +20,5 @@ public class Group {
     public void setMemberList(String id){ this.memberList.add(id);}
     public ArrayList<String> getMemberList(){ return this.memberList;}
     public int getMemberListSize(){ return this.memberList.size();}
+
 }

@@ -271,6 +271,9 @@ public class ContactsList implements Parcelable {
 
     }
 
+
+
+
     public void dbInsert(SQLiteDatabase db){
         db.beginTransaction();
         try{
@@ -280,6 +283,10 @@ public class ContactsList implements Parcelable {
                 ContentValues cv = new ContentValues();
                 cv.put("contact_id", tmp.getId());
                 cv.put("name", tmp.getName());
+//                for (int j = 0; j < tmp.getPhoneNumber().size() && j < 3; j++) {
+//                    cv.put("phone_number" + Integer.toString(j + 1), tmp.getPhoneNumber().get(j));
+//                    cv.put("phone_number_type" + Integer.toString(j + 1), tmp.getNumberType().get(j));
+//                }
                 for (int j = 0; j < tmp.getPhoneNumber().size() && j < 3; j++) {
                     String cleanedNumber = tmp.getPhoneNumber().get(j).replace("-", "");
                     cv.put("phone_number" + Integer.toString(j + 1), cleanedNumber);
