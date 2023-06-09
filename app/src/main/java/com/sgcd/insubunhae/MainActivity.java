@@ -174,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.menu_btn1:
                 fragmentTransaction = fragmentManager.beginTransaction();
                 if(fragmentManager.findFragmentByTag("viewer") == null) {
-                    fragmentTransaction.replace(R.id.container, FragmentContactsObjectViewer.newInstance(), "viewer").addToBackStack("viewer").commit();
+                    fragmentTransaction.replace(R.id.nav_host_fragment_activity_main, FragmentContactsObjectViewer.newInstance(), "viewer").addToBackStack("viewer").commit();
                 }
                 break;
             case R.id.menu_btn2:
@@ -469,14 +469,32 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //연락처 뷰어의 편집버튼 눌렀을 때 편집창으로 넘어감
-    public void toViewer(int id){
+    public void moveToViewer(String id){
+        final Bundle bundle = new Bundle();
+        FragmentContactsObjectViewer fragment = new FragmentContactsObjectViewer();
+        int idx = contactsList.getIndexFromId(id);
+        bundle.putInt("toViewerIdx", idx);
+        fragment.setArguments(bundle);
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
+        navController.navigate(R.id.action_navigation_home_to_fragmentContactsObjectViewer, bundle);
+    }
+
+    public void moveToEditor(Fragment fragment, int idx){
+        final Bundle bundle = new Bundle();
+        bundle.putInt("toViewerIdx", idx);
+        fragment.setArguments(bundle);
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
+        navController.navigate(R.id.action_fragmentContactsObjectViewer_to_fragmentContactsEditor, bundle);
+    }
+
+    public void toViewer(String id){
         final Bundle bundle = new Bundle();
         FragmentContactsObjectViewer fragment = new FragmentContactsObjectViewer();
         int idx = contactsList.getIndexFromId(id);
         bundle.putInt("toViewerIdx", idx);
         fragment.setArguments(bundle);
         fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.container, fragment, "viewer").addToBackStack("viewer").commit();
+        fragmentTransaction.replace(R.id.nav_host_fragment_activity_main, fragment, "viewer").addToBackStack("viewer").commit();
     }
     public void toEditor(Fragment fragment, int idx){
         final Bundle bundle = new Bundle();
@@ -484,7 +502,7 @@ public class MainActivity extends AppCompatActivity {
         bundle.putInt("toEditorIdx", idx);
         fragment.setArguments(bundle);
         fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.container, fragment, "editor").addToBackStack("editor").commit();
+        fragmentTransaction.replace(R.id.nav_host_fragment_activity_main, fragment, "editor").addToBackStack("editor").commit();
         //fragmentTransaction.add(fragment, "editor").commit();
     }
     // some additional functions end
