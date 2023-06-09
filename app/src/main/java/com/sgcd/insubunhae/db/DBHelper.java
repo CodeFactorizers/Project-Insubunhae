@@ -77,7 +77,6 @@ public class DBHelper extends SQLiteOpenHelper {
 
         smsFromDeviceToDB(db);
         callLogFromDeviceToDB(db);
-
     }
 
     @Override
@@ -159,14 +158,14 @@ public class DBHelper extends SQLiteOpenHelper {
 
             //don't insert calllog if name is null
             if (contactName == null) {
-                Log.d("skip", "    <skip> number is not saved in contacts list");
+                //Log.d("skip", "    <skip> number is not saved in contacts list");
             }
             //if number is saved, let's insert the call log
             else {
                 callLogId++;
 
                 if (cursor == null) {
-                    Log.d("callLogFromDeviceToDB", "cursor is null.. FYI, selection: " + selection);
+                    //Log.d("callLogFromDeviceToDB", "cursor is null.. FYI, selection: " + selection);
                     return;// is it safe???
                 }
                 // Start the transaction
@@ -188,7 +187,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
                         //don't insert callLog if name is null
                         if (contactName == null) {
-                            Log.d("skip", "    <skip> number is not saved in contacts list");
+                            //Log.d("skip", "    <skip> number is not saved in contacts list");
                             continue;
                         }
                         else{
@@ -209,8 +208,8 @@ public class DBHelper extends SQLiteOpenHelper {
                             callDuration = cursor.getInt(durationIndex);
                         }
 
-                        Log.d("callLogFromDeviceToDB", "callLogId: " + callLogId + "\t\t\t contactID: " + contactId + "\t name: " + contactName + "\t phone: " + contactPhone);
-                        Log.d("callLogFromDeviceToDB", "datetime: " + callDatetime + "\t type: " + callType + "\t\t duration: " + callDuration);
+                        //Log.d("callLogFromDeviceToDB", "callLogId: " + callLogId + "\t\t\t contactID: " + contactId + "\t name: " + contactName + "\t phone: " + contactPhone);
+                        //Log.d("callLogFromDeviceToDB", "datetime: " + callDatetime + "\t type: " + callType + "\t\t duration: " + callDuration);
 
                         /* Insert call log to DB */
                         ContentValues values = new ContentValues();
@@ -245,25 +244,10 @@ public class DBHelper extends SQLiteOpenHelper {
             Handler handler = new Handler(Looper.getMainLooper());
             handler.post(() -> {
                 // Update UI or perform any required operations on the main thread
-                Toast.makeText(context, "CallLog Retrieval finished, lastCallLogId: " + lastCallLogId, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(context, "CallLog Retrieval finished, lastCallLogId: " + lastCallLogId, Toast.LENGTH_SHORT).show();
                 // For example, you can notify the user that the task is completed or update UI elements based on the retrieved data
             });
         }).start();
-    }
-
-    // MESSENGER_HISTORY data 추가 메소드
-    public void insertMessengerHistory(int historyId, int contactId, String datetime, String day, String type, int count) {
-        SQLiteDatabase db = getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("history_id", historyId);
-        values.put("contact_id", contactId);
-        values.put("datetime", datetime);
-        values.put("day", day);
-        values.put("type", type);
-        values.put("count", count);
-        db.insert("MESSENGER_HISTORY", null, values);
-        Log.d("Database Operations", "Data inserted...");
-        db.close();
     }
 
     public void smsFromDeviceToDB(SQLiteDatabase db) {
@@ -294,19 +278,19 @@ public class DBHelper extends SQLiteOpenHelper {
                     String smsSender = null;
                     if (senderIndex >= 0) {
                         smsSender = cursor.getString(senderIndex);
+                        //Log.d("getSmsFromDeviceToDB", "smsSender : " + smsSender);
                         try {
                             String query = "SELECT contact_id FROM MAIN_CONTACTS WHERE phone_number1 = '"
                                     + smsSender + "'";
                             cursor1 = db.rawQuery(query, null);
+                            //Log.d("getSmsFromDeviceToDB", "cursor1 : " + cursor1);
 
-                            if (cursor1 != null) {
-                                if (cursor1.moveToFirst()) {
-                                    int columnIndex = cursor1.getColumnIndex("contact_id");
+                            if (cursor1 != null && cursor1.moveToFirst()) {
+                                int columnIndex = cursor1.getColumnIndex("contact_id");
+                                smsContactId = cursor1.getInt(columnIndex);
+                                //Log.d("getSmsFromDeviceToDB", "columnIndex : " + columnIndex);
+                                Log.d("getSmsFromDeviceToDB", "cursor1 : " + cursor1);
 
-                                    if (columnIndex >= 0) {
-                                        smsContactId = cursor1.getInt(columnIndex);
-                                    }
-                                }
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -371,8 +355,6 @@ public class DBHelper extends SQLiteOpenHelper {
 
                         //Log.d("smsFromDeviceToDB", "smsCount : " + new_count);
                     }
-
-
                 } while (cursor.moveToNext());
             } else {
                 Log.d("smsFromDeviceToDB", "cursor move to first failed");
@@ -401,7 +383,6 @@ public class DBHelper extends SQLiteOpenHelper {
             //fetchAdditionalCallLog();
         }
     }
-
 
     // from here, some additional methods..
     private static ContactInfo getContactInfo(String phoneNumber) {
@@ -491,7 +472,7 @@ public class DBHelper extends SQLiteOpenHelper {
         try {
             String query = "SELECT " + attributeName + " FROM " + tableName + " WHERE " + condition;
             dbCursor = idb.rawQuery(query, null);
-            Log.d("StatisticsFragment", "query : " + query);
+            //Log.d("StatisticsFragment", "query : " + query);
 
             if (dbCursor != null) {
                 while (dbCursor.moveToNext()) {
@@ -507,9 +488,65 @@ public class DBHelper extends SQLiteOpenHelper {
                 dbCursor.close();
             }
         }
-        idb.close();
+        //idb.close();
 
         return attributeValues;
+    }
+
+    public String getNameFromContactID(int contact_id) {
+        String name = null;
+
+        SQLiteDatabase idb = getWritableDatabase();
+        Cursor dbCursor = null;
+
+        try {
+            String query = "SELECT name FROM MAIN_CONTACTS WHERE contact_id = " + contact_id;
+            dbCursor = idb.rawQuery(query, null);
+            //Log.d("StatisticsFragment", "query : " + query);
+
+            if (dbCursor != null) {
+                while (dbCursor.moveToNext()) {
+                    int columnIndex = dbCursor.getColumnIndex("name");
+                    name = dbCursor.getString(columnIndex);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (dbCursor != null) {
+                dbCursor.close();
+            }
+        }
+        //idb.close();
+
+        return name;
+    }
+
+    public Integer getIdFromContactName(String name) {
+        Integer id = null;
+
+        SQLiteDatabase idb = getWritableDatabase();
+        Cursor dbCursor = null;
+        try {
+            String query = "SELECT contact_id FROM MAIN_CONTACTS WHERE name = '" + name + "'";
+            dbCursor = idb.rawQuery(query, null);
+
+            if (dbCursor != null) {
+                while (dbCursor.moveToNext()) {
+                    int columnIndex = dbCursor.getColumnIndex("contact_id");
+                    id = dbCursor.getInt(columnIndex);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (dbCursor != null) {
+                dbCursor.close();
+            }
+        }
+        //idb.close();
+
+        return id;
     }
 
     public List<Long> getLongFromTable(String tableName, String attributeName, String condition) {
@@ -521,7 +558,7 @@ public class DBHelper extends SQLiteOpenHelper {
         try {
             String query = "SELECT " + attributeName + " FROM " + tableName + " WHERE " + condition;
             dbCursor = idb.rawQuery(query, null);
-            Log.d("StatisticsFragment", "query : " + query);
+            //Log.d("StatisticsFragment", "query : " + query);
 
             if (dbCursor != null) {
                 while (dbCursor.moveToNext()) {
@@ -537,9 +574,38 @@ public class DBHelper extends SQLiteOpenHelper {
                 dbCursor.close();
             }
         }
-        idb.close();
+        //idb.close();
 
         return attributeValues;
+    }
+
+    public Integer getIntFromTable(String tableName, String attributeName, String condition) {
+        Integer result = null;
+
+        SQLiteDatabase idb = getWritableDatabase();
+        Cursor dbCursor = null;
+
+        try {
+            String query = "SELECT " + attributeName + " FROM " + tableName + " WHERE " + condition;
+            dbCursor = idb.rawQuery(query, null);
+            //Log.d("StatisticsFragment", "query : " + query);
+
+            if (dbCursor != null) {
+                while (dbCursor.moveToNext()) {
+                    int columnIndex = dbCursor.getColumnIndex(attributeName);
+                    result = dbCursor.getInt(columnIndex);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (dbCursor != null) {
+                dbCursor.close();
+            }
+        }
+        //idb.close();
+
+        return result;
     }
 
     public List<Integer> getContactIds() {
@@ -551,7 +617,7 @@ public class DBHelper extends SQLiteOpenHelper {
         try {
             String query = "SELECT contact_id FROM MAIN_CONTACTS";
             dbCursor = idb.rawQuery(query, null);
-            Log.d("StatisticsFragment", "query : " + query);
+            //Log.d("StatisticsFragment", "query : " + query);
 
             if (dbCursor != null) {
                 while (dbCursor.moveToNext()) {
@@ -567,7 +633,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 dbCursor.close();
             }
         }
-        idb.close();
+        //idb.close();
 
         return contact_id_list;
     }
@@ -586,16 +652,16 @@ public class DBHelper extends SQLiteOpenHelper {
         }
 
         dbCursor.close();
-        idb.close();
+        //idb.close();
 
         return sum;
     }
 
     // DB 집계함수-MAX
-    public Long getMaxOfAttribute(String tableName, String attributeName) {
+    public Long getMaxOfAttribute(String tableName, String attributeName, int contact_id) {
         SQLiteDatabase idb = this.getReadableDatabase();
 
-        String query = "SELECT MAX(" + attributeName + ") FROM " + tableName;
+        String query = "SELECT MAX(" + attributeName + ") FROM " + tableName + " WHERE contact_id = " + contact_id;
         Cursor dbCursor = idb.rawQuery(query, null);
         Long maxValue = null;
         if (dbCursor.moveToFirst()) {
@@ -609,10 +675,10 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     // DB 집계함수-MIN
-    public Long getMinOfAttribute(String tableName, String attributeName) {
+    public Long getMinOfAttribute(String tableName, String attributeName, int contact_id) {
         SQLiteDatabase idb = this.getReadableDatabase();
 
-        String query = "SELECT MIN(" + attributeName + ") FROM " + tableName;
+        String query = "SELECT MIN(" + attributeName + ") FROM " + tableName + " WHERE contact_id = " + contact_id;
         Cursor dbCursor = idb.rawQuery(query, null);
         Long minValue = null;
         if (dbCursor.moveToFirst()) {

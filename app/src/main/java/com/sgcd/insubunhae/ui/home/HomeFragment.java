@@ -11,15 +11,20 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import com.gyso.treeview.GysoTreeView;
-import com.gyso.treeview.layout.BoxRightTreeLayoutManager;
+
+import com.gyso.treeview.layout.BoxHorizonLeftAndRightLayoutManager;
+import com.gyso.treeview.layout.CompactDownTreeLayoutManager;
+import com.gyso.treeview.layout.CompactHorizonLeftAndRightLayoutManager;
+import com.gyso.treeview.layout.CompactRingTreeLayoutManager;
+import com.gyso.treeview.layout.ForceDirectedTreeLayoutManager;
+import com.gyso.treeview.layout.TableHorizonLeftAndRightLayoutManager;
 import com.gyso.treeview.layout.TreeLayoutManager;
 import com.gyso.treeview.line.BaseLine;
 import com.gyso.treeview.line.SmoothLine;
 import com.gyso.treeview.listener.TreeViewControlListener;
 import com.gyso.treeview.model.NodeModel;
-import com.gyso.treeview.model.TreeModel;
 
+import com.gyso.treeview.model.TreeModel;
 import com.sgcd.insubunhae.MainActivity;
 import com.sgcd.insubunhae.R;
 import com.sgcd.insubunhae.base.Animal;
@@ -32,11 +37,21 @@ import androidx.navigation.NavController;
 import android.widget.Toast;
 
 import com.gyso.treeview.TreeViewEditor;
+import com.sgcd.insubunhae.db.Contact;
+import com.sgcd.insubunhae.db.ContactsList;
+import com.sgcd.insubunhae.db.Group;
 
+import java.util.ArrayList;
+import java.util.Map;
 import java.util.Stack;
 import java.util.concurrent.atomic.AtomicInteger;
 
+
+
 public class HomeFragment extends Fragment {
+
+    //public ContactsList contactsList;
+
 
     private FragmentHomeBinding binding;
     private NavController navController;
@@ -46,6 +61,13 @@ public class HomeFragment extends Fragment {
     private AtomicInteger atomicInteger = new AtomicInteger();
     private Handler handler = new Handler();
     private NodeModel<Animal> parentToRemoveChildren = null;
+
+    public boolean na_flag = false;
+
+    int space_count = 10;
+    int space_20dp = 20;
+    int space_30dp = 30;
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 //        HomeViewModel homeViewModel =
@@ -96,6 +118,7 @@ public class HomeFragment extends Fragment {
         initWidgets();
     }
 
+
     private void initWidgets() {
         // 1 customs adapter
         AnimalTreeViewAdapter adapter = new AnimalTreeViewAdapter();
@@ -109,13 +132,13 @@ public class HomeFragment extends Fragment {
 
         // 4 nodes data setting
         setData(adapter);
-
         // 5 get an editor. Note: an adapter must set before get an editor.
         final com.gyso.treeview.TreeViewEditor editor = binding.baseTreeView.getEditor();
 
         // 6 you own others jobs
         doYourOwnJobs(editor, adapter);
     }
+
 
     void doYourOwnJobs(TreeViewEditor editor, AnimalTreeViewAdapter adapter) {
         // drag to move node
@@ -129,7 +152,7 @@ public class HomeFragment extends Fragment {
         // add some nodes
         binding.addNodesBt.setOnClickListener(v -> {
             if (targetNode == null) {
-                Toast.makeText(requireContext(), "Ohs, your targetNode is null", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), /*"Ohs, your targetNode is null"*/"타겟 노드 없음", Toast.LENGTH_SHORT).show();
                 return;
             }
             NodeModel<Animal> a = new NodeModel<>(new Animal(R.drawable.ic_10, "add-" + atomicInteger.getAndIncrement()));
@@ -145,7 +168,7 @@ public class HomeFragment extends Fragment {
         // remove node
         binding.removeNodeBt.setOnClickListener(v -> {
             if (removeCache.isEmpty()) {
-                Toast.makeText(requireContext(), "Ohs, demo removeCache is empty now!! Try to add some nodes firstly!!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), /*"Ohs, demo removeCache is empty now!! Try to add some nodes firstly!!"*/"제거 캐시 없음", Toast.LENGTH_SHORT).show();
                 return;
             }
             NodeModel<Animal> toRemoveNode = removeCache.pop();
@@ -155,7 +178,7 @@ public class HomeFragment extends Fragment {
 
         adapter.setOnItemListener((item, node) -> {
             Animal animal = node.getValue();
-            Toast.makeText(requireContext(), "you click the head of " + animal, Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "선택: " + animal, Toast.LENGTH_SHORT).show();
         });
 
         // treeView control listener
@@ -168,60 +191,61 @@ public class HomeFragment extends Fragment {
         binding.baseTreeView.setTreeViewControlListener(new TreeViewControlListener() {
             @Override
             public void onScaling(int state, int percent) {
-                Log.e(TAG, "onScaling: "+state+"  "+percent);
+                Log.e(TAG, "onScaling: " + state + "  " + percent);
                 binding.scalePercent.setVisibility(View.VISIBLE);
-                if(state == TreeViewControlListener.MAX_SCALE){
+                if (state == TreeViewControlListener.MAX_SCALE) {
                     binding.scalePercent.setText("MAX");
-                }else if(state == TreeViewControlListener.MIN_SCALE){
+                } else if (state == TreeViewControlListener.MIN_SCALE) {
                     binding.scalePercent.setText("MIN");
-                }else{
-                    binding.scalePercent.setText(percent+"%");
+                } else {
+                    binding.scalePercent.setText(percent + "%");
                 }
                 handler.removeCallbacksAndMessages(token);
-                handler.postAtTime(dismissRun,token, SystemClock.uptimeMillis()+2000);
+                handler.postAtTime(dismissRun, token, SystemClock.uptimeMillis() + 2000);
             }
 
             @Override
             public void onDragMoveNodesHit(NodeModel<?> draggingNode, NodeModel<?> hittingNode, View draggingView, View hittingView) {
-                Log.e(TAG, "onDragMoveNodesHit: draging["+draggingNode+"]hittingNode["+hittingNode+"]");
+                Log.e(TAG, "onDragMoveNodesHit: draging[" + draggingNode + "]hittingNode[" + hittingNode + "]");
             }
         });
     }
 
+
     /**
      * Box[XXX]TreeLayoutManagers are recommend for your project for they are running stably. Others treeLayoutManagers are developing.
+     *
      * @return layout manager
      */
     private TreeLayoutManager getTreeLayoutManager() {
-        int space_50dp = 30;
-        int space_20dp = 20;
+
         BaseLine line = getLine();
-        return new BoxRightTreeLayoutManager(requireContext(),space_50dp,space_20dp,line);
-        //return new BoxDownTreeLayoutManager(this,space_50dp,space_20dp,line);
+        //return new BoxRightTreeLayoutManager(requireContext(),space_50dp,space_20dp,line);
+        //return new BoxDownTreeLayoutManager(requireContext(),space_50dp,space_20dp,line);
         //return new BoxLeftTreeLayoutManager(this,space_50dp,space_20dp,line);
         //return new BoxUpTreeLayoutManager(this,space_50dp,space_20dp,line);
-        //return new BoxHorizonLeftAndRightLayoutManager(this,space_50dp,space_20dp,line);
-        //return new BoxVerticalUpAndDownLayoutManager(this,space_50dp,space_20dp,line);
-
+        return new BoxHorizonLeftAndRightLayoutManager(requireContext(), space_count, space_20dp, line);
+        //return new BoxVerticalUpAndDownLayoutManager(requireContext(),space_30dp,space_20dp,line);
 
         //TODO !!!!! the layoutManagers below are just for test don't use in your projects. Just for test now
-        //return new TableRightTreeLayoutManager(this,space_50dp,space_20dp,line);
+        //return new TableRightTreeLayoutManager(requireContext(), space_30dp,space_20dp,line);
         //return new TableLeftTreeLayoutManager(this,space_50dp,space_20dp,line);
         //return new TableDownTreeLayoutManager(this,space_50dp,space_20dp,line);
         //return new TableUpTreeLayoutManager(this,space_50dp,space_20dp,line);
-        //return new TableHorizonLeftAndRightLayoutManager(this,space_50dp,space_20dp,line);
-        //return new TableVerticalUpAndDownLayoutManager(this,space_50dp,space_20dp,line);
+        //return new TableHorizonLeftAndRightLayoutManager(requireContext(),space_count,space_20dp,line);
+        //return new TableVerticalUpAndDownLayoutManager(requireContext(),space_count,space_20dp,line);
 
-        //return new CompactRightTreeLayoutManager(this,space_50dp,space_20dp,line);
+        //return new CompactRightTreeLayoutManager(requireContext(),space_count,space_20dp,line);
         //return new CompactLeftTreeLayoutManager(this,space_50dp,space_20dp,line);
-        //return new CompactHorizonLeftAndRightLayoutManager(this,space_50dp,space_20dp,line);
-        //return new CompactDownTreeLayoutManager(this,space_50dp,space_20dp,line);
+        //return new CompactHorizonLeftAndRightLayoutManager(requireContext(),space_count,space_20dp,line);
+        //return new CompactDownTreeLayoutManager(requireContext(),space_count,space_20dp,line);
         //return new CompactUpTreeLayoutManager(this,space_50dp,space_20dp,line);
-        //return new CompactVerticalUpAndDownLayoutManager(this,space_50dp,space_20dp,line);
+        //return new CompactVerticalUpAndDownLayoutManager(requireContext(),space_count,space_20dp,line);
 
-        //return new CompactRingTreeLayoutManager(this,space_50dp,space_20dp,line);
-        //return new ForceDirectedTreeLayoutManager(this,line);
+        //return new CompactRingTreeLayoutManager(requireContext(), space_30dp,space_20dp,line);
+        //return new ForceDirectedTreeLayoutManager(requireContext(),line);
     }
+
 
     private BaseLine getLine() {
         return new SmoothLine();
@@ -230,70 +254,156 @@ public class HomeFragment extends Fragment {
         //return new AngledLine();
     }
 
-    private void setData(AnimalTreeViewAdapter adapter){
-        //root
-        NodeModel<Animal> root = new NodeModel<>(new Animal(R.drawable.ic_01,"root"));
-        TreeModel<Animal> treeModel = new TreeModel<>(root);
+    public void setData(AnimalTreeViewAdapter adapter) {
+        ArrayList<Contact> contactsList = ((MainActivity) getActivity()).getContactsList().getContactsList();
+        //contactsList = MainActivity.getContactsList();
+        //Map<String, Group> groupMap = contactsList.getGroupMap();
+        //group
+        ArrayList<String> groupList = new ArrayList<>();
 
-        //child nodes
-        NodeModel<Animal> capdi1_insubunhae = new NodeModel<>(new Animal(R.drawable.ic_05,"캡디1\n인수분해 팀"));
-        NodeModel<Animal> honghyoen_17 = new NodeModel<>(new Animal(R.drawable.ic_14,"17유홍현"));
-        NodeModel<Animal> sehee_17 = new NodeModel<>(new Animal(R.drawable.ic_15,"17조세희"));
-        NodeModel<Animal> junsu_18 = new NodeModel<>(new Animal(R.drawable.ic_08,"18김준수"));
-        NodeModel<Animal> sumin_19 = new NodeModel<>(new Animal(R.drawable.ic_09,"19임수민"));
+        int contactSize = contactsList.size();
+        Animal[] AnimalArray = new Animal[contactSize];
+        for (int i = 0; i < AnimalArray.length; i++) {
+            AnimalArray[i] = new Animal(contactsList.get(i).getName());
+        }
+
+        ArrayList<NodeModel<Animal>> AnimalNodes = new ArrayList<>(contactSize);
+        AnimalNodes.ensureCapacity(2000);
+        NodeModel<Animal>[] GroupTmpNodes = new NodeModel[contactSize];
+        //GroupTmpNodes.ensureCapacity(2000);
+        ArrayList<TreeModel<Animal>> GroupTrees = new ArrayList<>();
+        GroupTrees.ensureCapacity(100);
+
+        //미분류
+        Animal notAssigned = new Animal("미분류");
+        NodeModel<Animal> nANode = new NodeModel<Animal>(notAssigned);
+        TreeModel<Animal> NotAssignedTree = new TreeModel(nANode);
+
+        ArrayList<Animal> naAnimalArray = new ArrayList<Animal>();
+        naAnimalArray.ensureCapacity(1000);
+        ArrayList<NodeModel<Animal>> NotAssignedNodes = new ArrayList<>();
+        NotAssignedNodes.ensureCapacity(1000);
+        //아래부분에서 Root.addNode(...);하자 (미분류 그룹은 가장 마지막에 추가해두자..)
 
 
-        NodeModel<Animal> sub0 = new NodeModel<>(new Animal(R.drawable.ic_02,"소공"));
-        NodeModel<Animal> sub1 = new NodeModel<>(new Animal(R.drawable.ic_03,"sub01"));
-        NodeModel<Animal> sub2 = new NodeModel<>(new Animal(R.drawable.ic_04,"안녕"));
-        NodeModel<Animal> sub4 = new NodeModel<>(new Animal(R.drawable.ic_06,"동아리"));
-        NodeModel<Animal> sub5 = new NodeModel<>(new Animal(R.drawable.ic_07,"sub05000"));
-        NodeModel<Animal> sub6 = new NodeModel<>(new Animal(R.drawable.ic_08,"17학번"));
-        NodeModel<Animal> sub7 = new NodeModel<>(new Animal(R.drawable.ic_09,"sub07000"));
-        NodeModel<Animal> sub8 = new NodeModel<>(new Animal(R.drawable.ic_10,"sub08000"));
-        NodeModel<Animal> sub9 = new NodeModel<>(new Animal(R.drawable.ic_11,"ㄱㄴㄷ"));
-        NodeModel<Animal> sub10 = new NodeModel<>(new Animal(R.drawable.ic_12,"ㄱㄴㄷ"));
-        NodeModel<Animal> sub11 = new NodeModel<>(new Animal(R.drawable.ic_13,"sub11000"));
-        NodeModel<Animal> sub14 = new NodeModel<>(new Animal(R.drawable.ic_13,".000000"));
-        NodeModel<Animal> sub15 = new NodeModel<>(new Animal(R.drawable.ic_14,".000000"));
-        NodeModel<Animal> sub16 = new NodeModel<>(new Animal(R.drawable.ic_15,"sub16000"));
-        NodeModel<Animal> sub34 = new NodeModel<>(new Animal(R.drawable.ic_06,"1(멘토)"));
-        NodeModel<Animal> sub38 = new NodeModel<>(new Animal(R.drawable.ic_10,"2(멘토)"));
-        NodeModel<Animal> sub39 = new NodeModel<>(new Animal(R.drawable.ic_11,"조장"));
-        NodeModel<Animal> sub40 = new NodeModel<>(new Animal(R.drawable.ic_02,"아무개"));
-        NodeModel<Animal> sub47 = new NodeModel<>(new Animal(R.drawable.ic_09,"나"));
-        NodeModel<Animal> sub48 = new NodeModel<>(new Animal(R.drawable.ic_10,"sub48000"));
-        NodeModel<Animal> sub49 = new NodeModel<>(new Animal(R.drawable.ic_11,"sub49000"));
-        NodeModel<Animal> sub52 = new NodeModel<>(new Animal(R.drawable.ic_07,"팀장1"));
-        NodeModel<Animal> sub53 = new NodeModel<>(new Animal(R.drawable.ic_07,"팀장2"));
+        // Create the root node
+        Animal rootAnimal = new Animal(R.drawable.baseline_person_outline_48, "나");
+        NodeModel<Animal> root = new NodeModel<>(rootAnimal);
+        TreeModel<Animal> Root = new TreeModel<>(root);
+        //GroupTrees.add(new TreeModel<>(root));
 
-        //build relationship
-        treeModel.addNode(root,sub0,sub1,capdi1_insubunhae,sub4);
-        treeModel.addNode(capdi1_insubunhae,honghyoen_17,sehee_17);
-        treeModel.addNode(capdi1_insubunhae,junsu_18);
-        treeModel.addNode(capdi1_insubunhae,sumin_19);
-        treeModel.addNode(sub1,sub2);
-        treeModel.addNode(sub0,sub34,sub5,sub38,sub39);
-        treeModel.addNode(sub4,sub6);
-        treeModel.addNode(sub5,sub7,sub8);
-        treeModel.addNode(sub6,sub9,sub10,sub11);
-        treeModel.addNode(sub11,sub14,sub15);
-        treeModel.addNode(sub10,sub40);
-        treeModel.addNode(sub40,sub16);
-        treeModel.addNode(sub9,sub47,sub48);
-        treeModel.addNode(sub47,sub49);
-        treeModel.addNode(sub39,sub52,sub53);
+        //TreeModel<Animal> root = new TreeModel<>(GroupTmpNodes.get(0));//for test
+
+        int c = 0;
+//        int i = 0;
+        while (contactsList.get(c++).getIsGrouped() != 0) {
+            groupList.add(0, contactsList.get(c).getOnlyGroupName());
+            break;
+        }
+
+        for (int i = 0; i < contactsList.size(); i++) {
+            if (contactsList.get(i).getIsGrouped() == 0) {
+                break;
+            }
+            //Log.d("groupsize", "size"+groupList.size()+", i:"+i);
+            String s = contactsList.get(i).getOnlyGroupName();
+            //Log.d("group tag", "group"+ i +","+s );
+            //Log.d("contacts viewer", "groupId " + i);
+            if (!groupList.contains(s)) {
+                groupList.add(s);
+            }
+            //Log.d("contacts viewer", "groupList : " + groupList);
+
+        }
+        Animal[] GroupAnimalArray = new Animal[contactsList.size()];
+
+        //set each GroupTrees[]'s group nodes into NodeModels and THEN TreeModels.
+        for (int i=0; i< groupList.size(); i++) {
+            String name = groupList.get(i);
+            //Animal 생성(그룹용)
+            GroupAnimalArray[i] = new Animal(name);
+            //Log.d(".", "AnimalArray"+AnimalArray);
+            Log.d(".", "GroupAnimalArray:" + GroupAnimalArray);
+
+            //NodeModel<Animal> 추가
+            GroupTmpNodes[i] = new NodeModel<Animal>(GroupAnimalArray[i]);
+            //GroupTmpNodes[a].setName(name);
+
+            //TreeModel<Animal> 추가
+            GroupTrees.add(i, new TreeModel<Animal>(GroupTmpNodes[i]));
+            GroupTrees.get(i).getRootNode().getValue().setName(name);
+
+            Root.addNode(root, GroupTmpNodes[i]);
+            //GroupTrees.get(i).addNode(GroupTmpNodes.get(i));
+            //GroupTrees.set(i, GroupTrees.get(i).addNode(GroupTmpNodes.get(i)));
+            //Log.d("mindmap", "groupNodes : " + GroupTmpNodes[i].getValue().getName() +"/GroupTrees"+ GroupTrees.get(i).get;
+        }
+
+        //이제 그룹말고 실제 연락처를 animal 및 node로 생성
+        AnimalNodes.ensureCapacity(contactsList.size());
+
+        int na_count= 0;
+        for (int j = 0; j < contactsList.size(); j++) {
+            Contact tmpContact = contactsList.get(j);
+            Log.d("contact at 222 ","tmpContact: " + tmpContact.getName());
+
+            AnimalArray[j] = new Animal(tmpContact.getName());
+            //AnimalNodes.set(j, new NodeModel<Animal>(AnimalArray[j]));
+            AnimalNodes.add(j, new NodeModel<>(AnimalArray[j]));
+            Log.d("AnimalArray", "AnimalArray[j]:" +AnimalArray[j]);
+            Log.d("AnimalNode", "AnimalNodes.get(j):" +AnimalNodes.get(j));
+
+            if (tmpContact.getIsGrouped() != 0) {
+                String s = tmpContact.getOnlyGroupName();
+                int gI = groupList.indexOf(s);
+
+                Log.d("animalnnodes", "s:" + s + "gI: " + gI + "groupList.get(gI): " + groupList.get(gI) + "j:" + j);
+                GroupTrees.get(gI).addNode(GroupTmpNodes[gI], AnimalNodes.get(j));
+
+            }
+            else{
+                if(!na_flag) {
+                    na_flag = true;
+                    Root.addNode(root,nANode);
+                }
+                naAnimalArray.add(na_count, new Animal(tmpContact.getName()));
+                NotAssignedNodes.add(na_count,new NodeModel<>(naAnimalArray.get(na_count)));
+                NotAssignedTree.addNode(nANode,NotAssignedNodes.get(na_count));
+            }
+        }
+
+        //** sample nodes. going to set this into sample removing target node or something
+        NodeModel<Animal> insu = new NodeModel<>(new Animal("인수"));
+        NodeModel<Animal> insu_1 = new NodeModel<>(new Animal("인수1"));
+        NodeModel<Animal> insu_2 = new NodeModel<>(new Animal("인수2"));
+        NodeModel<Animal> insu_3 = new NodeModel<>(new Animal("인수3"));
+        NodeModel<Animal> insu_4 = new NodeModel<>(new Animal("인수4"));
+        TreeModel<Animal> Insu = new TreeModel<>(insu);
+        Root.addNode(root, insu);
+        Insu.addNode(insu, insu_1, insu_2, insu_3, insu_4);
 
         //mark
-        parentToRemoveChildren = sub0;
-        targetNode = sub1;
-
+        parentToRemoveChildren = insu;
+        targetNode = insu_1;
+        //** sample nodes end
         //set data
-        adapter.setTreeModel(treeModel);
+        //adapter.setTreeModel(GroupTrees.get(0));
+        adapter.setTreeModel(Root);
+
+
     }
 
+    // capitalize first character of the string
+    public String capitalizeString(String variableName) {
+        if (variableName == null || variableName.isEmpty()) {
+            return variableName; // Return the original name if it's null or empty
+        }
 
+        char firstChar = Character.toUpperCase(variableName.charAt(0));
+        String capitalized = firstChar + variableName.substring(1);
 
+        return capitalized;
+    }
 
     @Override
     public void onDestroyView() {
@@ -301,3 +411,49 @@ public class HomeFragment extends Fragment {
         binding = null;
     }
 }
+
+
+
+
+//        NodeModel<Animal> me = new NodeModel<>(new Animal(R.drawable.baseline_person_pin_circle_48,"나"));
+//        TreeModel<Animal> Me = new TreeModel<>(me);
+//        //TODO: 그룹명 get해서 TreeModel<Group> 하기, 모든 연락처에 대해 nodeModel하기, for(count){NodeModel<Contacts>, treemodel.addnode } 하기
+//
+//
+//        //sehee's try
+//        Log.d("0608", "home frag");
+//        ArrayList<Contact> contactsList = ((MainActivity)getActivity()).getContactsList().getContactsList();
+//
+//        String[] contactNameArray = new String[contactsList.size()];
+//        ArrayList<NodeModel<Animal>> nodeList = new ArrayList<>();
+//
+//
+//        String[] contactIdArray = new String[contactsList.size()];
+//        int[] contactIdIntArray = new int[contactIdArray.length];
+//        for (int i = 0; i < contactsList.size(); i++) {
+//            contactNameArray[i] = contactsList.get(i).getName();
+//            contactIdArray[i] = contactsList.get(i).getId();
+//            contactIdIntArray[i] = Integer.parseInt(contactIdArray[i]);
+//
+//            nodeList.add(new NodeModel<>(new Animal(contactNameArray[i])));
+//            //treeModel.addNode(root, sub0, sub1, nodeList.get(i));
+//            Me.addNode(me, nodeList.get(i));
+//        }
+//
+//
+//        //** sample nodes. going to set this into sample removing target node or something
+//        NodeModel<Animal> insu = new NodeModel<>(new Animal("인수"));
+//        NodeModel<Animal> insu_1 = new NodeModel<>(new Animal("인수1"));
+//        NodeModel<Animal> insu_2 = new NodeModel<>(new Animal("인수2"));
+//        NodeModel<Animal> insu_3 = new NodeModel<>(new Animal("인수3"));
+//        NodeModel<Animal> insu_4 = new NodeModel<>(new Animal("인수4"));
+//        TreeModel<Animal> Insu = new TreeModel<>(insu);
+//        Me.addNode(me, insu);
+//        Insu.addNode(insu, insu_1, insu_2, insu_3, insu_4);
+//
+//        //mark
+//        parentToRemoveChildren = insu;
+//        targetNode = insu_1;
+//        //** sample nodes end
+
+

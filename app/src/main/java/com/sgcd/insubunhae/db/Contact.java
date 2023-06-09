@@ -205,6 +205,7 @@ public class Contact implements Parcelable {
         this.groupName.add(groupName);
     }
     public ArrayList<String> getGroupName(){ return this.groupName; }
+    public String getOnlyGroupName(){ return this.groupName.get(0); }
     public void setGroupId(String groupId){this.groupId.add(groupId); }
     public ArrayList<String> getGroupId(){
         return this.groupId;
