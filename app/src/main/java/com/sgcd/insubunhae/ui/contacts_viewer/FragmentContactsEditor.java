@@ -3,6 +3,7 @@ package com.sgcd.insubunhae.ui.contacts_viewer;
 import android.content.Context;
 import android.os.Bundle;
 import android.provider.Contacts;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.sgcd.insubunhae.MainActivity;
 import com.sgcd.insubunhae.R;
@@ -26,13 +28,14 @@ import com.sgcd.insubunhae.db.ContactsList;
 
 import java.util.ArrayList;
 
-public class FragmentContactsEditor extends Fragment implements MainActivity.onBackPressedListner{
+public class FragmentContactsEditor extends Fragment implements MainActivity.onBackPressedListener{
     private FragmentContactsEditorBinding binding;
+    private FragmentContactsEditor fragmentContactsEditor;
     private Context context;
     private Contact contacts;
     private MainActivity activity;
     private View root;
-    private MutableLiveData<Contact> liveData= new MutableLiveData<>();
+    private ContactsEditorViewModel model;
 
 
     public static FragmentContactsEditor newInstance(){
@@ -41,6 +44,7 @@ public class FragmentContactsEditor extends Fragment implements MainActivity.onB
 
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
+        fragmentContactsEditor = this;
         this.context = context;
         activity = (MainActivity) getActivity();
     }
@@ -67,7 +71,9 @@ public class FragmentContactsEditor extends Fragment implements MainActivity.onB
         int idx = this.getArguments().getInt("toEditorIdx");
         contacts = contactsList.get(idx);
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_contacts_editor, container,false);
+        model = new ViewModelProvider(this).get(ContactsEditorViewModel.class);
         root = binding.getRoot();
+
 
         Button btn_save = root.findViewById(R.id.btn_save);
         EditText editText = root.findViewById(R.id.contacts_editor_name);
@@ -106,18 +112,32 @@ public class FragmentContactsEditor extends Fragment implements MainActivity.onB
                 }
                 contacts.setCompany(binding.getWork());
                 contacts.setSnsId(binding.getSNSID());
+                model.liveData.setValue(contacts);
 
                 Toast.makeText(context, binding.getName(), Toast.LENGTH_SHORT).show();
+                Log.d("editor", "before call back");
+                //activity.myGetFragmentManager().beginTransaction().remove(fragmentContactsEditor).commit();
+                fragmentContactsEditor.onBackPressed();
             }
         });
 
         setContact(contacts);
+        model.liveData.observe(activity, new Observer<Contact>() {
+            @Override
+            public void onChanged(Contact contact) {
+                contacts.cpyContact(contact);
+            }
+        });
+        if(model.liveData.getValue() == null){
+            model.liveData.setValue(contacts);
+        }
 
         return root;
     }
 
     @Override
     public void onBackPressed() {
+        Log.d("editor", "onBackPressed");
         activity.myGetFragmentManager().beginTransaction().remove(this).commit();
     }
 
@@ -143,6 +163,7 @@ public class FragmentContactsEditor extends Fragment implements MainActivity.onB
             binding.setPhoneNumber2(db_phone_num.get(1));
         }
         else{
+            binding.setPhoneNumber2(" ");
             View tmpView = root.findViewById(R.id.contacts_editor_phoneNumber2);
             tmpView.setVisibility(View.GONE);
         }
@@ -150,38 +171,53 @@ public class FragmentContactsEditor extends Fragment implements MainActivity.onB
             binding.setPhoneNumber3(db_phone_num.get(2));
         }
         else{
+            binding.setPhoneNumber3(" ");
             View tmpView = root.findViewById(R.id.contacts_editor_phoneNumber3);
             tmpView.setVisibility(View.GONE);
         }
         if(contact.getGroupId().size() != 0){
-            binding.setIsGrouped(Integer.toString(1));
+            String groupStr = new String();
+            groupStr += contact.getGroupName().get(0);
+            for(int i = 1; i < contact.getGroupCount(); i++){
+                groupStr += ", " + contact.getGroupName().get(i);
+            }
+            binding.setGroupList(groupStr);
         }
-        binding.setGroupCount(Integer.toString(contact.getGroupCount()));
+        else{
+            binding.setGroupList(" ");
+            View tmpView = root.findViewById((R.id.contacts_viewer_group_list));
+            tmpView.setVisibility(View.GONE);
+        }
         //주소
         if((contact.getAddress().size() > 0) && (contact.getAddress().get(0) !=null)) binding.setAddress(contact.getAddress().get(0));
         else{
+            binding.setAddress(" ");
             View tmpView = root.findViewById(R.id.contacts_editor_address1);
             tmpView.setVisibility(View.GONE);
         }
         if(contact.getAddress().size() > 1 && (contact.getAddress().get(0) !=null)) binding.setAddress2(contact.getAddress().get(1));
         else{
+            binding.setAddress2(" ");
             View tmpView = root.findViewById(R.id.contacts_editor_address2);
             tmpView.setVisibility(View.GONE);
         }
         //이메일
         if(contact.getEmail().size() > 0 && (contact.getEmail().get(0) !=null)) binding.setEmail(contact.getEmail().get(0));
         else{
+            binding.setEmail(" ");
             View tmpView = root.findViewById(R.id.contacts_editor_email);
             tmpView.setVisibility(View.GONE);
         }
         if(contact.getEmail().size() > 1 && (contact.getEmail().get(0) !=null))binding.setEmail2(contact.getEmail().get(1));
         else{
+            binding.setEmail2(" ");
             View tmpView = root.findViewById(R.id.contacts_editor_sub_email);
             tmpView.setVisibility(View.GONE);
         }
         //직장
         if(contact.getCompany() != null)binding.setWork(contact.getCompany());
         else{
+            binding.setWork(" ");
             root.findViewById(R.id.contacts_editor_work).setVisibility(View.GONE);
         }
         //sns id

@@ -282,13 +282,11 @@ public class DBHelper extends SQLiteOpenHelper {
                                     + smsSender + "'";
                             cursor1 = db.rawQuery(query, null);
                             Log.d("sms.....", "cursor1 : " + cursor1);
-
+                            
                             if (cursor1 != null && cursor1.moveToFirst()) {
                                 int columnIndex = cursor1.getColumnIndex("contact_id");
-                                Log.d("sms.....", "columnIndex : " + columnIndex);
                                 if (columnIndex >= 0) {
                                     smsContactId = cursor1.getInt(columnIndex);
-                                    Log.d("sms.....", "smsContactId : " + smsContactId);
                                 }
                             }
                         } catch (Exception e) {
