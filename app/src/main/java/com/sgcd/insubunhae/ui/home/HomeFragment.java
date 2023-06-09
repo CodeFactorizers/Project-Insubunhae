@@ -12,6 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.gyso.treeview.adapter.TreeViewAdapter;
 import com.gyso.treeview.layout.BoxHorizonLeftAndRightLayoutManager;
 import com.gyso.treeview.layout.CompactDownTreeLayoutManager;
 import com.gyso.treeview.layout.CompactHorizonLeftAndRightLayoutManager;
@@ -29,6 +30,7 @@ import com.sgcd.insubunhae.MainActivity;
 import com.sgcd.insubunhae.R;
 import com.sgcd.insubunhae.base.Animal;
 import com.sgcd.insubunhae.base.AnimalTreeViewAdapter;
+import com.sgcd.insubunhae.base.ContactTreeViewAdapter;
 import com.sgcd.insubunhae.databinding.FragmentHomeBinding;
 
 import androidx.navigation.NavController;
@@ -121,8 +123,8 @@ public class HomeFragment extends Fragment {
 
     private void initWidgets() {
         // 1 customs adapter
-        AnimalTreeViewAdapter adapter = new AnimalTreeViewAdapter();
-
+        //AnimalTreeViewAdapter adapter = new AnimalTreeViewAdapter();
+        ContactTreeViewAdapter adapter = new ContactTreeViewAdapter();
         // 2 configure layout manager; unit dp
         TreeLayoutManager treeLayoutManager = getTreeLayoutManager();
 
@@ -140,7 +142,8 @@ public class HomeFragment extends Fragment {
     }
 
 
-    void doYourOwnJobs(TreeViewEditor editor, AnimalTreeViewAdapter adapter) {
+//    void doYourOwnJobs(TreeViewEditor editor, AnimalTreeViewAdapter adapter) {
+    void doYourOwnJobs(TreeViewEditor editor, ContactTreeViewAdapter adapter) {
         // drag to move node
         binding.dragEditModeRd.setOnCheckedChangeListener((v, isChecked) -> {
             editor.requestMoveNodeByDragging(isChecked);
@@ -177,8 +180,9 @@ public class HomeFragment extends Fragment {
         });
 
         adapter.setOnItemListener((item, node) -> {
-            Animal animal = node.getValue();
-            Toast.makeText(requireContext(), "선택: " + animal, Toast.LENGTH_SHORT).show();
+            //Animal animal = node.getValue();
+            Contact contact = node.getValue();
+            Toast.makeText(requireContext(), "선택: " + contact, Toast.LENGTH_SHORT).show();
         });
 
         // treeView control listener
@@ -391,6 +395,32 @@ public class HomeFragment extends Fragment {
         adapter.setTreeModel(Root);
 
 
+    }
+
+    public void setData(ContactTreeViewAdapter adapter) {
+        ArrayList<Contact> contactsList = ((MainActivity)getActivity()).getContactsList().getContactsList();
+        ArrayList<NodeModel<Contact>> nodeList = new ArrayList<>();
+
+        Contact rootContact = new Contact();
+        rootContact.setName("나");
+        rootContact.setId("0");
+        NodeModel<Contact> root = new NodeModel<>(rootContact);
+        TreeModel<Contact> treeModel = new TreeModel<>(root);
+
+        Contact parentContact = new Contact();
+        parentContact.setName("parent");
+        parentContact.setId("par");
+        NodeModel<Contact> parent = new NodeModel<>(parentContact);
+        for(int i = 0; i < contactsList.size(); i++){
+            Contact tmp = new Contact();
+            tmp.setId(contactsList.get(i).getId());
+            tmp.setName(contactsList.get(i).getName());
+            nodeList.add(new NodeModel<>(tmp));
+
+            treeModel.addNode(root, nodeList.get(i));
+
+        }
+        adapter.setTreeModel(treeModel);
     }
 
     // capitalize first character of the string
