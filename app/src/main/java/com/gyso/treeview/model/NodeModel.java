@@ -18,6 +18,11 @@ import java.util.Stack;
 public class NodeModel<T> implements Serializable {
 
     public TreeModel<?> treeModel = null;
+    public String name;
+    //public String groupName;
+    public void setName(String name){
+        this. name=name;
+    }
 
     /**
      * for mark this node

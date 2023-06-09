@@ -186,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
             Log.d("getPermission", "in if");
             return false;
         } else {
-            showToast("Contacts permission already granted.");
+            //showToast("Contacts permission already granted.");
             requestCallLogPermission();// If contacts permission is granted, request call log permission
             return true;
         }
@@ -196,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CALL_LOG}, MY_PERMISSIONS_REQUEST_READ_CALL_LOG);
         } else {
-            showToast("Call log permission already granted.");
+            //showToast("Call log permission already granted.");
             requestSmsPermission();// If call log permission is granted, request SMS permission
         }
     }
@@ -205,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.READ_SMS}, MY_PERMISSIONS_REQUEST_READ_SMS);
         } else {
-            showToast("SMS permission already granted.");
+            //showToast("SMS permission already granted.");
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 requestNotificationPermission();
             }
@@ -217,7 +217,7 @@ public class MainActivity extends AppCompatActivity {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, MY_PERMISSIONS_REQUEST_POST_NOTIFICATION);
         } else {
-            showToast("Notification permission already granted.");
+            //showToast("Notification permission already granted.");
         }
     }
 
@@ -227,28 +227,28 @@ public class MainActivity extends AppCompatActivity {
 
         if (requestCode == MY_PERMISSIONS_REQUEST_READ_CONTACTS) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                showToast("Contacts permission granted.");
+                //showToast("Contacts permission granted.");
                 // Permission granted for reading contacts
                 // Add your desired action here
 
                 // If contacts permission is granted, request call log permission
                 requestCallLogPermission();
             } else {
-                showToast("Contacts permission denied.");
+               //showToast("Contacts permission denied.");
                 // some appropriate actions like re-request permission..?
             }
         } else if (requestCode == MY_PERMISSIONS_REQUEST_READ_CALL_LOG) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                showToast("Call log permission granted.");// If call log permission is granted, request SMS permission
+                //showToast("Call log permission granted.");// If call log permission is granted, request SMS permission
                 requestSmsPermission();
             } else {
-                showToast("Call log permission denied.");
+                //showToast("Call log permission denied.");
             }
         } else if (requestCode == MY_PERMISSIONS_REQUEST_READ_SMS) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                showToast("SMS permission granted.");
+                //showToast("SMS permission granted.");
             } else {
-                showToast("SMS permission denied.");
+                //showToast("SMS permission denied.");
             }
         }
     }
@@ -316,13 +316,13 @@ public class MainActivity extends AppCompatActivity {
 
                 // Perform UI updates indicating the task is complete
                 runOnUiThread(() -> {
-                    Toast.makeText(MainActivity.this, "Call log retrieval complete", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(MainActivity.this, "Call log retrieval complete", Toast.LENGTH_SHORT).show();
                     // You can customize the toast message or duration as per your needs.
                 });
             } else {// Handle the case where the cursor is null
                 // Perform UI updates indicating the task is complete
                 runOnUiThread(() -> {
-                    Toast.makeText(MainActivity.this, "Failed to retrieve call log", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(MainActivity.this, "Failed to retrieve call log", Toast.LENGTH_SHORT).show();
                     // You can display an error message or customize it based on the error scenario.
                 });
             }
@@ -362,7 +362,7 @@ public class MainActivity extends AppCompatActivity {
 
                 runOnUiThread(() -> {
                     // Display a completion message or update the UI accordingly
-                    Toast.makeText(MainActivity.this, "Call log fetched successfully", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(MainActivity.this, "Call log fetched successfully", Toast.LENGTH_SHORT).show();
                 });
             }).start();
         }

@@ -244,7 +244,7 @@ public class DBHelper extends SQLiteOpenHelper {
             Handler handler = new Handler(Looper.getMainLooper());
             handler.post(() -> {
                 // Update UI or perform any required operations on the main thread
-                Toast.makeText(context, "CallLog Retrieval finished, lastCallLogId: " + lastCallLogId, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(context, "CallLog Retrieval finished, lastCallLogId: " + lastCallLogId, Toast.LENGTH_SHORT).show();
                 // For example, you can notify the user that the task is completed or update UI elements based on the retrieved data
             });
         }).start();

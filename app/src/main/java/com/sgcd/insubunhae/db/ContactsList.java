@@ -271,6 +271,9 @@ public class ContactsList implements Parcelable {
 
     }
 
+
+
+
     public void dbInsert(SQLiteDatabase db){
         db.beginTransaction();
         try{

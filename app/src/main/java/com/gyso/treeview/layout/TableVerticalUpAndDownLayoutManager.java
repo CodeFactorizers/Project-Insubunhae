@@ -13,10 +13,10 @@ import com.gyso.treeview.util.ViewBox;
 
 import java.util.LinkedList;
 
-public class TableVerticalUpAndTableDownLayoutManager extends TableDownTreeLayoutManager {
+public class TableVerticalUpAndDownLayoutManager extends TableDownTreeLayoutManager {
     private static final String TAG = CompactVerticalUpAndDownLayoutManager.class.getSimpleName();
     private boolean isJustCalculate;
-    public TableVerticalUpAndTableDownLayoutManager(Context context, int spaceParentToChild, int spacePeerToPeer, BaseLine baseline) {
+    public TableVerticalUpAndDownLayoutManager(Context context, int spaceParentToChild, int spacePeerToPeer, BaseLine baseline) {
         super(context, spaceParentToChild, spacePeerToPeer, baseline);
     }
 
@@ -47,6 +47,7 @@ public class TableVerticalUpAndTableDownLayoutManager extends TableDownTreeLayou
         }
         mFixedDx = (fixedViewBox.getWidth()-mContentViewBox.getWidth())/2;
         mFixedDy = (fixedViewBox.getHeight()-mContentViewBox.getHeight())/2;
+
 
         //compute floor start position
         for (int i = 0; i <= floorMax.size(); i++) {
