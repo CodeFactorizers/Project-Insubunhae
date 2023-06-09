@@ -45,7 +45,6 @@ import com.sgcd.insubunhae.databinding.ActivityMainBinding;
 import com.sgcd.insubunhae.db.Contact;
 import com.sgcd.insubunhae.db.ContactsList;
 import com.sgcd.insubunhae.db.DBHelper;
-import com.sgcd.insubunhae.ui.contacts_viewer.FragmentContactsEditor;
 import com.sgcd.insubunhae.ui.contacts_viewer.FragmentContactsObjectViewer;
 
 public class MainActivity extends AppCompatActivity {
@@ -53,7 +52,10 @@ public class MainActivity extends AppCompatActivity {
 
     // DB 관련
     DBHelper dbHelper;
+    public DBHelper getDbHelper(){ return dbHelper;}
+
     SQLiteDatabase idb = null;
+    public SQLiteDatabase getSQLiteDatabase(){return idb;}
     private Cursor dbCursor;
 
     private static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1;
@@ -71,8 +73,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private FragmentTransaction fragmentTransaction;
-    private FragmentContactsObjectViewer fragmentContactsObjectViewer;
-    private FragmentContactsEditor fragmentContactsEditor;
     private ContactsList contactsList;
     public ContactsList getContactsList(){ return this.contactsList;}
 
@@ -96,18 +96,10 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-
-
-
         BottomNavigationView navView = findViewById(R.id.nav_view);
 
         //contacts viewer
         fragmentManager = getSupportFragmentManager();
-        fragmentContactsObjectViewer = new FragmentContactsObjectViewer();
-        fragmentContactsEditor = new FragmentContactsEditor();
-//        final Bundle bundle = new Bundle();
-//        bundle.putParcelableArrayList("contactsList", dbHelper.getContactsList().getContactsList());
-//        fragmentContactsObjectViewer.setArguments(bundle);
 
 
         // Passing each menu ID as a set of Ids because each
@@ -150,13 +142,10 @@ public class MainActivity extends AppCompatActivity {
         // Switching on the item id of the menu item
         switch (item.getItemId()) {
             case R.id.menu_btn1:
-                final Bundle bundle = new Bundle();
-                bundle.putParcelableArrayList("contactsListToViewer", dbHelper.getContactsList().getContactsList());
-                fragmentContactsObjectViewer.setArguments(bundle);
                 fragmentTransaction = fragmentManager.beginTransaction();
-                //View view = getLayoutInflater().from(this).inflate(R.layout.activity_main, null);
-                //int id = view.getId();
-                fragmentTransaction.replace(R.id.container, fragmentContactsObjectViewer).commitAllowingStateLoss();
+                if(fragmentManager.findFragmentByTag("viewer") == null) {
+                    fragmentTransaction.replace(R.id.container, FragmentContactsObjectViewer.newInstance(), "viewer").addToBackStack("viewer").commit();
+                }
                 break;
             case R.id.menu_btn2:
                 Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
@@ -439,12 +428,11 @@ public class MainActivity extends AppCompatActivity {
     //연락처 뷰어의 편집버튼 눌렀을 때 편집창으로 넘어감
     public void toEditor(Fragment fragment, int idx){
         final Bundle bundle = new Bundle();
-        Contact tmp = dbHelper.getContactsList().getContact(idx);
         bundle.putParcelableArrayList("contactsListToEditor", dbHelper.getContactsList().getContactsList());
         bundle.putInt("toEditorIdx", idx);
-        fragmentContactsEditor.setArguments(bundle);
+        fragment.setArguments(bundle);
         fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.container, fragmentContactsEditor).addToBackStack("editor").commit();
+        fragmentTransaction.replace(R.id.container, fragment, "editor").addToBackStack("editor").commit();
         //fragmentTransaction.add(fragment, "editor").commit();
     }
     // some additional functions end

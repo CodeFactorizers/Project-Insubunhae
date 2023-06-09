@@ -255,7 +255,9 @@ public class ContactsList implements Parcelable {
             Cursor groupCursor = db.rawQuery("SELECT * FROM GROUP_MEMBER WHERE contact_id == " + id, null);
             while(groupCursor.moveToNext()){
                 //Log.d("getdbfromapp", id + "가 속한 그룹 테이블 : " + groupCursor.getString(0) + " " + groupCursor.getString(1) + " " + groupCursor.getString((2)));
-                contact.setGroupId(groupCursor.getString(2));
+                String groupId = groupCursor.getString(2);
+                contact.setGroupId(groupId);
+                group_map.get(groupId).setMemberList(id);
             }
             groupIdToName(contact);
             if(!contact.getGroupId().isEmpty()) {
