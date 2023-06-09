@@ -5,6 +5,7 @@ plugins {
 android {
     namespace 'com.sgcd.insubunhae'
     compileSdk 33
+    buildToolsVersion "33.0.2"
 
     defaultConfig {
         applicationId "com.sgcd.insubunhae"
@@ -23,11 +24,12 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     buildFeatures {
         dataBinding true
+        viewBinding true//???
     }
 }
 
@@ -39,6 +41,7 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.4.1'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1'
     implementation 'androidx.navigation:navigation-fragment:2.5.3'
+    implementation "androidx.navigation:navigation-ui-ktx:2.5.3"
     implementation 'androidx.navigation:navigation-ui:2.5.3'
     implementation 'androidx.preference:preference:1.2.0'
     testImplementation 'junit:junit:4.13.2'
@@ -47,4 +50,7 @@ dependencies {
     implementation 'com.github.prolificinteractive:material-calendarview:2.0.0'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
     //implementation 'androidx.databinding:databinding-runtime:4.2.2'
+    implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation project(path: ':library')
+    implementation 'androidx.databinding:databinding-runtime:8.0.2'
 }
