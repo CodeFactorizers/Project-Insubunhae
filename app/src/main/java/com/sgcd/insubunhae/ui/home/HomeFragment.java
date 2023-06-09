@@ -123,8 +123,9 @@ public class HomeFragment extends Fragment {
 
     private void initWidgets() {
         // 1 customs adapter
-        //AnimalTreeViewAdapter adapter = new AnimalTreeViewAdapter();
-        ContactTreeViewAdapter adapter = new ContactTreeViewAdapter();
+        AnimalTreeViewAdapter adapter = new AnimalTreeViewAdapter();
+        //ContactTreeViewAdapter adapter = new ContactTreeViewAdapter();
+
         // 2 configure layout manager; unit dp
         TreeLayoutManager treeLayoutManager = getTreeLayoutManager();
 
@@ -142,8 +143,8 @@ public class HomeFragment extends Fragment {
     }
 
 
-//    void doYourOwnJobs(TreeViewEditor editor, AnimalTreeViewAdapter adapter) {
-    void doYourOwnJobs(TreeViewEditor editor, ContactTreeViewAdapter adapter) {
+    void doYourOwnJobs(TreeViewEditor editor, AnimalTreeViewAdapter adapter) {
+//    void doYourOwnJobs(TreeViewEditor editor, ContactTreeViewAdapter adapter) {
         // drag to move node
         binding.dragEditModeRd.setOnCheckedChangeListener((v, isChecked) -> {
             editor.requestMoveNodeByDragging(isChecked);
@@ -180,9 +181,10 @@ public class HomeFragment extends Fragment {
         });
 
         adapter.setOnItemListener((item, node) -> {
-            //Animal animal = node.getValue();
-            Contact contact = node.getValue();
-            Toast.makeText(requireContext(), "선택: " + contact, Toast.LENGTH_SHORT).show();
+            Animal animal = node.getValue();
+            Toast.makeText(requireContext(), "선택: " + animal, Toast.LENGTH_SHORT).show();
+//            Contact contact = node.getValue();
+//            Toast.makeText(requireContext(), "선택: " + contact, Toast.LENGTH_SHORT).show();
         });
 
         // treeView control listener
