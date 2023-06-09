@@ -23,8 +23,13 @@ public class TreeModel<T> implements Serializable {
     private transient ITraversal<NodeModel<?>> iTraversal;
     private int maxDeep =0;
     private int minDeep =0;
+    public String name;
     public TreeModel(NodeModel<T> rootNode) {
         this.rootNode = rootNode;
+        name = this.rootNode.name;
+    }
+    public void setName(String name){
+        this.name=name;
     }
 
     private boolean finishTraversal = false;

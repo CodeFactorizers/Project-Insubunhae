@@ -12,6 +12,7 @@ import com.sgcd.insubunhae.R;
  */
 public class Animal {
     public int headId = R.drawable.baseline_person_outline_48;
+
     public String name;
     public String groupName;
     public String phoneNumber;
@@ -36,6 +37,11 @@ public class Animal {
         }
         this.name = modifiedName.toString().trim();
     }
+
+    public Animal() {
+
+    }
+
 
     public void setIcon(int id){
         this.headId = id;
