@@ -46,6 +46,14 @@ public class ContactsList implements Parcelable {
     public int describeContents() {
         return 0;
     }
+    public int getIndexFromId(int id){
+        int i;
+        for(i = 0; i < contacts_list.size(); i++){
+            if(contacts_list.get(i).getId().equals(id)) break;
+        }
+        return i;
+    }
+
 
     public static final Creator<ContactsList> CREATOR = new Creator<ContactsList>() {
         @Override

@@ -38,6 +38,7 @@ public class FragmentContactsObjectViewer extends Fragment implements MainActivi
     private MainActivity activity;
     private View root;
     private ContactsList contactsList;
+    private int idx;
     private ArrayList<Contact> contactsArrayList;
 
     public static FragmentContactsObjectViewer newInstance(){
@@ -53,17 +54,16 @@ public class FragmentContactsObjectViewer extends Fragment implements MainActivi
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
-
         //data binding
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_contacts_object_viewer, container,false);
         root = binding.getRoot();
+        idx = this.getArguments().getInt("toViewerIdx");
 
         //편집 버튼
         Button btn_edit = root.findViewById(R.id.btn_edit);
         btn_edit.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                activity.toEditor(FragmentContactsEditor.newInstance(), 0);
+                activity.toEditor(FragmentContactsEditor.newInstance(), idx);
             }
         });
         contactsList = activity.getContactsList();
@@ -72,7 +72,7 @@ public class FragmentContactsObjectViewer extends Fragment implements MainActivi
         ArrayList<String> groupList = new ArrayList<>();
         //contactsArrayList = this.getArguments().getParcelableArrayList("contactsListToViewer");
         contactsArrayList = activity.getContactsList().getContactsList();
-        Contact tmp = contactsArrayList.get(0);
+        Contact tmp = contactsArrayList.get(idx);
         for(String i : tmp.getGroupId()){
             Log.d("contacts viewer", "groupId "+i);
             groupList.add(groupMap.get(i).getGroupName());

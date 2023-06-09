@@ -468,6 +468,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //연락처 뷰어의 편집버튼 눌렀을 때 편집창으로 넘어감
+    public void toViewer(int id){
+        final Bundle bundle = new Bundle();
+        FragmentContactsObjectViewer fragment = new FragmentContactsObjectViewer();
+        int idx = contactsList.getIndexFromId(id);
+        bundle.putInt("toViewerIdx", idx);
+        fragment.setArguments(bundle);
+        fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.container, fragment, "viewer").addToBackStack("viewer").commit();
+    }
     public void toEditor(Fragment fragment, int idx){
         final Bundle bundle = new Bundle();
         bundle.putParcelableArrayList("contactsListToEditor", dbHelper.getContactsList().getContactsList());
