@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.sgcd.insubunhae.MainActivity;
 import com.sgcd.insubunhae.db.ContactsList;
+import com.sgcd.insubunhae.ui.statistics.StatisticsFragment;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -34,7 +35,8 @@ public class DBHelper extends SQLiteOpenHelper {
     private static Context context;
     private ContactsList contacts_list = new ContactsList();
     private int isDBExist;
-    public ContactsList getContactsList(){
+
+    public ContactsList getContactsList() {
         return contacts_list;
     }
 
@@ -77,13 +79,14 @@ public class DBHelper extends SQLiteOpenHelper {
 
         smsFromDeviceToDB(db);
         callLogFromDeviceToDB(db);
+        //calculateFamiliarity(db);
     }
 
     @Override
     public void onOpen(SQLiteDatabase db) {
         // DB exist check
         Cursor c = db.rawQuery("SELECT name FROM sqlite_master WHERE type='table'", null);
-        if(c.getCount() != 0){
+        if (c.getCount() != 0) {
             //if exist, get contacts list from app DB
             contacts_list.getContactsFromAppDB(db);
         }
@@ -94,7 +97,7 @@ public class DBHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Create tables
-        for(int i = 0; i < ARRAY_LENGTH; i++) {
+        for (int i = 0; i < ARRAY_LENGTH; i++) {
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME_ARRAY[i]);
             Log.d("Database Operations", "Table : " + TABLE_NAME_ARRAY[i] + " dropped...");
         }
@@ -111,10 +114,10 @@ public class DBHelper extends SQLiteOpenHelper {
             int callType = 0;         // Call type
             int callDuration = 0;     // Call duration
 
-            String selection=null;
-            String[] selectionArgs=null;
+            String selection = null;
+            String[] selectionArgs = null;
             final String sortOrder = CallLog.Calls.DATE + " DESC";
-            final long refreshRate = 24*60*60*1000L;// 24 hours
+            final long refreshRate = 24 * 60 * 60 * 1000L;// 24 hours
 
             String[] projection = {
                     CallLog.Calls._ID,
@@ -134,17 +137,15 @@ public class DBHelper extends SQLiteOpenHelper {
                     sortOrder
             );
 
-            if(callLogId==0){
+            if (callLogId == 0) {
                 //Toast.makeText(context, "Retrieving All CallLog", Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "Retrieving All CallLog..");
-            }
-            else if(System.currentTimeMillis() - callDatetime >= refreshRate) {
+            } else if (System.currentTimeMillis() - callDatetime >= refreshRate) {
                 selection = CallLog.Calls.DATE + " > ?";
                 selectionArgs = new String[]{String.valueOf(DBContract.CallLog.last_updated)};
                 //Toast.makeText(context, "Retrieving Additional CallLog..", Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "Retrieving Additional CallLog from " + callDatetime);
-            }
-            else {
+            } else {
                 //Toast.makeText(context, "Not much CallLog to retrieve yet..", Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "Not much CallLog to retrieve yet..");
 
@@ -172,7 +173,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 db.beginTransaction();
 
                 try {
-                    for(callLogId+=1; cursor.moveToNext(); ){
+                    for (callLogId += 1; cursor.moveToNext(); ) {
 
                         // first, get phone number to know if this is saved number
                         if (phoneIndex >= 0) {
@@ -189,8 +190,7 @@ public class DBHelper extends SQLiteOpenHelper {
                         if (contactName == null) {
                             Log.d("skip", "    <skip> number is not saved in contacts list");
                             continue;
-                        }
-                        else{
+                        } else {
                             callLogId++;
                         }
 
@@ -225,8 +225,7 @@ public class DBHelper extends SQLiteOpenHelper {
                     }
                     // Mark the transaction as successful
                     db.setTransactionSuccessful();
-                }
-                finally {
+                } finally {
                     // End the transaction
                     db.endTransaction();
                 }
@@ -235,7 +234,7 @@ public class DBHelper extends SQLiteOpenHelper {
             //update last retrieval datetime and callLogId
             DBContract.CallLog.last_updated = callDatetime;
             DBContract.CallLog.call_log_cnt = callLogId;
-            Log.d("Updated last_updated", "datetime " + callDatetime + " callLogID "+ callLogId);
+            Log.d("Updated last_updated", "datetime " + callDatetime + " callLogID " + callLogId);
 
             cursor.close();
 
@@ -282,13 +281,14 @@ public class DBHelper extends SQLiteOpenHelper {
                             String query = "SELECT contact_id FROM MAIN_CONTACTS WHERE phone_number1 = '"
                                     + smsSender + "'";
                             cursor1 = db.rawQuery(query, null);
+                            Log.d("sms.....", "cursor1 : " + cursor1);
 
-                            if (cursor1 != null) {
-                                if (cursor1.moveToFirst()) {
-                                    int columnIndex = cursor1.getColumnIndex("contact_id");
-                                    if (columnIndex >= 0) {
-                                        smsContactId = cursor1.getInt(columnIndex);
-                                    }
+                            if (cursor1 != null && cursor1.moveToFirst()) {
+                                int columnIndex = cursor1.getColumnIndex("contact_id");
+                                Log.d("sms.....", "columnIndex : " + columnIndex);
+                                if (columnIndex >= 0) {
+                                    smsContactId = cursor1.getInt(columnIndex);
+                                    Log.d("sms.....", "smsContactId : " + smsContactId);
                                 }
                             }
                         } catch (Exception e) {
@@ -660,7 +660,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     // DB 집계함수-MAX
     public Long getMaxOfAttribute(String tableName, String attributeName, int contact_id) {
-        SQLiteDatabase idb = this.getReadableDatabase();
+        SQLiteDatabase idb = getReadableDatabase();
 
         String query = "SELECT MAX(" + attributeName + ") FROM " + tableName + " WHERE contact_id = " + contact_id;
         Cursor dbCursor = idb.rawQuery(query, null);
@@ -677,7 +677,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     // DB 집계함수-MIN
     public Long getMinOfAttribute(String tableName, String attributeName, int contact_id) {
-        SQLiteDatabase idb = this.getReadableDatabase();
+        SQLiteDatabase idb = getReadableDatabase();
 
         String query = "SELECT MIN(" + attributeName + ") FROM " + tableName + " WHERE contact_id = " + contact_id;
         Cursor dbCursor = idb.rawQuery(query, null);

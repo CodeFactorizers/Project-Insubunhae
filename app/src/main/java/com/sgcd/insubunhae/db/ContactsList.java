@@ -241,7 +241,8 @@ public class ContactsList implements Parcelable {
                 cv.put("contact_id", tmp.getId());
                 cv.put("name", tmp.getName());
                 for (int j = 0; j < tmp.getPhoneNumber().size() && j < 3; j++) {
-                    cv.put("phone_number" + Integer.toString(j + 1), tmp.getPhoneNumber().get(j));
+                    String cleanedNumber = tmp.getPhoneNumber().get(j).replace("-", "");
+                    cv.put("phone_number" + Integer.toString(j + 1), cleanedNumber);
                     cv.put("phone_number_type" + Integer.toString(j + 1), tmp.getNumberType().get(j));
                 }
                 if(tmp.getGroupId().size() == 0) {
