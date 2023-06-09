@@ -1,6 +1,8 @@
 package com.sgcd.insubunhae.ui.contacts_viewer;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.provider.Contacts;
 import android.util.Log;
@@ -25,17 +27,19 @@ import com.sgcd.insubunhae.databinding.FragmentContactsEditorBinding;
 import com.sgcd.insubunhae.databinding.FragmentContactsObjectViewerBinding;
 import com.sgcd.insubunhae.db.Contact;
 import com.sgcd.insubunhae.db.ContactsList;
+import com.sgcd.insubunhae.db.DBHelper;
 
 import java.util.ArrayList;
 
 public class FragmentContactsEditor extends Fragment implements MainActivity.onBackPressedListener{
     private FragmentContactsEditorBinding binding;
-    private FragmentContactsEditor fragmentContactsEditor;
     private Context context;
     private Contact contacts;
     private MainActivity activity;
     private View root;
     private ContactsEditorViewModel model;
+    private ArrayList<String> old_group_list;
+    private final String TAG = "editor";
 
 
     public static FragmentContactsEditor newInstance(){
@@ -44,7 +48,6 @@ public class FragmentContactsEditor extends Fragment implements MainActivity.onB
 
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        fragmentContactsEditor = this;
         this.context = context;
         activity = (MainActivity) getActivity();
     }
@@ -53,33 +56,42 @@ public class FragmentContactsEditor extends Fragment implements MainActivity.onB
 //    public void onCreate(@Nullable Bundle savedInstanceState) {
 //        super.onCreate(savedInstanceState);
 //
-////        liveData.observe(this, new Observer<Contact>() {
-////            @Override
-////            public void onChanged(Contact contact) {
-////                setContact(contact);
-////            }
-////        });
-////        if(liveData.getValue() == null){
-////
-////        }
+//        liveData.observe(this, new Observer<Contact>() {
+//            @Override
+//            public void onChanged(Contact contact) {
+//                setContact(contact);
+//            }
+//        });
+//        if(liveData.getValue() == null){
+//
+//        }
 //    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         //Parcels.unwrap(savedInstanceState.getParcelable("contactsToEditor");
-        ArrayList<Contact> contactsList = this.getArguments().getParcelableArrayList("contactsListToEditor");
+        //ArrayList<Contact> contactsList = this.getArguments().getParcelableArrayList("contactsListToEditor");
+        ArrayList<Contact> contactsList = activity.getContactsList().getContactsList();
         int idx = this.getArguments().getInt("toEditorIdx");
         contacts = contactsList.get(idx);
+        old_group_list = contacts.getGroupId();
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_contacts_editor, container,false);
         model = new ViewModelProvider(this).get(ContactsEditorViewModel.class);
         root = binding.getRoot();
 
 
         Button btn_save = root.findViewById(R.id.btn_save);
+        Button btn_back = root.findViewById(R.id.btn_back);
         EditText editText = root.findViewById(R.id.contacts_editor_name);
         Contact tmp = contacts;
         tmp = activity.getContactsList().getContact(idx);
 
+        btn_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
         btn_save.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 contacts.setName(binding.getName());
@@ -87,14 +99,26 @@ public class FragmentContactsEditor extends Fragment implements MainActivity.onB
 //                contacts.updatePhoneNumber(1, binding.getPhoneNumber2());
 //                contacts.updatePhoneNumber(2, binding.getPhoneNumber3());
                 contacts.clearPhoneNumber();
-                if( isValid(binding.getPhoneNumber1())){
-                    contacts.setPhoneNumber(binding.getPhoneNumber1());
+//                if( isValid(binding.getPhoneNumber1())){
+//                    contacts.setPhoneNumber(binding.getPhoneNumber1());
+//                }
+//                if(isValid(binding.getPhoneNumber2())){
+//                    contacts.setPhoneNumber(binding.getPhoneNumber2());
+//                }
+//                if(isValid(binding.getPhoneNumber3())){
+//                    contacts.setPhoneNumber(binding.getPhoneNumber3());
+//                }
+                String phoneNumber1 = ((EditText)root.findViewById(R.id.contacts_editor_phoneNumber1)).getText().toString();
+                if(isValid(phoneNumber1)){
+                    contacts.setPhoneNumber(phoneNumber1);
                 }
-                if(isValid(binding.getPhoneNumber2())){
-                    contacts.setPhoneNumber(binding.getPhoneNumber2());
+                String phoneNumber2 = ((EditText)root.findViewById(R.id.contacts_editor_phoneNumber2)).getText().toString();
+                if(isValid(phoneNumber2)){
+                    contacts.setPhoneNumber(phoneNumber2);
                 }
-                if(isValid(binding.getPhoneNumber3())){
-                    contacts.setPhoneNumber(binding.getPhoneNumber3());
+                String phoneNumber3 = ((EditText)root.findViewById(R.id.contacts_editor_phoneNumber3)).getText().toString();
+                if(isValid(phoneNumber3)){
+                    contacts.setPhoneNumber(phoneNumber3);
                 }
                 contacts.clearAddress();
                 if(isValid(binding.getAddress())){
@@ -113,11 +137,12 @@ public class FragmentContactsEditor extends Fragment implements MainActivity.onB
                 contacts.setCompany(binding.getWork());
                 contacts.setSnsId(binding.getSNSID());
                 model.liveData.setValue(contacts);
+                contacts.updateDb(activity.getSQLiteDatabase(), activity.getContactsList().getGroupMap(), old_group_list);
 
                 Toast.makeText(context, binding.getName(), Toast.LENGTH_SHORT).show();
                 Log.d("editor", "before call back");
-                //activity.myGetFragmentManager().beginTransaction().remove(fragmentContactsEditor).commit();
-                fragmentContactsEditor.onBackPressed();
+
+                onBackPressed();
             }
         });
 
@@ -125,6 +150,8 @@ public class FragmentContactsEditor extends Fragment implements MainActivity.onB
         model.liveData.observe(activity, new Observer<Contact>() {
             @Override
             public void onChanged(Contact contact) {
+
+                Log.d(TAG, "in livedata. onchanged");
                 contacts.cpyContact(contact);
             }
         });
@@ -138,7 +165,7 @@ public class FragmentContactsEditor extends Fragment implements MainActivity.onB
     @Override
     public void onBackPressed() {
         Log.d("editor", "onBackPressed");
-        activity.myGetFragmentManager().beginTransaction().remove(this).commit();
+        activity.myGetFragmentManager().popBackStack();
     }
 
     private static boolean isValid(String str){
@@ -224,4 +251,6 @@ public class FragmentContactsEditor extends Fragment implements MainActivity.onB
         if(contact.getSnsId() != null) binding.setSNSID(contact.getSnsId());
         else root.findViewById(R.id.contacts_editor_sns_id).setVisibility(View.GONE);
     }
+
+
 }

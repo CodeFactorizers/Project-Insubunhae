@@ -46,6 +46,14 @@ public class ContactsList implements Parcelable {
     public int describeContents() {
         return 0;
     }
+    public int getIndexFromId(int id){
+        int i;
+        for(i = 0; i < contacts_list.size(); i++){
+            if(contacts_list.get(i).getId().equals(id)) break;
+        }
+        return i;
+    }
+
 
     public static final Creator<ContactsList> CREATOR = new Creator<ContactsList>() {
         @Override
@@ -255,7 +263,9 @@ public class ContactsList implements Parcelable {
             Cursor groupCursor = db.rawQuery("SELECT * FROM GROUP_MEMBER WHERE contact_id == " + id, null);
             while(groupCursor.moveToNext()){
                 //Log.d("getdbfromapp", id + "가 속한 그룹 테이블 : " + groupCursor.getString(0) + " " + groupCursor.getString(1) + " " + groupCursor.getString((2)));
-                contact.setGroupId(groupCursor.getString(2));
+                String groupId = groupCursor.getString(2);
+                contact.setGroupId(groupId);
+                group_map.get(groupId).setMemberList(id);
             }
             groupIdToName(contact);
             if(!contact.getGroupId().isEmpty()) {
@@ -283,8 +293,13 @@ public class ContactsList implements Parcelable {
                 ContentValues cv = new ContentValues();
                 cv.put("contact_id", tmp.getId());
                 cv.put("name", tmp.getName());
+//                for (int j = 0; j < tmp.getPhoneNumber().size() && j < 3; j++) {
+//                    cv.put("phone_number" + Integer.toString(j + 1), tmp.getPhoneNumber().get(j));
+//                    cv.put("phone_number_type" + Integer.toString(j + 1), tmp.getNumberType().get(j));
+//                }
                 for (int j = 0; j < tmp.getPhoneNumber().size() && j < 3; j++) {
-                    cv.put("phone_number" + Integer.toString(j + 1), tmp.getPhoneNumber().get(j));
+                    String cleanedNumber = tmp.getPhoneNumber().get(j).replace("-", "");
+                    cv.put("phone_number" + Integer.toString(j + 1), cleanedNumber);
                     cv.put("phone_number_type" + Integer.toString(j + 1), tmp.getNumberType().get(j));
                 }
                 if(tmp.getGroupId().size() == 0) {

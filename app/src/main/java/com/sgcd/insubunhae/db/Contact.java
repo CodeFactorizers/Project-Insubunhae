@@ -1,13 +1,18 @@
 package com.sgcd.insubunhae.db;
 
 
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
 import java.sql.Array;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Map;
 
 public class Contact implements Parcelable {
     private String id;
@@ -41,6 +46,50 @@ public class Contact implements Parcelable {
         this.groupCount = contact.getGroupCount();
         this.company = contact.getCompany();
         this.snsId = contact.getSnsId();
+    }
+    public void updateDb(SQLiteDatabase idb, Map<String, Group> group_map, ArrayList<String> old_group_list){
+        //연락처 정보
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("name", this.name);
+        for(int i = 0; i < this.phoneNumber.size(); i++){
+            contentValues.put("phone_number" + Integer.toString(i+1), this.phoneNumber.get(i));
+        }
+        for(int i = 0; i < this.address.size(); i++){
+            contentValues.put("address" + Integer.toString(i+1), this.address.get(i));
+        }
+        if(this.email.size() >= 1){
+            contentValues.put("email", this.email.get(0));
+        }
+        if(this.email.size() >= 2){
+            contentValues.put("sub_email", this.email.get(1));
+        }
+        contentValues.put("work", this.company);
+        contentValues.put("sns_id", this.snsId);
+        long now = System.currentTimeMillis();
+        Date date = new Date(now);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String getTime = sdf.format(date);
+        contentValues.put("updated_date", getTime);
+        String whereClause = "contact_id = ?";
+        String[] whereArgs = {this.id};
+        idb.update("MAIN_CONTACTS", contentValues, whereClause, whereArgs);
+
+        //group 정보
+        idb.delete("GROUP_MEMBER", whereClause, whereArgs);
+        if(!old_group_list.equals(this.groupId)){
+            for(String oldGroupId : old_group_list){
+                group_map.get(oldGroupId).getMemberList().remove(id);
+            }
+            for(String groupId:this.groupId){
+                group_map.get(groupId).setMemberList(id);
+            }
+        }
+        for(String groupId:this.groupId) {
+            contentValues.clear();
+            contentValues.put("contact_id", id);
+            contentValues.put("group_id", groupId);
+            idb.insert("GROUP_MEMBER", null, contentValues);
+        }
     }
 
     public Contact() {
