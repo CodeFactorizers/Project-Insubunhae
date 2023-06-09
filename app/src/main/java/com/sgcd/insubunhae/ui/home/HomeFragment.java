@@ -50,6 +50,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -101,56 +102,8 @@ public class HomeFragment extends Fragment {
     }
 
 
-    public class Node implements Parcelable {
-        // Your existing code for the Node class
-
-        protected Node(Parcel in) {
-            // Read data from the parcel and assign it to the corresponding fields
-        }
-
-        // Implement the Parcelable.Creator interface
-        public final Parcelable.Creator<Node> CREATOR = new Parcelable.Creator<Node>() {
-            @Override
-            public Node createFromParcel(Parcel in) {
-                return new Node(in);
-            }
-
-            @Override
-            public Node[] newArray(int size) {
-                return new Node[size];
-            }
-        };
-
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            // Write data from the fields to the parcel
-        }
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-    }
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        // Save the state of the mind map view
-        outState.putParcelableArrayList("nodes", new ArrayList<>(nodeList));
-    }
-
-    @Override
-    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
-        if (savedInstanceState != null) {
-            nodeList = savedInstanceState.getParcelableArrayList("nodes");
-            // Update the mind map view with the restored state
-        }
-    }
-
     private void initWidgets() {
 
-        final GysoTreeView treeView = binding.baseTreeView;
-        // Configure the TreeView as needed
 
         // 1 customs adapter
         AnimalTreeViewAdapter adapter = new AnimalTreeViewAdapter();
@@ -161,16 +114,7 @@ public class HomeFragment extends Fragment {
         binding.baseTreeView.setTreeLayoutManager(treeLayoutManager);
         // 4 nodes data setting
 
-        class MyTask implements Runnable {
-            @Override
-            public void run() {
-                setData(adapter);
-            }
-        }
-        Executor executor = Executors.newSingleThreadExecutor();
-        executor.execute(new MyTask());
-
-        //setData(adapter);
+        setData(adapter);
 
         Log.d("002", "setData(adapter) finished.");
         // 5 get an editor. Note: an adapter must set before get an editor.
@@ -296,112 +240,116 @@ public class HomeFragment extends Fragment {
 
 
     public void setData(AnimalTreeViewAdapter adapter) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            // Perform heavy operations here
 
-        Log.d("setData() 1", "getContactsList starts");
-        ArrayList<Contact> contactsList = ((MainActivity) getActivity()).getContactsList().getContactsList();
-        Log.d("setData() 2", "getContactsList finished");
-        ArrayList<String> groupList = new ArrayList<>();
+            Log.d("setData() 1", "getContactsList starts");
+            ArrayList<Contact> contactsList = ((MainActivity) getActivity()).getContactsList().getContactsList();
+            Log.d("setData() 2", "getContactsList finished");
+            ArrayList<String> groupList = new ArrayList<>();
 
-        int contactSize = contactsList.size();
-        Animal[] AnimalArray = new Animal[contactSize];
-        for (int i = 0; i < AnimalArray.length; i++) {
-            AnimalArray[i] = new Animal(contactsList.get(i).getName());
-        }
-
-
-
-        ArrayList<NodeModel<Animal>> AnimalNodes = new ArrayList<>(contactSize);
-        AnimalNodes.ensureCapacity(2000);
-        NodeModel<Animal>[] GroupTmpNodes = new NodeModel[contactSize];
-        //GroupTmpNodes.ensureCapacity(2000);
-        ArrayList<TreeModel<Animal>> GroupTrees = new ArrayList<>();
-        GroupTrees.ensureCapacity(100);
-
-        //미분류
-        Animal notAssigned = new Animal("미분류");
-        NodeModel<Animal> nANode = new NodeModel<Animal>(notAssigned);
-        TreeModel<Animal> NotAssignedTree = new TreeModel(nANode);
-
-        ArrayList<Animal> naAnimalArray = new ArrayList<Animal>();
-        naAnimalArray.ensureCapacity(1000);
-        ArrayList<NodeModel<Animal>> NotAssignedNodes = new ArrayList<>();
-        NotAssignedNodes.ensureCapacity(1000);
-        //아래부분에서 Root.addNode(...);하자 (미분류 그룹은 가장 마지막에 추가해두자..)
-
-
-        // Create the root node
-        Animal rootAnimal = new Animal(R.drawable.baseline_person_outline_48, "나");
-        NodeModel<Animal> root = new NodeModel<>(rootAnimal);
-        TreeModel<Animal> Root = new TreeModel<>(root);
-
-        for (int i = 0; i < contactsList.size(); i++) {
-            if (contactsList.get(i).getIsGrouped() == 0) {
-                break;
+            int contactSize = contactsList.size();
+            Animal[] AnimalArray = new Animal[contactSize];
+            for (int i = 0; i < AnimalArray.length; i++) {
+                AnimalArray[i] = new Animal(contactsList.get(i).getName());
             }
-            String s = getOnlyGroupName(contactsList.get(i).getGroupName());
 
-            if (!groupList.contains(s)) {
-                groupList.add(s);
-            }
-        }
-        Log.d("setData() 3", "grouplist set, line315");
 
-        Animal[] GroupAnimalArray = new Animal[contactsList.size()];
 
-        //set each GroupTrees[]'s group nodes into NodeModels and THEN TreeModels.
-        for (int i=0; i< groupList.size(); i++) {
-            String name = groupList.get(i);
-            //Animal 생성(그룹용)
-            GroupAnimalArray[i] = new Animal(name);
-            Log.d(".", "GroupAnimalArray:" + GroupAnimalArray);
+            ArrayList<NodeModel<Animal>> AnimalNodes = new ArrayList<>(contactSize);
+            AnimalNodes.ensureCapacity(2000);
+            NodeModel<Animal>[] GroupTmpNodes = new NodeModel[contactSize];
+            //GroupTmpNodes.ensureCapacity(2000);
+            ArrayList<TreeModel<Animal>> GroupTrees = new ArrayList<>();
+            GroupTrees.ensureCapacity(100);
 
-            //NodeModel<Animal> 추가
-            GroupTmpNodes[i] = new NodeModel<Animal>(GroupAnimalArray[i]);
-            //GroupTmpNodes[a].setName(name);
+            //미분류
+            Animal notAssigned = new Animal("미분류");
+            NodeModel<Animal> nANode = new NodeModel<Animal>(notAssigned);
+            TreeModel<Animal> NotAssignedTree = new TreeModel(nANode);
 
-            //TreeModel<Animal> 추가
-            GroupTrees.add(i, new TreeModel<Animal>(GroupTmpNodes[i]));
-            GroupTrees.get(i).getRootNode().getValue().setName(name);
+            ArrayList<Animal> naAnimalArray = new ArrayList<Animal>();
+            naAnimalArray.ensureCapacity(1000);
+            ArrayList<NodeModel<Animal>> NotAssignedNodes = new ArrayList<>();
+            NotAssignedNodes.ensureCapacity(1000);
+            //아래부분에서 Root.addNode(...);하자 (미분류 그룹은 가장 마지막에 추가해두자..)
 
-            Root.addNode(root, GroupTmpNodes[i]);
-        }
-        Log.d("setData() 4", "groupnodes and trees set");
 
-        //이제 그룹말고 실제 연락처를 animal 및 node로 생성
-        AnimalNodes.ensureCapacity(contactsList.size());
+            // Create the root node
+            Animal rootAnimal = new Animal(R.drawable.baseline_person_outline_48, "나");
+            NodeModel<Animal> root = new NodeModel<>(rootAnimal);
+            TreeModel<Animal> Root = new TreeModel<>(root);
 
-        int na_count= 0;
-        for (int j = 0; j < contactsList.size(); j++) {
-            Contact tmpContact = contactsList.get(j);
-            //Log.d("contact at 222 ","tmpContact: " + tmpContact.getName());
-
-            AnimalArray[j] = new Animal(tmpContact.getName());
-            //AnimalNodes.set(j, new NodeModel<Animal>(AnimalArray[j]));
-            AnimalNodes.add(j, new NodeModel<>(AnimalArray[j]));
-            //Log.d("AnimalNode", "AnimalNodes.get(j):" +AnimalNodes.get(j));
-
-            if (tmpContact.getIsGrouped() != 0) {
-                String s = getOnlyGroupName(tmpContact.getGroupName());
-                int gI = groupList.indexOf(s);
-                if(GroupTmpNodes[j].leafCount>=4) continue;
-                GroupTrees.get(gI).addNode(GroupTmpNodes[gI], AnimalNodes.get(j));
-            }
-            else{
-                if(!na_flag) {
-                    na_flag = true;
-                    Root.addNode(root,nANode);
+            for (int i = 0; i < contactsList.size(); i++) {
+                if (contactsList.get(i).getIsGrouped() == 0) {
+                    break;
                 }
-                if(nANode.leafCount>=3){//3개까지만 나오도록
-                    Log.d("nANode", "leafCount: "+ nANode.leafCount+"leavesList"+ nANode.leavesList+"child"+nANode.childNodes);
-                    continue;
-                }
-                naAnimalArray.add(na_count, new Animal(tmpContact.getName()));
-                NotAssignedNodes.add(na_count,new NodeModel<>(naAnimalArray.get(na_count)));
-                NotAssignedTree.addNode(nANode,NotAssignedNodes.get(na_count));
-            }
-        }
+                String s = getOnlyGroupName(contactsList.get(i).getGroupName());
 
-        //** sample nodes. going to set this into sample removing target node or something
+                if (!groupList.contains(s)) {
+                    groupList.add(s);
+                }
+            }
+            Log.d("setData() 3", "grouplist set, line315");
+
+            Animal[] GroupAnimalArray = new Animal[contactsList.size()];
+
+            //set each GroupTrees[]'s group nodes into NodeModels and THEN TreeModels.
+            for (int i=0; i< groupList.size(); i++) {
+                String name = groupList.get(i);
+                //Animal 생성(그룹용)
+                GroupAnimalArray[i] = new Animal(name);
+                //Log.d(".", "GroupAnimalArray:" + GroupAnimalArray);
+
+                //NodeModel<Animal> 추가
+                GroupTmpNodes[i] = new NodeModel<Animal>(GroupAnimalArray[i]);
+                //GroupTmpNodes[a].setName(name);
+
+                //TreeModel<Animal> 추가
+                GroupTrees.add(i, new TreeModel<Animal>(GroupTmpNodes[i]));
+                GroupTrees.get(i).getRootNode().getValue().setName(name);
+
+                Root.addNode(root, GroupTmpNodes[i]);
+            }
+            Log.d("setData() 4", "groupnodes and trees set");
+
+            //이제 그룹말고 실제 연락처를 animal 및 node로 생성
+            AnimalNodes.ensureCapacity(contactsList.size());
+
+            int na_count= 0;
+            for (int j = 0; j < contactsList.size(); j++) {
+                Contact tmpContact = contactsList.get(j);
+                //Log.d("contact at 222 ","tmpContact: " + tmpContact.getName());
+
+                AnimalArray[j] = new Animal(tmpContact.getName());
+                //AnimalNodes.set(j, new NodeModel<Animal>(AnimalArray[j]));
+                AnimalNodes.add(j, new NodeModel<>(AnimalArray[j]));
+                //Log.d("AnimalNode", "AnimalNodes.get(j):" +AnimalNodes.get(j));
+
+                if (tmpContact.getIsGrouped() != 0) {
+                    String s = getOnlyGroupName(tmpContact.getGroupName());
+                    int gI = groupList.indexOf(s);
+                    Log.d("1111", "GroupTmpNodes[gI]" + GroupTmpNodes[gI]);
+                    if(GroupTmpNodes[gI].leafCount>=4) continue;
+                    GroupTrees.get(gI).addNode(GroupTmpNodes[gI], AnimalNodes.get(j));
+                }
+                else{
+                    if(!na_flag) {
+                        na_flag = true;
+                        Root.addNode(root,nANode);
+                    }
+                    if(nANode.leafCount>=3){//3개까지만 나오도록
+                        Log.d("nANode", "leafCount: "+ nANode.leafCount+"leavesList"+ nANode.leavesList+"child"+nANode.childNodes);
+                        continue;
+                    }
+                    naAnimalArray.add(na_count, new Animal(tmpContact.getName()));
+                    NotAssignedNodes.add(na_count,new NodeModel<>(naAnimalArray.get(na_count)));
+                    NotAssignedTree.addNode(nANode,NotAssignedNodes.get(na_count));
+                }
+            }
+
+            //** sample nodes. going to set this into sample removing target node or something
 //        NodeModel<Animal> insu = new NodeModel<>(new Animal("인수"));
 //        NodeModel<Animal> insu_1 = new NodeModel<>(new Animal("인수1"));
 //        NodeModel<Animal> insu_2 = new NodeModel<>(new Animal("인수2"));
@@ -412,11 +360,15 @@ public class HomeFragment extends Fragment {
 //        //mark
 //        parentToRemoveChildren = insu;
 //        targetNode = insu_1;
-        //** sample nodes end
-        //set data
-        //adapter.setTreeModel(GroupTrees.get(0));
+            //** sample nodes end
+            getActivity().runOnUiThread(() -> {
+            adapter.setTreeModel(Root);
 
-        adapter.setTreeModel(Root);
+                // Update the adapter and notify the change
+
+            });
+        });
+        adapter.notifyDataSetChange();
     }
 
     // capitalize first character of the string
