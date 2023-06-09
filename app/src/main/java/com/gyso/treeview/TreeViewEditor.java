@@ -209,7 +209,7 @@ public class TreeViewEditor {
 
     public interface  TraverseRelationshipCallback{
        <T> void callback(T root, T parent , T child);
-       default  void callbackView(View rootView, View parentView , View childView){};
+       default void callbackView(View rootView, View parentView , View childView){};
     }
 
     public interface OnNodeSelectedCallback{
