@@ -59,6 +59,7 @@ import com.sgcd.insubunhae.db.Contact;
 import com.sgcd.insubunhae.db.ContactsList;
 import com.sgcd.insubunhae.db.DBHelper;
 import com.sgcd.insubunhae.ui.contacts_viewer.FragmentContactsObjectViewer;
+import com.sgcd.insubunhae.ui.home.HomeFragment;
 
 public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;

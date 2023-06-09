@@ -299,6 +299,7 @@ public class ContactsList implements Parcelable {
 //                }
                 for (int j = 0; j < tmp.getPhoneNumber().size() && j < 3; j++) {
                     String cleanedNumber = tmp.getPhoneNumber().get(j).replace("-", "");
+                    cleanedNumber.replace(" ", "");
                     cv.put("phone_number" + Integer.toString(j + 1), cleanedNumber);
                     cv.put("phone_number_type" + Integer.toString(j + 1), tmp.getNumberType().get(j));
                 }

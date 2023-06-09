@@ -3,6 +3,8 @@ package com.sgcd.insubunhae.ui.home;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,14 +13,15 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.gyso.treeview.adapter.TreeViewAdapter;
+import com.gyso.treeview.GysoTreeView;
 import com.gyso.treeview.layout.BoxHorizonLeftAndRightLayoutManager;
 import com.gyso.treeview.layout.CompactDownTreeLayoutManager;
 import com.gyso.treeview.layout.CompactHorizonLeftAndRightLayoutManager;
 import com.gyso.treeview.layout.CompactRingTreeLayoutManager;
-import com.gyso.treeview.layout.ForceDirectedTreeLayoutManager;
 import com.gyso.treeview.layout.TableHorizonLeftAndRightLayoutManager;
 import com.gyso.treeview.layout.TreeLayoutManager;
 import com.gyso.treeview.line.BaseLine;
@@ -35,16 +38,18 @@ import com.sgcd.insubunhae.base.ContactTreeViewAdapter;
 import com.sgcd.insubunhae.databinding.FragmentHomeBinding;
 
 import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 
 import android.widget.Toast;
 
 import com.gyso.treeview.TreeViewEditor;
 import com.sgcd.insubunhae.db.Contact;
-import com.sgcd.insubunhae.db.ContactsList;
-import com.sgcd.insubunhae.db.Group;
+
+import org.w3c.dom.Node;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -52,10 +57,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class HomeFragment extends Fragment {
-
-    //public ContactsList contactsList;
-
-
     private FragmentHomeBinding binding;
     private NavController navController;
     public static final String TAG = HomeFragment.class.getSimpleName();
@@ -67,11 +68,14 @@ public class HomeFragment extends Fragment {
     private NodeModel<Animal> parentToRemoveChildren = null;
     private MainActivity activity;
 
-    public boolean na_flag = false;
+    // Add a member variable to store the mind map view state
+    private List<Node> nodeList = new ArrayList<>();
 
+    public boolean na_flag = false;
     int space_count = 10;
     int space_20dp = 20;
-    int space_30dp = 30;
+
+
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -84,17 +88,13 @@ public class HomeFragment extends Fragment {
 //        HomeViewModel homeViewModel =
 //                new ViewModelProvider(this).get(HomeViewModel.class);
         binding = FragmentHomeBinding.inflate(inflater, container, false);
-        View root = binding.getRoot();
-
-//        final TextView textView = binding.textHome;
-//        homeViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
-        return root;
+        return binding.getRoot();
     }
 
-
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        navController = Navigation.findNavController(view);//확인필요
 
         // Other initialization or code for HomeFragment
         // Set click listeners for the buttons
@@ -102,51 +102,78 @@ public class HomeFragment extends Fragment {
         TextView addNodesButton = view.findViewById(R.id.add_nodes_bt);
         TextView removeNodeButton = view.findViewById(R.id.remove_node_bt);
 
-        viewCenterButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Navigate to a destination when the button is clicked
-                navController.navigate(R.id.view_center_bt);
-            }
-        });
-
-        addNodesButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Navigate to a destination when the button is clicked
-                navController.navigate(R.id.add_nodes_bt);
-            }
-        });
-
-        removeNodeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Navigate to a destination when the button is clicked
-                navController.navigate(R.id.remove_node_bt);
-            }
-        });
+        binding.viewCenterBt.setOnClickListener(v -> navController.navigate(R.id.view_center_bt));
+        binding.addNodesBt.setOnClickListener(v -> navController.navigate(R.id.add_nodes_bt));
+        binding.removeNodeBt.setOnClickListener(v -> navController.navigate(R.id.remove_node_bt));
 
         initWidgets();
     }
 
+    public class Node implements Parcelable {
+        // Your existing code for the Node class
+
+        protected Node(Parcel in) {
+            // Read data from the parcel and assign it to the corresponding fields
+        }
+
+        // Implement the Parcelable.Creator interface
+        public final Parcelable.Creator<Node> CREATOR = new Parcelable.Creator<Node>() {
+            @Override
+            public Node createFromParcel(Parcel in) {
+                return new Node(in);
+            }
+
+            @Override
+            public Node[] newArray(int size) {
+                return new Node[size];
+            }
+        };
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            // Write data from the fields to the parcel
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+    }
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        // Save the state of the mind map view
+        outState.putParcelableArrayList("nodes", new ArrayList<>(nodeList));
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if (savedInstanceState != null) {
+            nodeList = savedInstanceState.getParcelableArrayList("nodes");
+            // Update the mind map view with the restored state
+        }
+    }
 
     private void initWidgets() {
+
+        final GysoTreeView treeView = binding.baseTreeView;
+        // Configure the TreeView as needed
+
         // 1 customs adapter
 //        AnimalTreeViewAdapter adapter = new AnimalTreeViewAdapter();
         ContactTreeViewAdapter adapter = new ContactTreeViewAdapter();
 
         // 2 configure layout manager; unit dp
         TreeLayoutManager treeLayoutManager = getTreeLayoutManager();
-
         // 3 view setting
         binding.baseTreeView.setAdapter(adapter);
         binding.baseTreeView.setTreeLayoutManager(treeLayoutManager);
-
         // 4 nodes data setting
         setData(adapter);
+        Log.d("002", "setData(adapter) finished.");
         // 5 get an editor. Note: an adapter must set before get an editor.
-        final com.gyso.treeview.TreeViewEditor editor = binding.baseTreeView.getEditor();
-
+        final TreeViewEditor editor = binding.baseTreeView.getEditor();
         // 6 you own others jobs
         doYourOwnJobs(editor, adapter);
     }
@@ -269,7 +296,7 @@ public class HomeFragment extends Fragment {
         // treeView control listener
         final Object token = new Object();
         Runnable dismissRun = () -> {
-            binding.scalePercent.setVisibility(View.GONE);
+            binding.scalePercent.setVisibility(View.VISIBLE);
         };
 
 
@@ -340,10 +367,9 @@ public class HomeFragment extends Fragment {
     }
 
     public void setData(AnimalTreeViewAdapter adapter) {
+        Log.d("setData() 1", "getContactsList starts");
         ArrayList<Contact> contactsList = activity.getContactsList().getContactsList();
-        //contactsList = MainActivity.getContactsList();
-        //Map<String, Group> groupMap = contactsList.getGroupMap();
-        //group
+        Log.d("setData() 2", "getContactsList finished");
         ArrayList<String> groupList = new ArrayList<>();
 
         int contactSize = contactsList.size();
@@ -375,31 +401,19 @@ public class HomeFragment extends Fragment {
         Animal rootAnimal = new Animal(R.drawable.baseline_person_outline_48, "나");
         NodeModel<Animal> root = new NodeModel<>(rootAnimal);
         TreeModel<Animal> Root = new TreeModel<>(root);
-        //GroupTrees.add(new TreeModel<>(root));
-
-        //TreeModel<Animal> root = new TreeModel<>(GroupTmpNodes.get(0));//for test
-
-        int c = 0;
-//        int i = 0;
-        while (contactsList.get(c++).getIsGrouped() != 0) {
-            groupList.add(0, contactsList.get(c).getOnlyGroupName());
-            break;
-        }
 
         for (int i = 0; i < contactsList.size(); i++) {
             if (contactsList.get(i).getIsGrouped() == 0) {
                 break;
             }
-            //Log.d("groupsize", "size"+groupList.size()+", i:"+i);
-            String s = contactsList.get(i).getOnlyGroupName();
-            //Log.d("group tag", "group"+ i +","+s );
-            //Log.d("contacts viewer", "groupId " + i);
+            String s = getOnlyGroupName(contactsList.get(i).getGroupName());
+
             if (!groupList.contains(s)) {
                 groupList.add(s);
             }
-            //Log.d("contacts viewer", "groupList : " + groupList);
-
         }
+        Log.d("setData() 3", "grouplist set, line315");
+
         Animal[] GroupAnimalArray = new Animal[contactsList.size()];
 
         //set each GroupTrees[]'s group nodes into NodeModels and THEN TreeModels.
@@ -407,7 +421,6 @@ public class HomeFragment extends Fragment {
             String name = groupList.get(i);
             //Animal 생성(그룹용)
             GroupAnimalArray[i] = new Animal(name);
-            //Log.d(".", "AnimalArray"+AnimalArray);
             Log.d(".", "GroupAnimalArray:" + GroupAnimalArray);
 
             //NodeModel<Animal> 추가
@@ -419,10 +432,8 @@ public class HomeFragment extends Fragment {
             GroupTrees.get(i).getRootNode().getValue().setName(name);
 
             Root.addNode(root, GroupTmpNodes[i]);
-            //GroupTrees.get(i).addNode(GroupTmpNodes.get(i));
-            //GroupTrees.set(i, GroupTrees.get(i).addNode(GroupTmpNodes.get(i)));
-            //Log.d("mindmap", "groupNodes : " + GroupTmpNodes[i].getValue().getName() +"/GroupTrees"+ GroupTrees.get(i).get;
         }
+        Log.d("setData() 4", "groupnodes and trees set");
 
         //이제 그룹말고 실제 연락처를 animal 및 node로 생성
         AnimalNodes.ensureCapacity(contactsList.size());
@@ -430,26 +441,27 @@ public class HomeFragment extends Fragment {
         int na_count= 0;
         for (int j = 0; j < contactsList.size(); j++) {
             Contact tmpContact = contactsList.get(j);
-            Log.d("contact at 222 ","tmpContact: " + tmpContact.getName());
+            //Log.d("contact at 222 ","tmpContact: " + tmpContact.getName());
 
             AnimalArray[j] = new Animal(tmpContact.getName());
             //AnimalNodes.set(j, new NodeModel<Animal>(AnimalArray[j]));
             AnimalNodes.add(j, new NodeModel<>(AnimalArray[j]));
-            Log.d("AnimalArray", "AnimalArray[j]:" +AnimalArray[j]);
-            Log.d("AnimalNode", "AnimalNodes.get(j):" +AnimalNodes.get(j));
+            //Log.d("AnimalNode", "AnimalNodes.get(j):" +AnimalNodes.get(j));
 
             if (tmpContact.getIsGrouped() != 0) {
-                String s = tmpContact.getOnlyGroupName();
+                String s = getOnlyGroupName(tmpContact.getGroupName());
                 int gI = groupList.indexOf(s);
-
-                Log.d("animalnnodes", "s:" + s + "gI: " + gI + "groupList.get(gI): " + groupList.get(gI) + "j:" + j);
+                if(GroupTmpNodes[j].leafCount>=4) continue;
                 GroupTrees.get(gI).addNode(GroupTmpNodes[gI], AnimalNodes.get(j));
-
             }
             else{
                 if(!na_flag) {
                     na_flag = true;
                     Root.addNode(root,nANode);
+                }
+                if(nANode.leafCount>=3){//3개까지만 나오도록
+                    Log.d("nANode", "leafCount: "+ nANode.leafCount+"leavesList"+ nANode.leavesList+"child"+nANode.childNodes);
+                    continue;
                 }
                 naAnimalArray.add(na_count, new Animal(tmpContact.getName()));
                 NotAssignedNodes.add(na_count,new NodeModel<>(naAnimalArray.get(na_count)));
@@ -458,24 +470,21 @@ public class HomeFragment extends Fragment {
         }
 
         //** sample nodes. going to set this into sample removing target node or something
-        NodeModel<Animal> insu = new NodeModel<>(new Animal("인수"));
-        NodeModel<Animal> insu_1 = new NodeModel<>(new Animal("인수1"));
-        NodeModel<Animal> insu_2 = new NodeModel<>(new Animal("인수2"));
-        NodeModel<Animal> insu_3 = new NodeModel<>(new Animal("인수3"));
-        NodeModel<Animal> insu_4 = new NodeModel<>(new Animal("인수4"));
-        TreeModel<Animal> Insu = new TreeModel<>(insu);
-        Root.addNode(root, insu);
-        Insu.addNode(insu, insu_1, insu_2, insu_3, insu_4);
-
-        //mark
-        parentToRemoveChildren = insu;
-        targetNode = insu_1;
+//        NodeModel<Animal> insu = new NodeModel<>(new Animal("인수"));
+//        NodeModel<Animal> insu_1 = new NodeModel<>(new Animal("인수1"));
+//        NodeModel<Animal> insu_2 = new NodeModel<>(new Animal("인수2"));
+//        TreeModel<Animal> Insu = new TreeModel<>(insu);
+//        Root.addNode(root, insu);
+//        Insu.addNode(insu, insu_1, insu_2);
+//
+//        //mark
+//        parentToRemoveChildren = insu;
+//        targetNode = insu_1;
         //** sample nodes end
         //set data
         //adapter.setTreeModel(GroupTrees.get(0));
+
         adapter.setTreeModel(Root);
-
-
     }
 
     public void setData(ContactTreeViewAdapter adapter) {
@@ -509,62 +518,37 @@ public class HomeFragment extends Fragment {
         if (variableName == null || variableName.isEmpty()) {
             return variableName; // Return the original name if it's null or empty
         }
-
         char firstChar = Character.toUpperCase(variableName.charAt(0));
         String capitalized = firstChar + variableName.substring(1);
 
         return capitalized;
     }
 
+//    private void updateMindMapView(GysoTreeView treeView, List<Node> nodeList) {
+//        // Clear the existing nodes from the TreeView
+//        TreeModel<Animal> tmpRoot = new TreeModel<>(new NodeModel<Animal>(new Animal("나")));
+//        treeView.getAdapter().setTreeModel(tmpRoot);
+//
+//        // Add the new nodes from the nodeList to the TreeView
+//        for (Node node : nodeList) {
+//            treeView.getAdapter().getTreeModel().addNode(node);
+//        }
+//
+//        // Notify the TreeView adapter that the data set has changed
+//        treeView.getAdapter().notifyDataSetChange();
+//    }
+
+
+    public String getOnlyGroupName(ArrayList<String> groups){
+        return groups.get(0);
+    }
+
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
     }
+
+
 }
-
-
-
-
-//        NodeModel<Animal> me = new NodeModel<>(new Animal(R.drawable.baseline_person_pin_circle_48,"나"));
-//        TreeModel<Animal> Me = new TreeModel<>(me);
-//        //TODO: 그룹명 get해서 TreeModel<Group> 하기, 모든 연락처에 대해 nodeModel하기, for(count){NodeModel<Contacts>, treemodel.addnode } 하기
-//
-//
-//        //sehee's try
-//        Log.d("0608", "home frag");
-//        ArrayList<Contact> contactsList = ((MainActivity)getActivity()).getContactsList().getContactsList();
-//
-//        String[] contactNameArray = new String[contactsList.size()];
-//        ArrayList<NodeModel<Animal>> nodeList = new ArrayList<>();
-//
-//
-//        String[] contactIdArray = new String[contactsList.size()];
-//        int[] contactIdIntArray = new int[contactIdArray.length];
-//        for (int i = 0; i < contactsList.size(); i++) {
-//            contactNameArray[i] = contactsList.get(i).getName();
-//            contactIdArray[i] = contactsList.get(i).getId();
-//            contactIdIntArray[i] = Integer.parseInt(contactIdArray[i]);
-//
-//            nodeList.add(new NodeModel<>(new Animal(contactNameArray[i])));
-//            //treeModel.addNode(root, sub0, sub1, nodeList.get(i));
-//            Me.addNode(me, nodeList.get(i));
-//        }
-//
-//
-//        //** sample nodes. going to set this into sample removing target node or something
-//        NodeModel<Animal> insu = new NodeModel<>(new Animal("인수"));
-//        NodeModel<Animal> insu_1 = new NodeModel<>(new Animal("인수1"));
-//        NodeModel<Animal> insu_2 = new NodeModel<>(new Animal("인수2"));
-//        NodeModel<Animal> insu_3 = new NodeModel<>(new Animal("인수3"));
-//        NodeModel<Animal> insu_4 = new NodeModel<>(new Animal("인수4"));
-//        TreeModel<Animal> Insu = new TreeModel<>(insu);
-//        Me.addNode(me, insu);
-//        Insu.addNode(insu, insu_1, insu_2, insu_3, insu_4);
-//
-//        //mark
-//        parentToRemoveChildren = insu;
-//        targetNode = insu_1;
-//        //** sample nodes end
-
-
