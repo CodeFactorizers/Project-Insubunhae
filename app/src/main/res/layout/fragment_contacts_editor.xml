@@ -68,6 +68,8 @@
                 android:layout_height="wrap_content"
                 android:text="@={name}"
                 android:hint="이름"
+                android:inputType="text"
+                android:imeOptions="actionDone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/contacts_editor_const_name" />
@@ -87,6 +89,8 @@
                 android:layout_height="wrap_content"
                 android:hint="010-1234-5678"
                 android:text="@{phone_number1}"
+                android:inputType="phone"
+                android:imeOptions="actionDone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/contacts_editor_const_phoneNumber" />
@@ -97,6 +101,8 @@
                 android:layout_height="wrap_content"
                 android:hint="010-1234-5678"
                 android:text="@{phone_number2}"
+                android:inputType="text"
+                android:imeOptions="actionDone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/contacts_editor_phoneNumber1" />
@@ -107,6 +113,8 @@
                 android:layout_height="wrap_content"
                 android:hint="010-1234-5678"
                 android:text="@{phone_number3}"
+                android:inputType="text"
+                android:imeOptions="actionDone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/contacts_editor_phoneNumber2" />
@@ -144,6 +152,8 @@
                 android:layout_height="wrap_content"
                 android:hint="서울시 마포구 신수동"
                 android:text="@={address}"
+                android:inputType="text"
+                android:imeOptions="actionDone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/contacts_editor_const_address" />
@@ -154,6 +164,8 @@
                 android:layout_height="wrap_content"
                 android:hint="서울시 마포구 신수동"
                 android:text="@={address2}"
+                android:inputType="text"
+                android:imeOptions="actionDone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/contacts_editor_address1" />
@@ -173,6 +185,8 @@
                 android:layout_height="wrap_content"
                 android:hint="example@gmail.com"
                 android:text="@={email}"
+                android:inputType="text"
+                android:imeOptions="actionDone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/contacts_editor_const_email" />
@@ -183,6 +197,8 @@
                 android:layout_height="wrap_content"
                 android:hint="example@gmail.com"
                 android:text="@={email2}"
+                android:inputType="text"
+                android:imeOptions="actionDone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/contacts_editor_email" />
@@ -202,6 +218,8 @@
                 android:layout_height="wrap_content"
                 android:hint="Samsung"
                 android:text="@={work}"
+                android:inputType="text"
+                android:imeOptions="actionDone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/contacts_editor_const_work" />
@@ -220,6 +238,8 @@
                 android:layout_height="wrap_content"
                 android:text="@{SNS_ID}"
                 android:hint="sns"
+                android:inputType="text"
+                android:imeOptions="actionDone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/contacts_editor_const_sns_id" />

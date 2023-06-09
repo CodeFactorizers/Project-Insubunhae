@@ -70,15 +70,14 @@ public class FragmentContactsObjectViewer extends Fragment implements MainActivi
         Map<String, Group> groupMap = contactsList.getGroupMap();
         //group
         ArrayList<String> groupList = new ArrayList<>();
-        contactsArrayList = this.getArguments().getParcelableArrayList("contactsListToViewer");
+        //contactsArrayList = this.getArguments().getParcelableArrayList("contactsListToViewer");
+        contactsArrayList = activity.getContactsList().getContactsList();
         Contact tmp = contactsArrayList.get(0);
         for(String i : tmp.getGroupId()){
             Log.d("contacts viewer", "groupId "+i);
             groupList.add(groupMap.get(i).getGroupName());
         }
         Log.d("contacts viewer", "groupList : " + groupList);
-
-
 
         bindToView(tmp);
 
@@ -88,7 +87,7 @@ public class FragmentContactsObjectViewer extends Fragment implements MainActivi
     @Override
     public void onBackPressed() {
         Log.d("contactsviewer", "onBackPressed fragment\n");
-        activity.myGetFragmentManager().beginTransaction().remove(this).commit();
+        activity.myGetFragmentManager().popBackStack();
     }
 
     public void bindToView(Contact contact){
