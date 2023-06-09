@@ -17,9 +17,12 @@ import androidx.fragment.app.Fragment;
 
 import com.gyso.treeview.GysoTreeView;
 import com.gyso.treeview.layout.BoxHorizonLeftAndRightLayoutManager;
+import com.gyso.treeview.layout.BoxVerticalUpAndDownLayoutManager;
 import com.gyso.treeview.layout.CompactDownTreeLayoutManager;
 import com.gyso.treeview.layout.CompactHorizonLeftAndRightLayoutManager;
+import com.gyso.treeview.layout.CompactRightTreeLayoutManager;
 import com.gyso.treeview.layout.CompactRingTreeLayoutManager;
+import com.gyso.treeview.layout.ForceDirectedTreeLayoutManager;
 import com.gyso.treeview.layout.TableHorizonLeftAndRightLayoutManager;
 import com.gyso.treeview.layout.TreeLayoutManager;
 import com.gyso.treeview.line.BaseLine;
@@ -209,7 +212,7 @@ public class HomeFragment extends Fragment {
         //return new BoxLeftTreeLayoutManager(this,space_50dp,space_20dp,line);
         //return new BoxUpTreeLayoutManager(this,space_50dp,space_20dp,line);
         return new BoxHorizonLeftAndRightLayoutManager(requireContext(), space_count, space_20dp, line);
-        //return new BoxVerticalUpAndDownLayoutManager(requireContext(),space_30dp,space_20dp,line);
+        //return new BoxVerticalUpAndDownLayoutManager(requireContext(),30,space_20dp,line);
 
         //TODO !!!!! the layoutManagers below are just for test don't use in your projects. Just for test now
         //return new TableRightTreeLayoutManager(requireContext(), space_30dp,space_20dp,line);
@@ -219,14 +222,14 @@ public class HomeFragment extends Fragment {
         //return new TableHorizonLeftAndRightLayoutManager(requireContext(),space_count,space_20dp,line);
         //return new TableVerticalUpAndDownLayoutManager(requireContext(),space_count,space_20dp,line);
 
-        //return new CompactRightTreeLayoutManager(requireContext(),space_count,space_20dp,line);
+        //return new CompactRightTreeLayoutManager(requireContext(),50,space_20dp,line);
         //return new CompactLeftTreeLayoutManager(this,space_50dp,space_20dp,line);
         //return new CompactHorizonLeftAndRightLayoutManager(requireContext(),space_count,space_20dp,line);
         //return new CompactDownTreeLayoutManager(requireContext(),space_count,space_20dp,line);
         //return new CompactUpTreeLayoutManager(this,space_50dp,space_20dp,line);
         //return new CompactVerticalUpAndDownLayoutManager(requireContext(),space_count,space_20dp,line);
 
-        //return new CompactRingTreeLayoutManager(requireContext(), space_30dp,space_20dp,line);
+        //return new CompactRingTreeLayoutManager(requireContext(), 200,60,line);
         //return new ForceDirectedTreeLayoutManager(requireContext(),line);
     }
 
@@ -281,9 +284,10 @@ public class HomeFragment extends Fragment {
             NodeModel<Animal> root = new NodeModel<>(rootAnimal);
             TreeModel<Animal> Root = new TreeModel<>(root);
 
+
             for (int i = 0; i < contactsList.size(); i++) {
                 if (contactsList.get(i).getIsGrouped() == 0) {
-                    break;
+                    continue;
                 }
                 String s = getOnlyGroupName(contactsList.get(i).getGroupName());
 
@@ -312,25 +316,32 @@ public class HomeFragment extends Fragment {
 
                 Root.addNode(root, GroupTmpNodes[i]);
             }
-            Log.d("setData() 4", "groupnodes and trees set");
+            //Log.d("setData() 4", "groupnodes and trees set");
 
             //이제 그룹말고 실제 연락처를 animal 및 node로 생성
             AnimalNodes.ensureCapacity(contactsList.size());
 
             int na_count= 0;
+
             for (int j = 0; j < contactsList.size(); j++) {
                 Contact tmpContact = contactsList.get(j);
                 //Log.d("contact at 222 ","tmpContact: " + tmpContact.getName());
 
                 AnimalArray[j] = new Animal(tmpContact.getName());
-                //AnimalNodes.set(j, new NodeModel<Animal>(AnimalArray[j]));
-                AnimalNodes.add(j, new NodeModel<>(AnimalArray[j]));
+                AnimalNodes.add(new NodeModel<>(AnimalArray[j]));
                 //Log.d("AnimalNode", "AnimalNodes.get(j):" +AnimalNodes.get(j));
+                //Log.d("leafcount and j", "leafCount: "+GroupTmpNodes[0].leafCount+"/ j: "+j);
 
                 if (tmpContact.getIsGrouped() != 0) {
                     String s = getOnlyGroupName(tmpContact.getGroupName());
                     int gI = groupList.indexOf(s);
-                    Log.d("1111", "GroupTmpNodes[gI]" + GroupTmpNodes[gI]);
+                    if(gI<0) continue;
+                    //Log.d("1111", "j:"+j+", name: "+tmpContact.getName()+ "GroupName: " + tmpContact.getGroupName());
+                    if(j >= 300){
+                        //Log.d("1112", "j = 490");
+                    }
+                    //Log.d("leafcount and j", "leafCount: "+GroupTmpNodes[gI].leafCount+"/ j: "+j);
+
                     if(GroupTmpNodes[gI].leafCount>=4) continue;
                     GroupTrees.get(gI).addNode(GroupTmpNodes[gI], AnimalNodes.get(j));
                 }
@@ -340,13 +351,14 @@ public class HomeFragment extends Fragment {
                         Root.addNode(root,nANode);
                     }
                     if(nANode.leafCount>=3){//3개까지만 나오도록
-                        Log.d("nANode", "leafCount: "+ nANode.leafCount+"leavesList"+ nANode.leavesList+"child"+nANode.childNodes);
+                        //Log.d("nANode", "leafCount: "+ nANode.leafCount+"leavesList"+ nANode.leavesList+"child"+nANode.childNodes);
                         continue;
                     }
                     naAnimalArray.add(na_count, new Animal(tmpContact.getName()));
                     NotAssignedNodes.add(na_count,new NodeModel<>(naAnimalArray.get(na_count)));
                     NotAssignedTree.addNode(nANode,NotAssignedNodes.get(na_count));
                 }
+                Log.d("groupList", "groupList:"+groupList);
             }
 
             //** sample nodes. going to set this into sample removing target node or something
