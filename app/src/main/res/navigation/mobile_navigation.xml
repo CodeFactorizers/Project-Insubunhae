@@ -18,7 +18,7 @@
         android:label="FragmentContactsObjectViewer"
         tools:layout="@layout/fragment_contacts_object_viewer">
         <action
-            android:id="@+id/action_fragmentContactsObjectViewer_to_fragmentContactsEditor"
+            android:id="@+id/action_fragmentContactsObjectViewer_action"
             app:destination="@id/fragmentContactsEditor"
             />
     </fragment>
@@ -29,7 +29,7 @@
         android:label="@string/title_home"
         tools:layout="@layout/fragment_home" >
         <action
-            android:id="@+id/action_navigation_home_to_fragmentContactsObjectViewer"
+            android:id="@+id/action_navigation_home_action"
             app:destination="@id/fragmentContactsObjectViewer" />
     </fragment>
 

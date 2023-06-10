@@ -44,6 +44,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import android.view.MenuInflater;
@@ -172,6 +173,9 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Switching on the item id of the menu item
         switch (item.getItemId()) {
+            case android.R.id.home:
+                navController.navigateUp();
+                break;
             case R.id.menu_btn1:
                 break;
             case R.id.menu_btn2:
@@ -473,7 +477,7 @@ public class MainActivity extends AppCompatActivity {
         bundle.putInt("toViewerIdx", idx);
         fragment.setArguments(bundle);
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
-        navController.navigate(R.id.action_navigation_home_to_fragmentContactsObjectViewer, bundle);
+        navController.navigate(R.id.action_navigation_home_action, bundle);
     }
 
     public void moveToEditor(Fragment fragment, int idx){
@@ -481,7 +485,7 @@ public class MainActivity extends AppCompatActivity {
         bundle.putInt("toEditorIdx", idx);
         fragment.setArguments(bundle);
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
-        navController.navigate(R.id.action_fragmentContactsObjectViewer_to_fragmentContactsEditor, bundle);
+        navController.navigate(R.id.action_fragmentContactsObjectViewer_action, bundle);
     }
     // some additional functions end
 

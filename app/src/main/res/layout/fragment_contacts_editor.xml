@@ -33,14 +33,14 @@
             android:padding="20dp"
             android:layout_marginTop="0dp">
 
-            <Button
-                android:id="@+id/btn_back"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="뒤로가기"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                ></Button>
+<!--            <Button-->
+<!--                android:id="@+id/btn_back"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="뒤로가기"-->
+<!--                app:layout_constraintTop_toTopOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                ></Button>-->
 
             <Button
                 android:id="@+id/btn_save"

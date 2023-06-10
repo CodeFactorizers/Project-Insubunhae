@@ -144,12 +144,12 @@ public class FragmentContactsObjectViewer extends Fragment {
             //tmpView.setVisibility(View.GONE);
         }
         //이메일
-        if(contact.getEmail().size() > 0&& (contact.getEmail().get(0) !=null)) binding.setEmail(contact.getEmail().get(0));
+        if(contact.getEmail().size() > 0 && (contact.getEmail().get(0) !=null)) binding.setEmail(contact.getEmail().get(0));
         else{
             View tmpView = root.findViewById(R.id.contacts_viewer_email);
             //tmpView.setVisibility(View.GONE);
         }
-        if(contact.getEmail().size() > 1&& (contact.getEmail().get(0) !=null))binding.setEmail2(contact.getEmail().get(1));
+        if(contact.getEmail().size() > 1 && (contact.getEmail().get(0) !=null))binding.setEmail2(contact.getEmail().get(1));
         else{
             View tmpView = root.findViewById(R.id.contacts_viewer_sub_email);
             //tmpView.setVisibility(View.GONE);
