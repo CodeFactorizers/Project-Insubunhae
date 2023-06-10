@@ -172,10 +172,6 @@ public class MainActivity extends AppCompatActivity {
         // Switching on the item id of the menu item
         switch (item.getItemId()) {
             case R.id.menu_btn1:
-                fragmentTransaction = fragmentManager.beginTransaction();
-                if(fragmentManager.findFragmentByTag("viewer") == null) {
-                    fragmentTransaction.replace(R.id.nav_host_fragment_activity_main, FragmentContactsObjectViewer.newInstance(), "viewer").addToBackStack("viewer").commit();
-                }
                 break;
             case R.id.menu_btn2:
                 Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
@@ -485,25 +481,6 @@ public class MainActivity extends AppCompatActivity {
         fragment.setArguments(bundle);
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
         navController.navigate(R.id.action_fragmentContactsObjectViewer_to_fragmentContactsEditor, bundle);
-    }
-
-    public void toViewer(String id){
-        final Bundle bundle = new Bundle();
-        FragmentContactsObjectViewer fragment = new FragmentContactsObjectViewer();
-        int idx = contactsList.getIndexFromId(id);
-        bundle.putInt("toViewerIdx", idx);
-        fragment.setArguments(bundle);
-        fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.nav_host_fragment_activity_main, fragment, "viewer").addToBackStack("viewer").commit();
-    }
-    public void toEditor(Fragment fragment, int idx){
-        final Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList("contactsListToEditor", dbHelper.getContactsList().getContactsList());
-        bundle.putInt("toEditorIdx", idx);
-        fragment.setArguments(bundle);
-        fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.nav_host_fragment_activity_main, fragment, "editor").addToBackStack("editor").commit();
-        //fragmentTransaction.add(fragment, "editor").commit();
     }
     // some additional functions end
 
