@@ -126,6 +126,7 @@ public class HomeFragment extends Fragment {
 
 
         // 1 customs adapter
+        //어댑터 교환
 //        AnimalTreeViewAdapter adapter = new AnimalTreeViewAdapter();
         ContactTreeViewAdapter adapter = new ContactTreeViewAdapter();
 
@@ -571,20 +572,6 @@ public class HomeFragment extends Fragment {
                 }
             }
         }
-
-//        Contact parentContact = new Contact();
-//        parentContact.setName("parent");
-//        parentContact.setId("par");
-//        NodeModel<Contact> parent = new NodeModel<>(parentContact);
-//        for(int i = 0; i < contactsList.size(); i++){
-//            Contact tmp = new Contact();
-//            tmp.setId(contactsList.get(i).getId());
-//            tmp.setName(contactsList.get(i).getName());
-//            nodeList.add(new NodeModel<>(tmp));
-//
-//            treeModel.addNode(root, nodeList.get(i));
-//
-//        }
         adapter.setTreeModel(rootTree);
     }
 
