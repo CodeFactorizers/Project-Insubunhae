@@ -198,7 +198,11 @@ public class StatisticsFragment extends Fragment {
                         statisticsViewModel.getText().observe(getViewLifecycleOwner(), text -> {
                             textView.setText(text);
                         });
-                        statisticsViewModel.setText(String.valueOf(cur_contact_id));
+                        //statisticsViewModel.setText(String.valueOf(cur_contact_id - 1));
+                        statisticsViewModel.setText(String.valueOf(contactNameArray[cur_contact_id - 1 - start_index]));
+                        Log.d("statistics name button", "> : " + (cur_contact_id - 1));
+                        Log.d("statistics name button", ">> : " + start_index);
+                        Log.d("statistics name button", ">>> : " + contactNameArray[cur_contact_id - 1 - start_index]);
 
                         // [Draw Again] bar chart
                         BarChart barChart = binding.barchart;
@@ -419,7 +423,7 @@ public class StatisticsFragment extends Fragment {
         //SMS
         contactedDates_sms = dbHelper.getLongFromTable("MESSENGER_HISTORY",
                 "datetime", "contact_id = " + cur_contact_id);
-        Log.d("paintMiniCal", "paint sms dates : " + contactedDates_sms);
+        //Log.d("paintMiniCal", "paint sms dates : " + contactedDates_sms);
 
         List<CalendarDay> paintedDates = new ArrayList<>();
         for (Long paintingDate : contactedDates_sms) {
@@ -432,7 +436,7 @@ public class StatisticsFragment extends Fragment {
 
             paintedDates.add(calendarDay);
         }
-        Log.d("paintMiniCal", "paint sms dates again : " + paintedDates);
+        //Log.d("paintMiniCal", "paint sms dates again : " + paintedDates);
 
         //CALL LOG
         contactedDates_call = dbHelper.getLongFromTable("CALL_LOG",
@@ -450,7 +454,7 @@ public class StatisticsFragment extends Fragment {
 
             paintedDates.add(calendarDay);
         }
-        Log.d("paintMiniCal", "paint sms+call dates again : " + paintedDates);
+        //Log.d("paintMiniCal", "paint sms+call dates again : " + paintedDates);
         DayViewDecorator decorator = new DayViewDecorator() {
             @Override
             public boolean shouldDecorate(CalendarDay day) {
@@ -466,7 +470,7 @@ public class StatisticsFragment extends Fragment {
         calendarView.removeDecorators();
         calendarView.addDecorator(decorator);
         calendarView.invalidateDecorators();
-        Log.d("paintMiniCal", "painting end");
+        //Log.d("paintMiniCal", "painting end");
     }
 
     // [SMS only]
