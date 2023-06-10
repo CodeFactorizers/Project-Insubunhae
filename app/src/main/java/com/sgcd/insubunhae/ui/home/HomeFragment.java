@@ -67,6 +67,7 @@ public class HomeFragment extends Fragment {
 
     private NodeModel<Animal> parentToRemoveChildren = null;
     private MainActivity activity;
+    private final Object token = new Object();
 
     // Add a member variable to store the mind map view state
     private List<Node> nodeList = new ArrayList<>();
@@ -74,6 +75,8 @@ public class HomeFragment extends Fragment {
     public boolean na_flag = false;
     int space_count = 10;
     int space_20dp = 20;
+
+    private static final int LEAF_MAX = 4;
 
 
 
@@ -222,7 +225,7 @@ public class HomeFragment extends Fragment {
         });
 
         // treeView control listener
-        final Object token = new Object();
+        //final Object token = new Object();
         Runnable dismissRun = () -> {
             binding.scalePercent.setVisibility(View.GONE);
         };
@@ -289,12 +292,13 @@ public class HomeFragment extends Fragment {
 
         adapter.setOnItemListener((item, node) -> {
             Contact contact = node.getValue();
+            handler.removeCallbacksAndMessages(token);
             Toast.makeText(requireContext(), "선택: " + contact.getName(), Toast.LENGTH_SHORT).show();
             activity.moveToViewer(contact.getId());
         });
 
         // treeView control listener
-        final Object token = new Object();
+        //final Object token = new Object();
         Runnable dismissRun = () -> {
             binding.scalePercent.setVisibility(View.VISIBLE);
         };
@@ -489,28 +493,106 @@ public class HomeFragment extends Fragment {
 
     public void setData(ContactTreeViewAdapter adapter) {
         ArrayList<Contact> contactsList = activity.getContactsList().getContactsList();
-        ArrayList<NodeModel<Contact>> nodeList = new ArrayList<>();
+        ArrayList<String> groupList = new ArrayList<>();
+        ArrayList<NodeModel<Contact>> contactNodeList = new ArrayList<>();
 
+        //Contacts 그대로 쓰니까 contactsList로 대체 가능
+        Contact[] contactArray = new Contact[contactsList.size()];
+        //밑에서 하는데 여기서도 함
+//        for(int i = 0; i < contactsList.size(); i++){
+//            contactArray[i] = new Contact(contactsList.get(i).getName());
+//        }
+
+        //node
+        //nodeList.ensureCapacity(2000);
+        NodeModel<Contact>[] groupTmpNodes = new NodeModel[contactsList.size()];
+        ArrayList<TreeModel<Contact>> groupTreeList = new ArrayList<>();
+        groupTreeList.ensureCapacity(100);
+
+        //root 노드
         Contact rootContact = new Contact();
         rootContact.setName("나");
         rootContact.setId("0");
-        NodeModel<Contact> root = new NodeModel<>(rootContact);
-        TreeModel<Contact> treeModel = new TreeModel<>(root);
+        NodeModel<Contact> rootNodeModel = new NodeModel<>(rootContact);
+        TreeModel<Contact> rootTree = new TreeModel<>(rootNodeModel);
 
-        Contact parentContact = new Contact();
-        parentContact.setName("parent");
-        parentContact.setId("par");
-        NodeModel<Contact> parent = new NodeModel<>(parentContact);
+        // 미분류 그룹
+        Contact notAssigned = new Contact();
+        notAssigned.setName("미분류");
+        NodeModel<Contact> notAssignedNode = new NodeModel<>(notAssigned);
+        TreeModel<Contact> notAssignedTree = new TreeModel(notAssignedNode);
+        ArrayList<Contact> notAssignedContactArray = new ArrayList<>();
+        notAssignedContactArray.ensureCapacity(1000);
+        ArrayList<NodeModel<Contact>> notAssignedNodes = new ArrayList<>();
+
+        //연락처 속한 첫번째 그룹 이름만 뽑음 groupList (왜?)
         for(int i = 0; i < contactsList.size(); i++){
-            Contact tmp = new Contact();
-            tmp.setId(contactsList.get(i).getId());
-            tmp.setName(contactsList.get(i).getName());
-            nodeList.add(new NodeModel<>(tmp));
-
-            treeModel.addNode(root, nodeList.get(i));
-
+            if(contactsList.get(i).getIsGrouped() == 0){
+                continue;
+            }
+            String s = contactsList.get(i).getGroupName().get(0);
+            if(!groupList.contains(s)){
+                groupList.add(s);
+            }
         }
-        adapter.setTreeModel(treeModel);
+
+        //group 노드 추가
+        Contact[] groupContactArray = new Contact[contactsList.size()];
+        for(int i = 0; i < groupList.size(); i++){
+            String name = groupList.get(i);
+            groupContactArray[i] = new Contact(name);
+            groupTmpNodes[i] = new NodeModel<Contact>(groupContactArray[i]);
+            //각 그룹의 하위 노드 추가를 위한 트리모델
+            groupTreeList.add(new TreeModel<Contact>(groupTmpNodes[i]));
+            groupTreeList.get(i).getRootNode().getValue().setName(name);
+
+            rootTree.addNode(rootNodeModel, groupTmpNodes[i]);
+        }
+
+        int notAssignedCount = 0;
+        for(int i = 0; i < contactsList.size(); i++){
+            Contact tmpContact = contactsList.get(i);
+            //contactArray[i] = new Contact(tmpContact.getName());
+            contactNodeList.add(new NodeModel<>(tmpContact));
+            if(tmpContact.getIsGrouped() == 1){
+                //속한 그룹 있으면 해당 그룹 NodeModelArray에 추가
+                String groupName = tmpContact.getGroupName().get(0);
+                int groupIndex = groupList.indexOf(groupName);
+                if(groupTmpNodes[i].leafCount>=LEAF_MAX) continue;
+                groupTreeList.get(groupIndex).addNode(groupTmpNodes[groupIndex], contactNodeList.get(i));
+            }
+            else{
+                //없으면 notAssigned NodeModelArray에 추가
+                if(!na_flag){
+                    na_flag = true;
+                    rootTree.addNode(rootNodeModel, notAssignedNode);
+                }
+                if(notAssignedNode.leafCount >= LEAF_MAX){
+                    //로그 출력
+//                    Log.d("nANode", "leafCount: "+ notAssignedNode.leafCount+" leavesList"+ notAssignedNode.leavesList+"child"+notAssignedNode.childNodes);
+                    Log.d("nANode", "node : " + notAssignedNode.name);
+                    continue;
+                }
+                notAssignedContactArray.add(notAssignedCount, new Contact(tmpContact.getName()));
+                notAssignedNodes.add(notAssignedCount, new NodeModel<>(notAssignedContactArray.get(notAssignedCount)));
+                notAssignedTree.addNode(notAssignedNode, notAssignedNodes.get(notAssignedCount));
+            }
+        }
+
+//        Contact parentContact = new Contact();
+//        parentContact.setName("parent");
+//        parentContact.setId("par");
+//        NodeModel<Contact> parent = new NodeModel<>(parentContact);
+//        for(int i = 0; i < contactsList.size(); i++){
+//            Contact tmp = new Contact();
+//            tmp.setId(contactsList.get(i).getId());
+//            tmp.setName(contactsList.get(i).getName());
+//            nodeList.add(new NodeModel<>(tmp));
+//
+//            treeModel.addNode(root, nodeList.get(i));
+//
+//        }
+        adapter.setTreeModel(rootTree);
     }
 
     // capitalize first character of the string
