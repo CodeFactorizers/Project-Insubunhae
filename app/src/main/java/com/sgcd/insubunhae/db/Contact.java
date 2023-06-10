@@ -96,6 +96,9 @@ public class Contact implements Parcelable {
         isGrouped = 0;
         groupCount = 0;
     }
+    public Contact(String name){
+        this.name = name;
+    }
 
     protected Contact(Parcel in) {
         id = in.readString();
