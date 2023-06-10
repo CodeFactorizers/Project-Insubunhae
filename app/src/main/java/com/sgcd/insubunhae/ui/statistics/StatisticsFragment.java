@@ -363,7 +363,7 @@ public class StatisticsFragment extends Fragment {
 
         // 정렬
         Collections.sort(chartData, new Comparator<Pair<Integer, String>>() {
-            @Override
+            @Override //
             public int compare(Pair<Integer, String> o1, Pair<Integer, String> o2) {
                 return o2.first - o1.first;
             }

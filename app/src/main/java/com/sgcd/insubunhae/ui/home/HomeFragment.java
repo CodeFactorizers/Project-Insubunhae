@@ -164,8 +164,8 @@ public class HomeFragment extends Fragment {
         // Configure the TreeView as needed
 
         // 1 customs adapter
-//        AnimalTreeViewAdapter adapter = new AnimalTreeViewAdapter();
-        ContactTreeViewAdapter adapter = new ContactTreeViewAdapter();
+        AnimalTreeViewAdapter adapter = new AnimalTreeViewAdapter();
+//        ContactTreeViewAdapter adapter = new ContactTreeViewAdapter();
 
         // 2 configure layout manager; unit dp
         TreeLayoutManager treeLayoutManager = getTreeLayoutManager();
