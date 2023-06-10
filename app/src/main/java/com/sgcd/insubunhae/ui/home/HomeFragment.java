@@ -62,6 +62,7 @@ public class HomeFragment extends Fragment {
     public static final String TAG = HomeFragment.class.getSimpleName();
     private final Stack<NodeModel<Animal>> removeCache = new Stack<>();
     private NodeModel<Animal> targetNode;
+    private NodeModel<Contact> targetNodeC;
     private AtomicInteger atomicInteger = new AtomicInteger();
     private Handler handler = new Handler();
 
@@ -182,7 +183,7 @@ public class HomeFragment extends Fragment {
     }
 
 
-    void doYourOwnJobs(TreeViewEditor editor, AnimalTreeViewAdapter adapter) {
+    void doYourOwnJobs(TreeViewEditor editor, @NonNull AnimalTreeViewAdapter adapter) {
 
         // drag to move node
         binding.dragEditModeRd.setOnCheckedChangeListener((v, isChecked) -> {
@@ -265,18 +266,18 @@ public class HomeFragment extends Fragment {
 
         // add some nodes
         binding.addNodesBt.setOnClickListener(v -> {
-            if (targetNode == null) {
-                Toast.makeText(requireContext(), /*"Ohs, your targetNode is null"*/"타겟 노드 없음", Toast.LENGTH_SHORT).show();
+            if (targetNodeC == null) {
+                Toast.makeText(requireContext(), /*"Ohs, your targetNodeC is null"*/"타겟 노드 없음", Toast.LENGTH_SHORT).show();
                 return;
             }
-            NodeModel<Animal> a = new NodeModel<>(new Animal(R.drawable.ic_10, "add-" + atomicInteger.getAndIncrement()));
-            NodeModel<Animal> b = new NodeModel<>(new Animal(R.drawable.ic_11, "add-" + atomicInteger.getAndIncrement()));
-            NodeModel<Animal> c = new NodeModel<>(new Animal(R.drawable.ic_14, "add-" + atomicInteger.getAndIncrement()));
-            editor.addChildNodes(targetNode, a, b, c);
+            NodeModel<Contact> a = new NodeModel<>(new Contact("add-" + atomicInteger.getAndIncrement()));
+            NodeModel<Contact> b = new NodeModel<>(new Contact("add-" + atomicInteger.getAndIncrement()));
+            NodeModel<Contact> c = new NodeModel<>(new Contact("add-" + atomicInteger.getAndIncrement()));
+            editor.addChildNodes(targetNodeC, a, b, c);
 
             // add to remove demo cache
             removeCache.push(targetNode);
-            targetNode = b;
+            targetNodeC = b;
         });
 
         // remove node
@@ -570,7 +571,7 @@ public class HomeFragment extends Fragment {
                 if(notAssignedNode.leafCount >= LEAF_MAX){
                     //로그 출력
 //                    Log.d("nANode", "leafCount: "+ notAssignedNode.leafCount+" leavesList"+ notAssignedNode.leavesList+"child"+notAssignedNode.childNodes);
-                    Log.d("nANode", "node : " + notAssignedNode.name);
+                    Log.d("nANode", "node : " + notAssignedNode.getValue().getName());
                     continue;
                 }
                 notAssignedContactArray.add(notAssignedCount, new Contact(tmpContact.getName()));
