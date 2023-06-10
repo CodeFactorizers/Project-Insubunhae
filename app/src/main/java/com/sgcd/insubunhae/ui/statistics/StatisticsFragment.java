@@ -84,7 +84,9 @@ public class StatisticsFragment extends Fragment {
 
     // 연락한 날짜 리스트
     List<Long> contactedDates_sms;
+    int contactedDates_sms_total = 0;
     List<Long> contactedDates_call;
+    int contactedDates_call_total = 0;
 
     int[] weeklyFrequencies = new int[7];
 
@@ -109,16 +111,18 @@ public class StatisticsFragment extends Fragment {
         // 초기 '인물 이름'
         final TextView textView = binding.textView;
         statisticsViewModel.getText().observe(getViewLifecycleOwner(), text -> {
-            textView.setText(text);
+            textView.setText("전체 통계");
         });
 
         ArrayList<Contact> contactsList = ((MainActivity) getActivity()).getContactsList().getContactsList();
+        int start_index = Integer.parseInt(contactsList.get(0).getId());
         String[] contactNameArray = new String[contactsList.size()];
         //List<Integer> contact_id_list_int = new ArrayList<>();
         for (int i = 0; i < contactsList.size(); i++) {
             contactNameArray[i] = contactsList.get(i).getName();
         }
-        statisticsViewModel.setText(String.valueOf(cur_contact_id));
+        //statisticsViewModel.setText("전체 통계");
+        //statisticsViewModel.setText(String.valueOf(contactNameArray[0]));
 
         //현재 인물의 CALL_LOG에서 data받아오기 : datetime, duration
         List<String> c_dt = new ArrayList<>();
@@ -144,7 +148,7 @@ public class StatisticsFragment extends Fragment {
         PieChart pieChart1 = binding.piechart1;
         drawPieChart_totalFam(pieChart1);
         PieChart pieChart2 = binding.piechart2;
-        drawPieChart_compareCallvsSms(pieChart2);
+        drawPieChart_compareCallvsSms_initial(pieChart2);
         BarChart barChart = binding.barchart;
         drawBarChart(barChart);
 
@@ -203,9 +207,6 @@ public class StatisticsFragment extends Fragment {
                         });
                         //statisticsViewModel.setText(String.valueOf(cur_contact_id - 1));
                         statisticsViewModel.setText(String.valueOf(contactNameArray[cur_contact_id - 1 - start_index]));
-//                        Log.d("statistics name button", "> : " + (cur_contact_id - 1));
-//                        Log.d("statistics name button", ">> : " + start_index);
-//                        Log.d("statistics name button", ">>> : " + contactNameArray[cur_contact_id - 1 - start_index]);
 
                         // [Draw Again] calendar
                         MaterialCalendarView calendarView = binding.calendarView;
@@ -241,6 +242,59 @@ public class StatisticsFragment extends Fragment {
             return format.format(value);
         }
     }
+
+    public void drawPieChart_compareCallvsSms_initial(PieChart pieChart) {
+        Log.d("sehee update", "second pie start");
+
+        pieChart.setDrawHoleEnabled(true);
+        pieChart.setHoleColor(Color.WHITE);
+        pieChart.setTransparentCircleRadius(61f);
+        pieChart.getDescription().setEnabled(false);
+        pieChart.getLegend().setEnabled(false);
+        pieChart.setEntryLabelColor(Color.BLACK);
+
+        ArrayList<Contact> contactsList = ((MainActivity) getActivity()).getContactsList().getContactsList();
+        int start_index = Integer.parseInt(contactsList.get(0).getId());
+        List<Long> contactedDates_sms_initial = new ArrayList<>();
+        for (int i = 0; i < contactsList.size(); i++) {
+            List<Long> tmp = dbHelper.getLongFromTable("MESSENGER_HISTORY",
+                    "datetime", "contact_id = " + (i + start_index));
+            contactedDates_sms_initial.addAll(tmp);
+            contactedDates_sms_total += contactedDates_sms_initial.size();
+        }
+        List<Long> contactedDates_call_initial = new ArrayList<>();
+        for (int i = 0; i < contactsList.size(); i++) {
+            List<Long> tmp = dbHelper.getLongFromTable("CALL_LOG",
+                    "datetime", "contact_id = " + (i + start_index));
+            contactedDates_call_initial.addAll(tmp);
+            contactedDates_call_total += contactedDates_call_initial.size();
+        }
+
+        float total_sms_portion = (float) contactedDates_sms_total / (contactedDates_sms_total + contactedDates_call_total);
+        float total_call_portion = (float) contactedDates_call_total / (contactedDates_sms_total + contactedDates_call_total);
+        Log.d("sehee update", "total portion sms : " + total_sms_portion);
+        Log.d("sehee update", "total portion call : " + total_call_portion);
+
+        List<PieEntry> entries = new ArrayList<>();
+        entries.add(new PieEntry(total_call_portion, "Call"));
+        entries.add(new PieEntry(total_sms_portion, "SMS"));
+
+        int[] colors = {0xFF66FF99, 0xFFFFFF99, 0xFFFF6666, 0xFF99CCFF, 0xFFCCFF99};
+
+        PieDataSet dataSet = new PieDataSet(entries, "LabelPie");
+
+        //dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
+        dataSet.setColors(colors);
+        dataSet.setValueTextSize(12f);
+        dataSet.setValueTextColor(Color.BLACK);
+        dataSet.setValueFormatter(new PercentValueFormatter());
+
+        PieData data = new PieData(dataSet);
+
+        pieChart.setData(data); // chart에 data설정
+        pieChart.invalidate(); // chart 그리기
+    }
+
     public void drawPieChart_compareCallvsSms(PieChart pieChart) {
         Log.d("sehee update", "second pie start");
 
