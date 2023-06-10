@@ -299,6 +299,7 @@ public class HomeFragment extends Fragment {
 
             Animal[] GroupAnimalArray = new Animal[contactsList.size()];
 
+
             //set each GroupTrees[]'s group nodes into NodeModels and THEN TreeModels.
             for (int i=0; i< groupList.size(); i++) {
                 String name = groupList.get(i);
