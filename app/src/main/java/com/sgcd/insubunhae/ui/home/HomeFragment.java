@@ -571,7 +571,7 @@ public class HomeFragment extends Fragment {
                 if(notAssignedNode.leafCount >= LEAF_MAX){
                     //로그 출력
 //                    Log.d("nANode", "leafCount: "+ notAssignedNode.leafCount+" leavesList"+ notAssignedNode.leavesList+"child"+notAssignedNode.childNodes);
-                    Log.d("nANode", "node : " + notAssignedNode.getValue().getName());
+                    Log.d("nANode", "node : " + tmpContact.getName());
                     continue;
                 }
                 notAssignedContactArray.add(notAssignedCount, new Contact(tmpContact.getName()));
