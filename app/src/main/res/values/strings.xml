@@ -6,7 +6,7 @@
     <string name="title_activity_settings">설정</string>
 
     <!-- Top menu buttons -->
-    <string name="menu_button1">버튼1</string>
+    <string name="menu_button1"> </string>
     <string name="menu_button2">설정</string>
     <string name="menu_button3">버튼3</string>
     <string name="menu_button4">버튼4</string>

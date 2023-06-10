@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+        <import type="java.util.ArrayList"/>
+        <variable name= "name" type= "String"  />
+        <variable name= "phone_number1" type= "String"/>
+        <variable name= "phone_number2" type= "String"/>
+        <variable name= "phone_number3" type= "String"/>
+        <variable name= "group_list" type= "String" />
+        <variable name= "group_count" type= "String" />
+        <variable name= "address" type= "String" />
+        <variable name= "address2" type= "String" />
+        <variable name= "email" type= "String" />
+        <variable name= "email2" type= "String" />
+        <variable name= "work" type= "String" />
+        <variable name= "SNS_ID" type= "String" />
+
+    </data>
+
+    <ScrollView
+        android:id="@+id/contacts_editor_scroll"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/contacts_editor_constLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp"
+            android:layout_marginTop="0dp">
+
+            <Button
+                android:id="@+id/btn_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="뒤로가기"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                ></Button>
+
+            <Button
+                android:id="@+id/btn_save"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="저장"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                ></Button>
+
+            <TextView
+                android:id="@+id/contacts_editor_const_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="name"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginTop="100dp"/>
+
+            <EditText
+                android:id="@+id/contacts_editor_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@={name}"
+                android:hint="이름"
+                android:inputType="text"
+                android:imeOptions="actionDone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/contacts_editor_const_name" />
+
+            <TextView
+                android:id="@+id/contacts_editor_const_phoneNumber"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="전화번호"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/contacts_editor_name" />
+
+            <EditText
+                android:id="@+id/contacts_editor_phoneNumber1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="010-1234-5678"
+                android:text="@{phone_number1}"
+                android:inputType="phone"
+                android:imeOptions="actionDone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/contacts_editor_const_phoneNumber" />
+
+            <EditText
+                android:id="@+id/contacts_editor_phoneNumber2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="010-1234-5678"
+                android:text="@{phone_number2}"
+                android:inputType="text"
+                android:imeOptions="actionDone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/contacts_editor_phoneNumber1" />
+
+            <EditText
+                android:id="@+id/contacts_editor_phoneNumber3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="010-1234-5678"
+                android:text="@{phone_number3}"
+                android:inputType="text"
+                android:imeOptions="actionDone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/contacts_editor_phoneNumber2" />
+
+            <TextView
+                android:id="@+id/contacts_editor_const_group_list"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="group"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/contacts_editor_phoneNumber3" />
+
+            <TextView
+                android:id="@+id/contacts_editor_group_list"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@{group_list}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/contacts_editor_const_group_list" />
+
+            <TextView
+                android:id="@+id/contacts_editor_const_address"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="주소"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/contacts_editor_group_list" />
+
+            <EditText
+                android:id="@+id/contacts_editor_address1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="서울시 마포구 신수동"
+                android:text="@={address}"
+                android:inputType="text"
+                android:imeOptions="actionDone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/contacts_editor_const_address" />
+
+            <EditText
+                android:id="@+id/contacts_editor_address2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="서울시 마포구 신수동"
+                android:text="@={address2}"
+                android:inputType="text"
+                android:imeOptions="actionDone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/contacts_editor_address1" />
+
+            <TextView
+                android:id="@+id/contacts_editor_const_email"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="이메일"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/contacts_editor_address2" />
+
+            <EditText
+                android:id="@+id/contacts_editor_email"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="example@gmail.com"
+                android:text="@={email}"
+                android:inputType="text"
+                android:imeOptions="actionDone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/contacts_editor_const_email" />
+
+            <EditText
+                android:id="@+id/contacts_editor_sub_email"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="example@gmail.com"
+                android:text="@={email2}"
+                android:inputType="text"
+                android:imeOptions="actionDone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/contacts_editor_email" />
+
+            <TextView
+                android:id="@+id/contacts_editor_const_work"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="직장"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/contacts_editor_sub_email" />
+
+            <EditText
+                android:id="@+id/contacts_editor_work"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="Samsung"
+                android:text="@={work}"
+                android:inputType="text"
+                android:imeOptions="actionDone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/contacts_editor_const_work" />
+
+            <TextView
+                android:id="@+id/contacts_editor_const_sns_id"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="SNS_ID"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/contacts_editor_work" />
+            <EditText
+                android:id="@+id/contacts_editor_sns_id"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@{SNS_ID}"
+                android:hint="sns"
+                android:inputType="text"
+                android:imeOptions="actionDone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/contacts_editor_const_sns_id" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+</layout>
+
+

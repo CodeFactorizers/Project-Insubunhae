@@ -99,6 +99,7 @@ public class DBContract {
                 + ADDRESS2 + " VARCHAR(30),"
                 + ADDRESS_TYPE2 + " TEXT,"
                 + EMAIL + " VARCHAR(30) CHECK (" + EMAIL + " like '%@%'),"
+
                 + EMAIL2 + " VARCHAR(30) CHECK (" + EMAIL2 + " like '%@%'),"
                 + WORK + " VARCHAR(20),"
                 + SNS_ID + " VARCHAR(20),"

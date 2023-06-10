@@ -16,4 +16,9 @@ public class StatisticsViewModel extends ViewModel {
     public LiveData<String> getText() {
         return mText;
     }
+
+    public void setText(String s) {
+        mText.setValue(s);
+        //mText.postValue(s);
+    }
 }

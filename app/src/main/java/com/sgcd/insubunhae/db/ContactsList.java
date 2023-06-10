@@ -7,22 +7,84 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.provider.ContactsContract;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
+import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ContactsList {
+public class ContactsList implements Parcelable {
     private ArrayList<Contact> contacts_list = new ArrayList<Contact>();
+    public ArrayList<Contact> getContactsList(){
+        return contacts_list;
+    }
+    public Contact getContact(int idx){ return contacts_list.get(idx);}
     private Map<String, Group> group_map = new HashMap<String, Group>();
+    public Map<String, Group> getGroupMap(){
+        return group_map;
+    }
     public ContactsList(){}
 
+    protected ContactsList(Parcel in) {
+        contacts_list = in.createTypedArrayList(Contact.CREATOR);
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeTypedList(contacts_list);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+    public int getIndexFromId(String id){
+        int i;
+        for(i = 0; i < contacts_list.size(); i++){
+            if(contacts_list.get(i).getId().equals(id)) break;
+        }
+        return i;
+    }
+
+
+    public static final Creator<ContactsList> CREATOR = new Creator<ContactsList>() {
+        @Override
+        public ContactsList createFromParcel(Parcel in) {
+            return new ContactsList(in);
+        }
+
+        @Override
+        public ContactsList[] newArray(int size) {
+            return new ContactsList[size];
+        }
+    };
+
+    public void updateContacts(int idx, Contact contact){
+        Contact tmp = this.contacts_list.get(idx);
+        tmp.setName(contact.getName());
+    }
+
+    private void groupIdToName(Contact contact){
+        ArrayList<String> groupId = contact.getGroupId();
+        if(groupId.isEmpty()){}
+        else{
+            for(String id : groupId) {
+                contact.setGroupName(group_map.get(id).getGroupName());
+            }
+        }
+
+    }
+
     @SuppressLint("Range")
-    public ArrayList<Contact> getContacts(Context context) {
+    public ArrayList<Contact> getContacts(Context context, DBHelper dbHelper, SQLiteDatabase db) {
         Log.d("getContacts", "enter getContacts -------------");
         ContentResolver resolver = context.getContentResolver();
         Cursor cursor = resolver.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
@@ -42,14 +104,14 @@ public class ContactsList {
             Group group = new Group();
             group.setGroupName(groupName);
             group.setGroupId(groupId);
-            Log.d("group", groupName);
-            Log.d("group", groupId);
+            //Log.d("group", groupName);
+            //Log.d("group", groupId);
             group_map.put(groupId, group);
         }
+        groupCursor.close();
 
         //contact
         if (cursor != null) {
-            Log.d("getContacts", "in if -------------");
             //각 연락처
             while (cursor.moveToNext()) {
                 Contact contact = new Contact();
@@ -102,7 +164,7 @@ public class ContactsList {
 
                     contact.setAddress(address);
                     contact.setAddressType(addressType);
-                    Log.d("getContacts", "address : " + address + " type : " + addressType);
+                    //Log.d("getContacts", "address : " + address + " type : " + addressType);
                 }
                 addressCursor.close();
                 //}
@@ -118,6 +180,10 @@ public class ContactsList {
                     String groupRowId = groupMemberCursor.getString(groupMemberCursor.getColumnIndex(ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID));
                     contact.setGroupId(groupRowId);
                     group_map.get(groupRowId).setMemberList(id);
+                }
+                contact.setGroupCount(contact.getGroupId().size());
+                if(contact.getGroupCount() != 0){
+                    contact.setIsGrouped(1);
                 }
                 if (groupMemberCursor != null) {
                     groupMemberCursor.close();
@@ -145,24 +211,7 @@ public class ContactsList {
                     contact.setTitle(title);
                     contact.setDepartment(department);
                 }
-
-                // im address
-//                Cursor imCursor = resolver.query(
-//                        ContactsContract.Data.CONTENT_URI,
-//                        null,
-//                        ContactsContract.CommonDataKinds.Im.CONTACT_ID + " = ? ",
-//                        new String[]{contactId},
-//                        null);
-//
-//                if (imCursor != null && imCursor.moveToFirst()) {
-//                    do {
-//                        int imType = imCursor.getInt(imCursor.getColumnIndex(ContactsContract.CommonDataKinds.Im.TYPE));
-//                        String imName = imCursor.getString(imCursor.getColumnIndex(ContactsContract.CommonDataKinds.Im.DATA));
-//                        // IM 주소 정보 처리
-//                    } while (imCursor.moveToNext());
-//                    imCursor.close();
-//                }
-
+                orgCursor.close();
                 contacts_list.add(contact);
             }
 
@@ -173,6 +222,68 @@ public class ContactsList {
         return this.contacts_list;
     }
 
+    public void getContactsFromAppDB(SQLiteDatabase db){
+        Cursor groupInfoCursor = db.rawQuery("SELECT * FROM GROUP_INFO", null);
+        while(groupInfoCursor.moveToNext()){
+            Group group= new Group();
+            String groupId = groupInfoCursor.getString(0);
+            group.setGroupId(groupId);
+            group.setGroupName(groupInfoCursor.getString(1));
+            group_map.put(groupId,group);
+        }
+        groupInfoCursor.close();
+
+        Cursor cursor = db.rawQuery("SELECT * FROM MAIN_CONTACTS", null);
+
+        while(cursor.moveToNext()){
+            Contact contact = new Contact();
+            String id = cursor.getString(0);
+            contact.setId(cursor.getString(0));
+            contact.setName(cursor.getString(1));
+            //if(!cursor.isNull(3))
+                contact.setPhoneNumber(cursor.getString(3));
+            //if(!cursor.isNull(5))
+                contact.setPhoneNumber(cursor.getString(5));
+            //if(!cursor.isNull(7))
+                contact.setPhoneNumber(cursor.getString(7));
+            contact.setIsGrouped(cursor.getInt(9));
+            contact.setGroupCount(cursor.getInt(10));
+            //if(!cursor.isNull(11))
+                contact.setAddress(cursor.getString(11));
+            //if(!cursor.isNull(13))
+                contact.setAddress(cursor.getString(13));
+            //if(!cursor.isNull(15))
+                contact.setEmail(cursor.getString(15));
+            //if(!cursor.isNull(16))
+                contact.setEmail(cursor.getString(16));
+            contact.setCompany(cursor.getString(17));
+            contact.setSnsId(cursor.getString(18));
+            //Log.d("getContactsFromAppDB", cursor.getInt(0) + " : " + cursor.getString(1) + ", " + cursor.getString(3));
+
+            Cursor groupCursor = db.rawQuery("SELECT * FROM GROUP_MEMBER WHERE contact_id == " + id, null);
+            while(groupCursor.moveToNext()){
+                //Log.d("getdbfromapp", id + "가 속한 그룹 테이블 : " + groupCursor.getString(0) + " " + groupCursor.getString(1) + " " + groupCursor.getString((2)));
+                String groupId = groupCursor.getString(2);
+                contact.setGroupId(groupId);
+                group_map.get(groupId).setMemberList(id);
+            }
+            groupIdToName(contact);
+            if(!contact.getGroupId().isEmpty()) {
+                //Log.d("getdbfromapp", contact.getGroupName().toString());
+                contact.setIsGrouped(1);
+                contact.setGroupCount(contact.getGroupId().size());
+            }
+            groupCursor.close();
+
+            contacts_list.add(contact);
+        }
+        cursor.close();
+
+    }
+
+
+
+
     public void dbInsert(SQLiteDatabase db){
         db.beginTransaction();
         try{
@@ -182,8 +293,14 @@ public class ContactsList {
                 ContentValues cv = new ContentValues();
                 cv.put("contact_id", tmp.getId());
                 cv.put("name", tmp.getName());
+//                for (int j = 0; j < tmp.getPhoneNumber().size() && j < 3; j++) {
+//                    cv.put("phone_number" + Integer.toString(j + 1), tmp.getPhoneNumber().get(j));
+//                    cv.put("phone_number_type" + Integer.toString(j + 1), tmp.getNumberType().get(j));
+//                }
                 for (int j = 0; j < tmp.getPhoneNumber().size() && j < 3; j++) {
-                    cv.put("phone_number" + Integer.toString(j + 1), tmp.getPhoneNumber().get(j));
+                    String cleanedNumber = tmp.getPhoneNumber().get(j).replace("-", "");
+                    cleanedNumber.replace(" ", "");
+                    cv.put("phone_number" + Integer.toString(j + 1), cleanedNumber);
                     cv.put("phone_number_type" + Integer.toString(j + 1), tmp.getNumberType().get(j));
                 }
                 if(tmp.getGroupId().size() == 0) {
@@ -236,7 +353,5 @@ public class ContactsList {
         } finally{
             db.endTransaction();
         }
-
     }
-
 }

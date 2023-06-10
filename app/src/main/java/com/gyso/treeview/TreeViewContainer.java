@@ -143,6 +143,7 @@ public class TreeViewContainer extends ViewGroup implements TreeViewNotifier {
         if(MeasureSpec.getSize(widthMeasureSpec)>0 && MeasureSpec.getSize(heightMeasureSpec)>0){
             winWidth  = MeasureSpec.getSize(widthMeasureSpec);
             winHeight = MeasureSpec.getSize(heightMeasureSpec);
+
         }
         if (mTreeLayoutManager != null && mTreeModel != null) {
             mTreeLayoutManager.setViewport(winHeight,winWidth);
