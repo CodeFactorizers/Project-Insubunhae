@@ -363,7 +363,7 @@ public class StatisticsFragment extends Fragment {
 
         // 정렬
         Collections.sort(chartData, new Comparator<Pair<Integer, String>>() {
-            @Override //
+            @Override // 내림차순 정렬
             public int compare(Pair<Integer, String> o1, Pair<Integer, String> o2) {
                 return o2.first - o1.first;
             }
@@ -377,13 +377,17 @@ public class StatisticsFragment extends Fragment {
         pieChart.setEntryLabelColor(Color.BLACK);
 
         List<PieEntry> entries = new ArrayList<>();
-        for (Pair<Integer, String> data : chartData) {
+        int count = Math.min(chartData.size(), 5);
+        int[] colors = {0xFF66FF99, 0xFFFFFF99, 0xFFFF6666, 0xFF99CCFF, 0xFFCCFF99};
+        for (int i = 0; i < count; i++) {
+            Pair<Integer, String> data = chartData.get(i);
             entries.add(new PieEntry(data.first, data.second));
         }
 
         PieDataSet dataSet = new PieDataSet(entries, "LabelPie");
 
-        dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
+        //dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
+        dataSet.setColors(colors);
         dataSet.setValueTextSize(12f);
         dataSet.setValueTextColor(Color.BLACK);
 
