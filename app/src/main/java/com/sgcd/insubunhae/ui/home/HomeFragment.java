@@ -34,6 +34,7 @@ import com.sgcd.insubunhae.MainActivity;
 import com.sgcd.insubunhae.R;
 import com.sgcd.insubunhae.base.Animal;
 import com.sgcd.insubunhae.base.AnimalTreeViewAdapter;
+import com.sgcd.insubunhae.base.ContactNode;
 import com.sgcd.insubunhae.base.ContactTreeViewAdapter;
 import com.sgcd.insubunhae.databinding.FragmentHomeBinding;
 
@@ -92,6 +93,7 @@ public class HomeFragment extends Fragment {
 //        HomeViewModel homeViewModel =
 //                new ViewModelProvider(this).get(HomeViewModel.class);
         binding = FragmentHomeBinding.inflate(inflater, container, false);
+        na_flag = false;
         return binding.getRoot();
     }
 
@@ -292,10 +294,16 @@ public class HomeFragment extends Fragment {
         });
 
         adapter.setOnItemListener((item, node) -> {
-            Contact contact = node.getValue();
+            ContactNode contact = node.getValue();
             handler.removeCallbacksAndMessages(token);
-            Toast.makeText(requireContext(), "선택: " + contact.getName(), Toast.LENGTH_SHORT).show();
-            activity.moveToViewer(contact.getId());
+            if(contact.getType() == ContactNode.CONTACT){
+                Toast.makeText(requireContext(), "선택: " + contact.getId() + " "+ contact.getName(), Toast.LENGTH_SHORT).show();
+                na_flag = false;
+                activity.moveToViewer(contact.getId());
+            }
+            else{
+                Toast.makeText(requireContext(), "선택 그룹 : " + contact.getName(), Toast.LENGTH_SHORT).show();
+            }
         });
 
         // treeView control listener
@@ -495,10 +503,10 @@ public class HomeFragment extends Fragment {
     public void setData(ContactTreeViewAdapter adapter) {
         ArrayList<Contact> contactsList = activity.getContactsList().getContactsList();
         ArrayList<String> groupList = new ArrayList<>();
-        ArrayList<NodeModel<Contact>> contactNodeList = new ArrayList<>();
+        ArrayList<NodeModel<ContactNode>> contactNodeList = new ArrayList<>();
 
         //Contacts 그대로 쓰니까 contactsList로 대체 가능
-        Contact[] contactArray = new Contact[contactsList.size()];
+        ContactNode[] contactArray = new ContactNode[contactsList.size()];
         //밑에서 하는데 여기서도 함
 //        for(int i = 0; i < contactsList.size(); i++){
 //            contactArray[i] = new Contact(contactsList.get(i).getName());
@@ -506,27 +514,26 @@ public class HomeFragment extends Fragment {
 
         //node
         //nodeList.ensureCapacity(2000);
-        NodeModel<Contact>[] groupTmpNodes = new NodeModel[contactsList.size()];
-        ArrayList<TreeModel<Contact>> groupTreeList = new ArrayList<>();
+        NodeModel<ContactNode>[] groupTmpNodes = new NodeModel[contactsList.size()];
+        ArrayList<TreeModel<ContactNode>> groupTreeList = new ArrayList<>();
         groupTreeList.ensureCapacity(100);
 
         //root 노드
-        Contact rootContact = new Contact();
+        ContactNode rootContact = new ContactNode();
         rootContact.setName("나");
         rootContact.setId("0");
-        NodeModel<Contact> rootNodeModel = new NodeModel<>(rootContact);
-        TreeModel<Contact> rootTree = new TreeModel<>(rootNodeModel);
+        NodeModel<ContactNode> rootNodeModel = new NodeModel<>(rootContact);
+        TreeModel<ContactNode> rootTree = new TreeModel<>(rootNodeModel);
 
         // 미분류 그룹
-        Contact notAssigned = new Contact();
-        notAssigned.setName("미분류");
-        NodeModel<Contact> notAssignedNode = new NodeModel<>(notAssigned);
-        TreeModel<Contact> notAssignedTree = new TreeModel(notAssignedNode);
-        ArrayList<Contact> notAssignedContactArray = new ArrayList<>();
+        ContactNode notAssigned = new ContactNode("미분류");
+        NodeModel<ContactNode> notAssignedNode = new NodeModel<>(notAssigned);
+        TreeModel<ContactNode> notAssignedTree = new TreeModel(notAssignedNode);
+        ArrayList<ContactNode> notAssignedContactArray = new ArrayList<>();
         notAssignedContactArray.ensureCapacity(1000);
-        ArrayList<NodeModel<Contact>> notAssignedNodes = new ArrayList<>();
+        ArrayList<NodeModel<ContactNode>> notAssignedNodes = new ArrayList<>();
 
-        //연락처 속한 첫번째 그룹 이름만 뽑음 groupList (왜?)
+        //연락처 속한 첫번째 그룹 이름만 뽑음. groupList
         for(int i = 0; i < contactsList.size(); i++){
             if(contactsList.get(i).getIsGrouped() == 0){
                 continue;
@@ -538,13 +545,13 @@ public class HomeFragment extends Fragment {
         }
 
         //group 노드 추가
-        Contact[] groupContactArray = new Contact[contactsList.size()];
+        ContactNode[] groupContactArray = new ContactNode[contactsList.size()];
         for(int i = 0; i < groupList.size(); i++){
             String name = groupList.get(i);
-            groupContactArray[i] = new Contact(name);
-            groupTmpNodes[i] = new NodeModel<Contact>(groupContactArray[i]);
+            groupContactArray[i] = new ContactNode(name);
+            groupTmpNodes[i] = new NodeModel<ContactNode>(groupContactArray[i]);
             //각 그룹의 하위 노드 추가를 위한 트리모델
-            groupTreeList.add(new TreeModel<Contact>(groupTmpNodes[i]));
+            groupTreeList.add(new TreeModel<ContactNode>(groupTmpNodes[i]));
             groupTreeList.get(i).getRootNode().getValue().setName(name);
 
             rootTree.addNode(rootNodeModel, groupTmpNodes[i]);
@@ -553,10 +560,10 @@ public class HomeFragment extends Fragment {
         int notAssignedCount = 0;
         for(int i = 0; i < contactsList.size(); i++){
             Contact tmpContact = contactsList.get(i);
-            //contactArray[i] = new Contact(tmpContact.getName());
-            contactNodeList.add(new NodeModel<>(tmpContact));
+            contactArray[i] = new ContactNode(tmpContact.getId(), tmpContact.getName(), tmpContact.getIsGrouped());
+            contactNodeList.add(new NodeModel<>(contactArray[i]));
             if(tmpContact.getIsGrouped() == 1){
-                //속한 그룹 있으면 해당 그룹 NodeModelArray에 추가
+                //속한 그룹 있으면 해당 그룹의 NodeModelArray에 추가
                 String groupName = tmpContact.getGroupName().get(0);
                 int groupIndex = groupList.indexOf(groupName);
                 if(groupTmpNodes[i].leafCount>=LEAF_MAX) continue;
@@ -565,18 +572,21 @@ public class HomeFragment extends Fragment {
             else{
                 //없으면 notAssigned NodeModelArray에 추가
                 if(!na_flag){
+                    //notAssigned 그룹노드 없으면 추가
                     na_flag = true;
                     rootTree.addNode(rootNodeModel, notAssignedNode);
                 }
                 if(notAssignedNode.leafCount >= LEAF_MAX){
-                    //로그 출력
+                    //notAssigend에 연락처 많으면 로그만 출력
 //                    Log.d("nANode", "leafCount: "+ notAssignedNode.leafCount+" leavesList"+ notAssignedNode.leavesList+"child"+notAssignedNode.childNodes);
                     Log.d("nANode", "node : " + notAssignedNode.getValue().getName());
-                    continue;
                 }
-                notAssignedContactArray.add(notAssignedCount, new Contact(tmpContact.getName()));
-                notAssignedNodes.add(notAssignedCount, new NodeModel<>(notAssignedContactArray.get(notAssignedCount)));
-                notAssignedTree.addNode(notAssignedNode, notAssignedNodes.get(notAssignedCount));
+                else {
+                    //notAssigned에 추가
+                    notAssignedContactArray.add(notAssignedCount, contactArray[i]);
+                    notAssignedNodes.add(notAssignedCount, new NodeModel<>(notAssignedContactArray.get(notAssignedCount)));
+                    notAssignedTree.addNode(notAssignedNode, notAssignedNodes.get(notAssignedCount));
+                }
             }
         }
 
