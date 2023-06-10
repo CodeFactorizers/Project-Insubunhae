@@ -47,24 +47,34 @@ public class Contact implements Parcelable {
         this.company = contact.getCompany();
         this.snsId = contact.getSnsId();
     }
+    public void updateDBNullSafe(ContentValues contentValues, String columnName, String columnValue){
+        if(columnValue != null){
+            contentValues.put(columnName, columnValue);
+        }
+        else{
+            //contentValues.putNull(columnName);
+        }
+    }
+
     public void updateDb(SQLiteDatabase idb, Map<String, Group> group_map, ArrayList<String> old_group_list){
         //연락처 정보
         ContentValues contentValues = new ContentValues();
+        contentValues.put("contact_id", this.id.toString());
         contentValues.put("name", this.name);
         for(int i = 0; i < this.phoneNumber.size(); i++){
-            contentValues.put("phone_number" + Integer.toString(i+1), this.phoneNumber.get(i));
+            updateDBNullSafe(contentValues, "phone_number" + Integer.toString(i+1),this.phoneNumber.get(i));
         }
         for(int i = 0; i < this.address.size(); i++){
-            contentValues.put("address" + Integer.toString(i+1), this.address.get(i));
+            updateDBNullSafe(contentValues, "address" + Integer.toString(i+1),this.address.get(i));
         }
         if(this.email.size() >= 1){
-            contentValues.put("email", this.email.get(0));
+            updateDBNullSafe(contentValues, "email",this.email.get(0));
         }
         if(this.email.size() >= 2){
-            contentValues.put("sub_email", this.email.get(1));
+            updateDBNullSafe(contentValues, "sub_email",this.email.get(1));
         }
-        contentValues.put("work", this.company);
-        contentValues.put("sns_id", this.snsId);
+        updateDBNullSafe(contentValues, "work",this.company);
+        updateDBNullSafe(contentValues, "sns_id",this.snsId);
         long now = System.currentTimeMillis();
         Date date = new Date(now);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");

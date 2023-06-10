@@ -19,5 +19,6 @@ public class StatisticsViewModel extends ViewModel {
 
     public void setText(String s) {
         mText.setValue(s);
+        //mText.postValue(s);
     }
 }

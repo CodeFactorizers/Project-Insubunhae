@@ -283,7 +283,6 @@ public class DBHelper extends SQLiteOpenHelper {
                             String query = "SELECT contact_id FROM MAIN_CONTACTS WHERE phone_number1 = '"
                                     + smsSender + "'";
                             cursor1 = db.rawQuery(query, null);
-                            Log.d("sms.....", "cursor1 : " + cursor1);
                             
                             if (cursor1 != null && cursor1.moveToFirst()) {
                                 int columnIndex = cursor1.getColumnIndex("contact_id");
