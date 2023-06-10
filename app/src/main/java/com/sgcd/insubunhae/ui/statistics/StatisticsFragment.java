@@ -85,7 +85,7 @@ public class StatisticsFragment extends Fragment {
     List<Long> contactedDates_sms;
     List<Long> contactedDates_call;
 
-    int[] weeklyFrequencies;
+    int[] weeklyFrequencies = new int[7];
 
     //onAttach : activity의 context 저장
     @Override
@@ -136,13 +136,14 @@ public class StatisticsFragment extends Fragment {
 
         // 캘린더
         MaterialCalendarView calendarView = binding.calendarView;
+        //List<CalendarDay> paintedDates_sms = paintMiniCalendar_aggregateDates_sms();
         paintMiniCalendar(calendarView);
 
         // 차트
         PieChart pieChart1 = binding.piechart1;
-        drawPieChart(pieChart1);
+        drawPieChart_total(pieChart1);
         PieChart pieChart2 = binding.piechart2;
-        drawPieChart(pieChart2);
+        drawPieChart_compareCallvsSms(pieChart2);
         BarChart barChart = binding.barchart;
         drawBarChart(barChart);
 
@@ -189,20 +190,21 @@ public class StatisticsFragment extends Fragment {
                         //cur_contact_id = contactIds.get(which);
                         cur_contact_id = which + start_index + 1;
                         //cur_contact_id =
-                        //Log.d("paintMiniCal", "cur_contact_id : " + cur_contact_id);
+                        Log.d("sehee update", "cur_contact_id : " + cur_contact_id);
 
                         // name tag
                         StatisticsViewModel statisticsViewModel =
                                 new ViewModelProvider(requireActivity()).get(StatisticsViewModel.class);
                         final TextView textView = binding.textView;
+                        //statisticsViewModel.setText(String.valueOf(contactNameArray[cur_contact_id - 1 - start_index]));
                         statisticsViewModel.getText().observe(getViewLifecycleOwner(), text -> {
                             textView.setText(text);
                         });
                         //statisticsViewModel.setText(String.valueOf(cur_contact_id - 1));
                         statisticsViewModel.setText(String.valueOf(contactNameArray[cur_contact_id - 1 - start_index]));
-                        Log.d("statistics name button", "> : " + (cur_contact_id - 1));
-                        Log.d("statistics name button", ">> : " + start_index);
-                        Log.d("statistics name button", ">>> : " + contactNameArray[cur_contact_id - 1 - start_index]);
+//                        Log.d("statistics name button", "> : " + (cur_contact_id - 1));
+//                        Log.d("statistics name button", ">> : " + start_index);
+//                        Log.d("statistics name button", ">>> : " + contactNameArray[cur_contact_id - 1 - start_index]);
 
                         // [Draw Again] bar chart
                         BarChart barChart = binding.barchart;
@@ -210,7 +212,16 @@ public class StatisticsFragment extends Fragment {
 
                         // [Draw Again] calendar
                         MaterialCalendarView calendarView = binding.calendarView;
+                        //List<CalendarDay> paintedDates_sms = paintMiniCalendar_aggregateDates_sms();
+                        //paintMiniCalendar(calendarView, paintedDates_sms, "#000000");
+                        //List<CalendarDay> paintedDates_call = paintMiniCalendar_aggregateDates_call();
                         paintMiniCalendar(calendarView);
+
+                        // 차트
+                        PieChart pieChart1 = binding.piechart1;
+                        drawPieChart_total(pieChart1);
+                        PieChart pieChart2 = binding.piechart2;
+                        drawPieChart_compareCallvsSms(pieChart2);
                     }
                 })
                 .show();
@@ -357,7 +368,53 @@ public class StatisticsFragment extends Fragment {
 //        }
 //    }
 
-    public void drawPieChart(PieChart pieChart) {
+    public void drawPieChart_compareCallvsSms(PieChart pieChart) {
+        Log.d("sehee update", "second pie start");
+
+        // contact_id list 가져오기
+        ArrayList<Contact> contactsList = ((MainActivity) getActivity()).getContactsList().getContactsList();
+
+        String[] contactNameArray = new String[contactsList.size()];
+        String[] contactIdArray = new String[contactsList.size()];
+        int[] contactIdIntArray = new int[contactIdArray.length];
+        for (int i = 0; i < contactsList.size(); i++) {
+            contactNameArray[i] = contactsList.get(i).getName();
+            contactIdArray[i] = contactsList.get(i).getId();
+            contactIdIntArray[i] = Integer.parseInt(contactIdArray[i]);
+        }
+
+        pieChart.setDrawHoleEnabled(true);
+        pieChart.setHoleColor(Color.WHITE);
+        pieChart.setTransparentCircleRadius(61f);
+        pieChart.getDescription().setEnabled(false);
+        pieChart.getLegend().setEnabled(false);
+        pieChart.setEntryLabelColor(Color.BLACK);
+
+        List<PieEntry> entries = new ArrayList<>();
+        int[] colors = {0xFF66FF99, 0xFFFFFF99, 0xFFFF6666, 0xFF99CCFF, 0xFFCCFF99};
+        int total_sms_portion = contactedDates_sms.size();
+        int total_call_portion = contactedDates_call.size();
+        Log.d("sehee update", "total portion sms : " + total_sms_portion);
+        Log.d("sehee update", "total portion call : " + total_call_portion);
+
+        entries.add(new PieEntry(total_call_portion));
+        entries.add(new PieEntry(total_sms_portion));
+
+
+        PieDataSet dataSet = new PieDataSet(entries, "LabelPie");
+
+        //dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
+        dataSet.setColors(colors);
+        dataSet.setValueTextSize(12f);
+        dataSet.setValueTextColor(Color.BLACK);
+
+        PieData data = new PieData(dataSet);
+
+        pieChart.setData(data); // chart에 data설정
+        pieChart.invalidate(); // chart 그리기
+    }
+
+    public void drawPieChart_total(PieChart pieChart) {
         // contact_id list 가져오기
         ArrayList<Contact> contactsList = ((MainActivity) getActivity()).getContactsList().getContactsList();
 
@@ -416,19 +473,64 @@ public class StatisticsFragment extends Fragment {
         pieChart.invalidate(); // chart 그리기
     }
 
+//    public List<CalendarDay> paintMiniCalendar_aggregateDates_sms() {
+//        //SMS
+//        contactedDates_sms = dbHelper.getLongFromTable("MESSENGER_HISTORY",
+//                "datetime", "contact_id = " + cur_contact_id);
+//        Log.d("paintMiniCal", "paint sms dates : " + contactedDates_sms);
+//
+//        List<CalendarDay> paintedDates_sms = new ArrayList<>();
+//        for (Long paintingDate_sms : contactedDates_sms) {
+//            Calendar calendar = Calendar.getInstance();
+//            calendar.setTimeInMillis(paintingDate_sms);
+//
+//            CalendarDay calendarDay = CalendarDay.from(calendar.get(Calendar.YEAR),
+//                    calendar.get(Calendar.MONTH) + 1,
+//                    calendar.get(Calendar.DAY_OF_MONTH));
+//
+//            paintedDates_sms.add(calendarDay);
+//        }
+//        Log.d("paintMiniCal", "paint sms dates again : " + paintedDates_sms);
+//
+//        return paintedDates_sms;
+//
+//    }
+
+//    public List<CalendarDay> paintMiniCalendar_aggregateDates_call() {
+//        //CALL LOG
+//        contactedDates_call = dbHelper.getLongFromTable("CALL_LOG",
+//                "datetime", "contact_id = " + cur_contact_id);
+//        Log.d("paintMiniCal", "paint call dates : " + contactedDates_call);
+//
+//        List<CalendarDay> paintedDates_call = new ArrayList<>();
+//        for (Long paintingDate_call : contactedDates_call) {
+//            Calendar calendar = Calendar.getInstance();
+//            calendar.setTimeInMillis(paintingDate_call);
+//
+//            CalendarDay calendarDay = CalendarDay.from(calendar.get(Calendar.YEAR),
+//                    calendar.get(Calendar.MONTH) + 1,
+//                    calendar.get(Calendar.DAY_OF_MONTH));
+//
+//            paintedDates_call.add(calendarDay);
+//        }
+//        Log.d("paintMiniCal", "paint call dates again : " + paintedDates_call);
+//
+//        return paintedDates_call;
+//    }
+
     // [통계] 미니 캘린더 색칠
     public void paintMiniCalendar(MaterialCalendarView calendarView) {
-        //Log.d("paintMiniCal", "let's paint!");
+        Log.d("sehee update", "cal start");
 
         //SMS
         contactedDates_sms = dbHelper.getLongFromTable("MESSENGER_HISTORY",
                 "datetime", "contact_id = " + cur_contact_id);
-        //Log.d("paintMiniCal", "paint sms dates : " + contactedDates_sms);
+        Log.d("paintMiniCal", "paint sms dates : " + contactedDates_sms);
 
         List<CalendarDay> paintedDates = new ArrayList<>();
-        for (Long paintingDate : contactedDates_sms) {
+        for (Long paintingDate_sms : contactedDates_sms) {
             Calendar calendar = Calendar.getInstance();
-            calendar.setTimeInMillis(paintingDate);
+            calendar.setTimeInMillis(paintingDate_sms);
 
             CalendarDay calendarDay = CalendarDay.from(calendar.get(Calendar.YEAR),
                     calendar.get(Calendar.MONTH) + 1,
@@ -436,17 +538,17 @@ public class StatisticsFragment extends Fragment {
 
             paintedDates.add(calendarDay);
         }
-        //Log.d("paintMiniCal", "paint sms dates again : " + paintedDates);
+        Log.d("paintMiniCal", "paint sms dates again : " + paintedDates);
 
         //CALL LOG
         contactedDates_call = dbHelper.getLongFromTable("CALL_LOG",
                 "datetime", "contact_id = " + cur_contact_id);
-        //Log.d("paintMiniCal", "paint call dates : " + contactedDates_call);
+        Log.d("paintMiniCal", "paint call dates : " + contactedDates_call);
 
-        //List<CalendarDay> paintedDates = new ArrayList<>();
-        for (Long paintingDate : contactedDates_call) {
+        //List<CalendarDay> paintedDates_call = new ArrayList<>();
+        for (Long paintingDate_call : contactedDates_call) {
             Calendar calendar = Calendar.getInstance();
-            calendar.setTimeInMillis(paintingDate);
+            calendar.setTimeInMillis(paintingDate_call);
 
             CalendarDay calendarDay = CalendarDay.from(calendar.get(Calendar.YEAR),
                     calendar.get(Calendar.MONTH) + 1,
@@ -454,28 +556,31 @@ public class StatisticsFragment extends Fragment {
 
             paintedDates.add(calendarDay);
         }
-        //Log.d("paintMiniCal", "paint sms+call dates again : " + paintedDates);
+        Log.d("paintMiniCal", "paint sms + call dates again : " + paintedDates);
+
         DayViewDecorator decorator = new DayViewDecorator() {
             @Override
             public boolean shouldDecorate(CalendarDay day) {
+                //CalendarDay day = view.getDate();
                 return paintedDates.contains(day);
             }
 
             @Override
             public void decorate(DayViewFacade view) {
                 view.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#FF0066")));
+                //view.setBackgroundDrawable(new ColorDrawable(Color.parseColor(color)));
             }
         };
 
         calendarView.removeDecorators();
         calendarView.addDecorator(decorator);
         calendarView.invalidateDecorators();
-        //Log.d("paintMiniCal", "painting end");
+        Log.d("paintMiniCal", "painting end");
     }
 
     // [SMS only]
     public void aggregateWeekContact(List<Long> contactedDates_sms) {
-        weeklyFrequencies = new int[7];
+        //weeklyFrequencies = new int[7];
 
         for (Long contactedDate : contactedDates_sms) {
             Calendar calendar = Calendar.getInstance();
@@ -489,7 +594,10 @@ public class StatisticsFragment extends Fragment {
     }
 
     public void drawBarChart(BarChart barChart) {
+        Log.d("sehee update", "bar start");
+
         aggregateWeekContact(contactedDates_sms); //일주일 데이터 누적 리스트
+        aggregateWeekContact(contactedDates_call);
 
         ArrayList<BarEntry> entries = new ArrayList<>();
         for (int i = 0; i < weeklyFrequencies.length; i++) {
