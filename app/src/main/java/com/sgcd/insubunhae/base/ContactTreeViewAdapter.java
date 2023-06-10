@@ -19,7 +19,7 @@ import com.sgcd.insubunhae.R;
 import com.sgcd.insubunhae.databinding.NodeBaseLayoutBinding;
 import com.sgcd.insubunhae.db.Contact;
 
-public class ContactTreeViewAdapter extends TreeViewAdapter<Contact> {
+public class ContactTreeViewAdapter extends TreeViewAdapter<ContactNode> {
 
     private DashLine dashLine =  new DashLine(Color.parseColor("#F06292"),6);
     private ContactTreeViewAdapter.OnItemClickListener listener;
@@ -29,19 +29,19 @@ public class ContactTreeViewAdapter extends TreeViewAdapter<Contact> {
     }
 
     @Override
-    public TreeViewHolder<Contact> onCreateViewHolder(@NonNull ViewGroup viewGroup, NodeModel<Contact> node) {
+    public TreeViewHolder<ContactNode> onCreateViewHolder(@NonNull ViewGroup viewGroup, NodeModel<ContactNode> node) {
         NodeBaseLayoutBinding nodeBinding = NodeBaseLayoutBinding.inflate(LayoutInflater.from(viewGroup.getContext()),viewGroup,false);
         return new TreeViewHolder<>(nodeBinding.getRoot(),node);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull TreeViewHolder<Contact> holder) {
+    public void onBindViewHolder(@NonNull TreeViewHolder<ContactNode> holder) {
         //todo get view and node from holder, and then show by you
         View itemView = holder.getView();
-        NodeModel<Contact> node = holder.getNode();
+        NodeModel<ContactNode> node = holder.getNode();
         TextView nameView = itemView.findViewById(R.id.name);
         ImageView headView = itemView.findViewById(R.id.portrait);
-        final Contact contact = node.value;
+        final ContactNode contact = node.value;
         nameView.setText(contact.getName());
         //headView.setImageResource(contact.headId);
         headView.setOnClickListener(v -> {
@@ -67,6 +67,6 @@ public class ContactTreeViewAdapter extends TreeViewAdapter<Contact> {
     }
 
     public interface OnItemClickListener{
-        void onItemClick(View item, NodeModel<Contact> node);
+        void onItemClick(View item, NodeModel<ContactNode> node);
     }
 }
