@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.provider.Contacts;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -20,6 +21,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.sgcd.insubunhae.MainActivity;
 import com.sgcd.insubunhae.R;
@@ -34,6 +36,7 @@ import java.util.ArrayList;
 //public class FragmentContactsEditor extends Fragment implements MainActivity.onBackPressedListener{
 public class FragmentContactsEditor extends Fragment{
     private FragmentContactsEditorBinding binding;
+    private FragmentContactsEditor fragmentContactsEditor;
     private Context context;
     private Contact contacts;
     private MainActivity activity;
@@ -51,6 +54,7 @@ public class FragmentContactsEditor extends Fragment{
         super.onAttach(context);
         this.context = context;
         activity = (MainActivity) getActivity();
+        fragmentContactsEditor = this;
     }
 
 //    @Override
@@ -82,17 +86,18 @@ public class FragmentContactsEditor extends Fragment{
 
 
         Button btn_save = root.findViewById(R.id.btn_save);
-        Button btn_back = root.findViewById(R.id.btn_back);
+//        Button btn_back = root.findViewById(R.id.btn_back);
         EditText editText = root.findViewById(R.id.contacts_editor_name);
         Contact tmp = contacts;
         tmp = activity.getContactsList().getContact(idx);
 
-        btn_back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                onBackPressed();
-            }
-        });
+//        btn_back.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+////                onBackPressed();
+//                NavHostFragment.findNavController(fragmentContactsEditor).navigateUp();
+//            }
+//        });
         btn_save.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 contacts.setName(binding.getName());
@@ -142,6 +147,7 @@ public class FragmentContactsEditor extends Fragment{
 
                 Toast.makeText(context, binding.getName(), Toast.LENGTH_SHORT).show();
                 Log.d("editor", "before call back");
+                NavHostFragment.findNavController(fragmentContactsEditor).navigateUp();
 
 //                onBackPressed();
             }
