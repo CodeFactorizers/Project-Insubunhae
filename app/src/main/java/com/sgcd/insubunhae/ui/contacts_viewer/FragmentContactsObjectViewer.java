@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Map;
 
 //public class FragmentContactsObjectViewer extends Fragment implements MainActivity.onBackPressedListener {
-public class FragmentContactsObjectViewer extends Fragment implements MainActivity.onBackPressedListener {
+public class FragmentContactsObjectViewer extends Fragment {
     private FragmentContactsObjectViewerBinding binding;
     private Context context;
     private MainActivity activity;
@@ -86,11 +86,11 @@ public class FragmentContactsObjectViewer extends Fragment implements MainActivi
         return root;
     }
 
-    @Override
-    public void onBackPressed() {
-        Log.d("contactsviewer", "onBackPressed fragment\n");
-//        activity.myGetFragmentManager().popBackStack();
-    }
+//    @Override
+//    public void onBackPressed() {
+//        Log.d("contactsviewer", "onBackPressed fragment\n");
+////        activity.myGetFragmentManager().popBackStack();
+//    }
 
     public void bindToView(Contact contact){
         //연락처 정보 출력
@@ -103,21 +103,21 @@ public class FragmentContactsObjectViewer extends Fragment implements MainActivi
         }
         else{
             View tmpView = root.findViewById(R.id.contacts_viewer_phoneNumber1);
-            tmpView.setVisibility(View.GONE);
+            //tmpView.setVisibility(View.GONE);
         }
         if(db_phone_num.size() > 1 && db_phone_num.get(1) != null){
             binding.setPhoneNumber2(db_phone_num.get(1));
         }
         else{
             View tmpView = root.findViewById(R.id.contacts_viewer_phoneNumber2);
-            tmpView.setVisibility(View.GONE);
+            //tmpView.setVisibility(View.GONE);
         }
         if(db_phone_num.size() > 2 && db_phone_num.get(2) != null){
             binding.setPhoneNumber3(db_phone_num.get(2));
         }
         else{
             View tmpView = root.findViewById(R.id.contacts_viewer_phoneNumber3);
-            tmpView.setVisibility(View.GONE);
+            //tmpView.setVisibility(View.GONE);
         }
         if(contact.getGroupId().size() != 0){
             String groupStr = new String();
@@ -129,30 +129,30 @@ public class FragmentContactsObjectViewer extends Fragment implements MainActivi
         }
         else{
             View tmpView = root.findViewById((R.id.contacts_viewer_group_list));
-            tmpView.setVisibility(View.GONE);
+            //tmpView.setVisibility(View.GONE);
         }
         binding.setGroupCount(Integer.toString(contact.getGroupCount()));
         //주소
         if((contact.getAddress().size() > 0) && (contact.getAddress().get(0) !=null)) binding.setAddress(contact.getAddress().get(0));
         else{
             View tmpView = root.findViewById(R.id.contacts_viewer_address1);
-            tmpView.setVisibility(View.GONE);
+            //tmpView.setVisibility(View.GONE);
         }
         if(contact.getAddress().size() > 1 && (contact.getAddress().get(0) !=null)) binding.setAddress2(contact.getAddress().get(1));
         else{
             View tmpView = root.findViewById(R.id.contacts_viewer_address2);
-            tmpView.setVisibility(View.GONE);
+            //tmpView.setVisibility(View.GONE);
         }
         //이메일
         if(contact.getEmail().size() > 0&& (contact.getEmail().get(0) !=null)) binding.setEmail(contact.getEmail().get(0));
         else{
             View tmpView = root.findViewById(R.id.contacts_viewer_email);
-            tmpView.setVisibility(View.GONE);
+            //tmpView.setVisibility(View.GONE);
         }
         if(contact.getEmail().size() > 1&& (contact.getEmail().get(0) !=null))binding.setEmail2(contact.getEmail().get(1));
         else{
             View tmpView = root.findViewById(R.id.contacts_viewer_sub_email);
-            tmpView.setVisibility(View.GONE);
+            //tmpView.setVisibility(View.GONE);
         }
         //직장
         if(contact.getCompany() != null)binding.setWork(contact.getCompany());

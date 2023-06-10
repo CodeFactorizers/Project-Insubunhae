@@ -31,7 +31,8 @@ import com.sgcd.insubunhae.db.DBHelper;
 
 import java.util.ArrayList;
 
-public class FragmentContactsEditor extends Fragment implements MainActivity.onBackPressedListener{
+//public class FragmentContactsEditor extends Fragment implements MainActivity.onBackPressedListener{
+public class FragmentContactsEditor extends Fragment{
     private FragmentContactsEditorBinding binding;
     private Context context;
     private Contact contacts;
@@ -89,7 +90,7 @@ public class FragmentContactsEditor extends Fragment implements MainActivity.onB
         btn_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onBackPressed();
+//                onBackPressed();
             }
         });
         btn_save.setOnClickListener(new View.OnClickListener(){
@@ -142,7 +143,7 @@ public class FragmentContactsEditor extends Fragment implements MainActivity.onB
                 Toast.makeText(context, binding.getName(), Toast.LENGTH_SHORT).show();
                 Log.d("editor", "before call back");
 
-                onBackPressed();
+//                onBackPressed();
             }
         });
 
@@ -162,11 +163,11 @@ public class FragmentContactsEditor extends Fragment implements MainActivity.onB
         return root;
     }
 
-    @Override
-    public void onBackPressed() {
-        Log.d("editor", "onBackPressed");
-//        activity.myGetFragmentManager().popBackStack();
-    }
+//    @Override
+//    public void onBackPressed() {
+//        Log.d("editor", "onBackPressed");
+////        activity.myGetFragmentManager().popBackStack();
+//    }
 
     private static boolean isValid(String str){
         boolean ret = str == null || str.isEmpty();

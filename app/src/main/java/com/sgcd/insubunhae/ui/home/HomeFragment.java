@@ -508,6 +508,7 @@ public class HomeFragment extends Fragment {
         rootContact.setName("나");
         rootContact.setId("0");
         rootContact.setHeadId(R.drawable.baseline_person_pin_circle_48);
+        rootContact.setType(ContactNode.GROUP);
         NodeModel<ContactNode> rootNodeModel = new NodeModel<>(rootContact);
         TreeModel<ContactNode> rootTree = new TreeModel<>(rootNodeModel);
 
