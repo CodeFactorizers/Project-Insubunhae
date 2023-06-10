@@ -7,10 +7,31 @@
     app:startDestination="@+id/navigation_home">
 
     <fragment
+        android:id="@+id/fragmentContactsEditor"
+        android:name="com.sgcd.insubunhae.ui.contacts_viewer.FragmentContactsEditor"
+        android:label="FragmentContactsEditor"
+        tools:layout="@layout/fragment_contacts_editor"/>
+    <fragment
+        android:id="@+id/fragmentContactsObjectViewer"
+        android:name="com.sgcd.insubunhae.ui.contacts_viewer.FragmentContactsObjectViewer"
+        android:label="FragmentContactsObjectViewer"
+        tools:layout="@layout/fragment_contacts_object_viewer">
+        <action
+            android:id="@+id/action_fragmentContactsObjectViewer_to_fragmentContactsEditor"
+            app:destination="@id/fragmentContactsEditor" />
+    </fragment>
+
+    <fragment
         android:id="@+id/navigation_home"
         android:name="com.sgcd.insubunhae.ui.home.HomeFragment"
         android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_navigation_home_to_fragmentContactsObjectViewer"
+            app:destination="@id/fragmentContactsObjectViewer" />
+    </fragment>
+
+
 
     <fragment
         android:id="@+id/navigation_statistics"

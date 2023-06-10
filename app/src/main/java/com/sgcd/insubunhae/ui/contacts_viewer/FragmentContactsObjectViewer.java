@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+//public class FragmentContactsObjectViewer extends Fragment implements MainActivity.onBackPressedListener {
 public class FragmentContactsObjectViewer extends Fragment implements MainActivity.onBackPressedListener {
     private FragmentContactsObjectViewerBinding binding;
     private Context context;
@@ -63,7 +64,7 @@ public class FragmentContactsObjectViewer extends Fragment implements MainActivi
         Button btn_edit = root.findViewById(R.id.btn_edit);
         btn_edit.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                activity.toEditor(FragmentContactsEditor.newInstance(), idx);
+                activity.moveToEditor(FragmentContactsEditor.newInstance(), idx);
             }
         });
         contactsList = activity.getContactsList();
@@ -87,7 +88,7 @@ public class FragmentContactsObjectViewer extends Fragment implements MainActivi
     @Override
     public void onBackPressed() {
         Log.d("contactsviewer", "onBackPressed fragment\n");
-        activity.myGetFragmentManager().popBackStack();
+//        activity.myGetFragmentManager().popBackStack();
     }
 
     public void bindToView(Contact contact){
