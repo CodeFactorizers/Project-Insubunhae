@@ -38,7 +38,7 @@
             android:layout_marginTop="16dp"
             android:background="@color/purple_700"
             android:gravity="center"
-            android:text="인물 이름"
+            android:text="@{statisticsViewModel.text}"
             android:textColor="@color/white"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

@@ -105,9 +105,18 @@ public class StatisticsFragment extends Fragment {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_statistics, container, false);
         View root = binding.getRoot();
 
-        //final TextView textView = binding.textStatistics;
-        //statisticsViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+        // 초기 '인물 이름'
+        final TextView textView = binding.textView;
+        statisticsViewModel.getText().observe(getViewLifecycleOwner(), text -> {
+            textView.setText(text);
+        });
 
+        ArrayList<Contact> contactsList = ((MainActivity) getActivity()).getContactsList().getContactsList();
+        String[] contactNameArray = new String[contactsList.size()];
+        //List<Integer> contact_id_list_int = new ArrayList<>();
+        for (int i = 0; i < contactsList.size(); i++) {
+            contactNameArray[i] = contactsList.get(i).getName();
+        }
         statisticsViewModel.setText(String.valueOf(cur_contact_id));
 
         //현재 인물의 CALL_LOG에서 data받아오기 : datetime, duration
@@ -183,7 +192,13 @@ public class StatisticsFragment extends Fragment {
                         //Log.d("paintMiniCal", "cur_contact_id : " + cur_contact_id);
 
                         // name tag
-                        //statisticsViewModel.setText(String.valueOf(cur_contact_id));
+                        StatisticsViewModel statisticsViewModel =
+                                new ViewModelProvider(requireActivity()).get(StatisticsViewModel.class);
+                        final TextView textView = binding.textView;
+                        statisticsViewModel.getText().observe(getViewLifecycleOwner(), text -> {
+                            textView.setText(text);
+                        });
+                        statisticsViewModel.setText(String.valueOf(cur_contact_id));
 
                         // [Draw Again] bar chart
                         BarChart barChart = binding.barchart;
