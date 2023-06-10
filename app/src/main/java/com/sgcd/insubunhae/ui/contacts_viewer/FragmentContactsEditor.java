@@ -182,7 +182,7 @@ public class FragmentContactsEditor extends Fragment implements MainActivity.onB
             binding.setPhoneNumber1(db_phone_num.get(0));
         }
         else{
-            binding.setPhoneNumber1(" ");
+            binding.setPhoneNumber1("");
 //            View tmpView = root.findViewById(R.id.contacts_editor_phoneNumber1);
 //            tmpView.setVisibility(View.GONE);
         }
@@ -190,17 +190,17 @@ public class FragmentContactsEditor extends Fragment implements MainActivity.onB
             binding.setPhoneNumber2(db_phone_num.get(1));
         }
         else{
-            binding.setPhoneNumber2(" ");
+            binding.setPhoneNumber2("");
             View tmpView = root.findViewById(R.id.contacts_editor_phoneNumber2);
-            tmpView.setVisibility(View.GONE);
+            //tmpView.setVisibility(View.GONE);
         }
         if(db_phone_num.size() > 2 && db_phone_num.get(2) != null){
             binding.setPhoneNumber3(db_phone_num.get(2));
         }
         else{
-            binding.setPhoneNumber3(" ");
+            binding.setPhoneNumber3("");
             View tmpView = root.findViewById(R.id.contacts_editor_phoneNumber3);
-            tmpView.setVisibility(View.GONE);
+            //tmpView.setVisibility(View.GONE);
         }
         if(contact.getGroupId().size() != 0){
             String groupStr = new String();
@@ -211,40 +211,40 @@ public class FragmentContactsEditor extends Fragment implements MainActivity.onB
             binding.setGroupList(groupStr);
         }
         else{
-            binding.setGroupList(" ");
+            binding.setGroupList("");
             View tmpView = root.findViewById((R.id.contacts_editor_group_list));
-            tmpView.setVisibility(View.GONE);
+            //tmpView.setVisibility(View.GONE);
         }
         //주소
         if((contact.getAddress().size() > 0) && (contact.getAddress().get(0) !=null)) binding.setAddress(contact.getAddress().get(0));
         else{
-            binding.setAddress(" ");
+            binding.setAddress("");
             View tmpView = root.findViewById(R.id.contacts_editor_address1);
-            tmpView.setVisibility(View.GONE);
+            //tmpView.setVisibility(View.GONE);
         }
         if(contact.getAddress().size() > 1 && (contact.getAddress().get(0) !=null)) binding.setAddress2(contact.getAddress().get(1));
         else{
-            binding.setAddress2(" ");
+            binding.setAddress2("");
             View tmpView = root.findViewById(R.id.contacts_editor_address2);
-            tmpView.setVisibility(View.GONE);
+            //tmpView.setVisibility(View.GONE);
         }
         //이메일
         if(contact.getEmail().size() > 0 && (contact.getEmail().get(0) !=null)) binding.setEmail(contact.getEmail().get(0));
         else{
-            binding.setEmail(" ");
+            binding.setEmail("");
             View tmpView = root.findViewById(R.id.contacts_editor_email);
-            tmpView.setVisibility(View.GONE);
+            //tmpView.setVisibility(View.GONE);
         }
         if(contact.getEmail().size() > 1 && (contact.getEmail().get(0) !=null))binding.setEmail2(contact.getEmail().get(1));
         else{
-            binding.setEmail2(" ");
+            binding.setEmail2("");
             View tmpView = root.findViewById(R.id.contacts_editor_sub_email);
-            tmpView.setVisibility(View.GONE);
+            //tmpView.setVisibility(View.GONE);
         }
         //직장
         if(contact.getCompany() != null)binding.setWork(contact.getCompany());
         else{
-            binding.setWork(" ");
+            binding.setWork("");
             root.findViewById(R.id.contacts_editor_work).setVisibility(View.GONE);
         }
         //sns id

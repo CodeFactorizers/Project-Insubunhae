@@ -126,6 +126,7 @@ public class HomeFragment extends Fragment {
 
 
         // 1 customs adapter
+        //어댑터 교환
 //        AnimalTreeViewAdapter adapter = new AnimalTreeViewAdapter();
         ContactTreeViewAdapter adapter = new ContactTreeViewAdapter();
 
@@ -576,7 +577,6 @@ public class HomeFragment extends Fragment {
                 }
             }
         }
-
             getActivity().runOnUiThread(() -> {
                 adapter.setTreeModel(rootTree);
 

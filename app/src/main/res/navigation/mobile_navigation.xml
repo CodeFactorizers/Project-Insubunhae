@@ -10,7 +10,8 @@
         android:id="@+id/fragmentContactsEditor"
         android:name="com.sgcd.insubunhae.ui.contacts_viewer.FragmentContactsEditor"
         android:label="FragmentContactsEditor"
-        tools:layout="@layout/fragment_contacts_editor"/>
+        tools:layout="@layout/fragment_contacts_editor">
+    </fragment>
     <fragment
         android:id="@+id/fragmentContactsObjectViewer"
         android:name="com.sgcd.insubunhae.ui.contacts_viewer.FragmentContactsObjectViewer"
@@ -18,7 +19,8 @@
         tools:layout="@layout/fragment_contacts_object_viewer">
         <action
             android:id="@+id/action_fragmentContactsObjectViewer_to_fragmentContactsEditor"
-            app:destination="@id/fragmentContactsEditor" />
+            app:destination="@id/fragmentContactsEditor"
+            />
     </fragment>
 
     <fragment

@@ -120,6 +120,7 @@ public class ContactsList implements Parcelable {
                 String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
                 contact.setId(id);
                 String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+                if(name == null) continue;
                 contact.setName(name);
 
                 // phoneNumber
