@@ -641,7 +641,7 @@ public class MainActivity extends AppCompatActivity {
             //Log.d("CalFam", "user_fam : " + user_fam); //친밀도 (유저 입력)
             //Log.d("CalFam", "how_long_month : " + how_long_month); //알고 지낸 시간(월)
             //Log.d("CalFam", "recent_score : " + recent_score); //최근 연락일
-            Log.d("CalFam", "contact_id : " + cur_contact_id + " || calc_fam : " + calc_fam); //친밀도(계산값)
+            //Log.d("CalFam", "contact_id : " + cur_contact_id + " || calc_fam : " + calc_fam); //친밀도(계산값)
 
             // [DB에 data 추가] cur_contact_id에 대해 user_fam, recent_contact, first_contact, calc_fam 값 추가
             ContentValues values = new ContentValues();
