@@ -4,6 +4,7 @@ package com.sgcd.insubunhae.ui.statistics;
 
 import static com.sgcd.insubunhae.BR.statisticsViewModel;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -83,7 +84,9 @@ public class StatisticsFragment extends Fragment {
 
     // 연락한 날짜 리스트
     List<Long> contactedDates_sms;
+    int contactedDates_sms_total = 0;
     List<Long> contactedDates_call;
+    int contactedDates_call_total = 0;
 
     int[] weeklyFrequencies = new int[7];
 
@@ -108,16 +111,18 @@ public class StatisticsFragment extends Fragment {
         // 초기 '인물 이름'
         final TextView textView = binding.textView;
         statisticsViewModel.getText().observe(getViewLifecycleOwner(), text -> {
-            textView.setText(text);
+            textView.setText("전체 통계");
         });
 
         ArrayList<Contact> contactsList = ((MainActivity) getActivity()).getContactsList().getContactsList();
+        int start_index = Integer.parseInt(contactsList.get(0).getId());
         String[] contactNameArray = new String[contactsList.size()];
         //List<Integer> contact_id_list_int = new ArrayList<>();
         for (int i = 0; i < contactsList.size(); i++) {
             contactNameArray[i] = contactsList.get(i).getName();
         }
-        statisticsViewModel.setText(String.valueOf(cur_contact_id));
+        //statisticsViewModel.setText("전체 통계");
+        //statisticsViewModel.setText(String.valueOf(contactNameArray[0]));
 
         //현재 인물의 CALL_LOG에서 data받아오기 : datetime, duration
         List<String> c_dt = new ArrayList<>();
@@ -141,9 +146,9 @@ public class StatisticsFragment extends Fragment {
 
         // 차트
         PieChart pieChart1 = binding.piechart1;
-        drawPieChart_total(pieChart1);
+        drawPieChart_totalFam(pieChart1);
         PieChart pieChart2 = binding.piechart2;
-        drawPieChart_compareCallvsSms(pieChart2);
+        drawPieChart_compareCallvsSms_initial(pieChart2);
         BarChart barChart = binding.barchart;
         drawBarChart(barChart);
 
@@ -202,13 +207,6 @@ public class StatisticsFragment extends Fragment {
                         });
                         //statisticsViewModel.setText(String.valueOf(cur_contact_id - 1));
                         statisticsViewModel.setText(String.valueOf(contactNameArray[cur_contact_id - 1 - start_index]));
-//                        Log.d("statistics name button", "> : " + (cur_contact_id - 1));
-//                        Log.d("statistics name button", ">> : " + start_index);
-//                        Log.d("statistics name button", ">>> : " + contactNameArray[cur_contact_id - 1 - start_index]);
-
-                        // [Draw Again] bar chart
-                        BarChart barChart = binding.barchart;
-                        drawBarChart(barChart);
 
                         // [Draw Again] calendar
                         MaterialCalendarView calendarView = binding.calendarView;
@@ -217,171 +215,36 @@ public class StatisticsFragment extends Fragment {
                         //List<CalendarDay> paintedDates_call = paintMiniCalendar_aggregateDates_call();
                         paintMiniCalendar(calendarView);
 
-                        // 차트
+                        // [Draw Again] pie chart
                         PieChart pieChart1 = binding.piechart1;
-                        drawPieChart_total(pieChart1);
+                        drawPieChart_totalFam(pieChart1);
                         PieChart pieChart2 = binding.piechart2;
                         drawPieChart_compareCallvsSms(pieChart2);
+
+                        // [Draw Again] bar chart
+                        BarChart barChart = binding.barchart;
+                        drawBarChart(barChart);
                     }
                 })
                 .show();
     }
 
-//    // 친밀도 계산 [SMS only]
-//    public static void calculateFamiliarity(SQLiteDatabase db) {
-//        // MAIN_CONTACTS 에서 contact_id 리스트 가져오기
-//        List<String> contact_id_list = new ArrayList<>();
-//        contact_id_list = dbHelper.getAttributeValueFromTable("MAIN_CONTACTS", "contact_id", "contact_id >= 0");
-//        List<Integer> contact_id_list_int = new ArrayList<>();
-//        for (String str : contact_id_list) {
-//            int number = Integer.parseInt(str);
-//            contact_id_list_int.add(number);
-//        }
-//        Log.d("CalFam", "contact_id_list_int : " + contact_id_list_int);
-//
-//        //각 contact_id에 대하여, 친밀도(calc_fam) 계산
-//        for (Integer cur_contact_id : contact_id_list_int) {
-//
-//            int calc_fam = 0; // 친밀도(계산값)
-//            int recent_content = 0; //
-//            int content_score = 1; // 최근 연락내용(점수 1~5점)
-//            int user_fam = cur_contact_id; // 친밀도(유저 입력)
-//            int how_long_month = -1; // 알고 지낸 시간(월)
-//            int recent_days = -1; // 최근 연락일 ~ 현재(일)
-//            int recent_score = -1; // 최근 연락일(점수 1~5점)
-//
-//            // [DB에서 추출] MESSENGER_HISTORY의 datetime, count
-//            List<String> m_dt = new ArrayList<>();
-//            m_dt = dbHelper.getAttributeValueFromTable("MESSENGER_HISTORY",
-//                    "datetime", "contact_id = " + cur_contact_id);
-//            //Log.d("CalFam", "sms_datetime : " + m_dt);
-//            List<String> m_cnt = new ArrayList<>();
-//            m_cnt = dbHelper.getAttributeValueFromTable("MESSENGER_HISTORY",
-//                    "count", "contact_id = " + cur_contact_id);
-//            List<Integer> m_cnt_int = new ArrayList<>();
-//            for (String str : m_cnt) {
-//                int number = Integer.parseInt(str);
-//                m_cnt_int.add(number);
-//            }
-//            //Log.d("CalFam", "sms_cnt : " + m_cnt);
-//
-//            // [DB에서 추출] recent_contact, first_contact
-//            Long recent_contact = dbHelper.getMaxOfAttribute("MESSENGER_HISTORY", "datetime", cur_contact_id);
-//            //Log.d("CalFam", "recent_contact : " + recent_contact);
-//            Date date_recent_contact = new Date(recent_contact);
-//            SimpleDateFormat dateFormat_recent_contact = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
-//            String timestamp_recent_contact = dateFormat_recent_contact.format(date_recent_contact);
-//
-//            Long first_contact = dbHelper.getMinOfAttribute("MESSENGER_HISTORY", "datetime", cur_contact_id);
-//            //Log.d("CalFam", "first_contact : " + first_contact);
-//            Date date_first_contact = new Date(first_contact);
-//            SimpleDateFormat dateFormat_first_contact = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
-//            String timestamp_first_contact = dateFormat_first_contact.format(date_first_contact);
-//
-//            // currentTimestamp = 현재 시간(yy-MM-dd HH:mm:ss) ---------------------------------*/
-//            Date date_current = new Date();
-//
-//            SimpleDateFormat dateFormat_current = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
-//
-//            Calendar calendar = Calendar.getInstance();
-//            calendar.setTime(date_current);
-//
-//            String timestamp_current = dateFormat_current.format(calendar.getTime());
-//            //-------------------------------------------------------------------------------*/
-//
-//            // how_long_month, recent_days, recent_score 계산 --------------------------------*/
-//            try {
-//                Date date1 = dateFormat_recent_contact.parse(timestamp_first_contact);
-//                Date date2 = dateFormat_current.parse(timestamp_current);
-//
-//                double milliseconds = date2.getTime() - date1.getTime();
-//
-//                how_long_month = (int) (Math.round(milliseconds / (30.0 * 24.0 * 60.0 * 60.0 * 1000.0)));
-//            } catch (
-//                    Exception e) {
-//                e.printStackTrace();
-//            }
-//
-//            try {
-//                Date date1 = dateFormat_first_contact.parse(timestamp_recent_contact);
-//                Date date2 = dateFormat_current.parse(timestamp_current);
-//
-//                long milliseconds = date2.getTime() - date1.getTime();
-//
-//                recent_days = (int) (milliseconds / (24 * 60 * 60 * 1000));
-//
-//            } catch (
-//                    Exception e) {
-//                e.printStackTrace();
-//            }
-//
-//            if (recent_days >= 0 && recent_days <= 3) {
-//                recent_score = 5;
-//            } else if (recent_days >= 4 && recent_days <= 7) {
-//                recent_score = 4;
-//            } else if (recent_days >= 8 && recent_days <= 30) {
-//                recent_score = 3;
-//            } else if (recent_days >= 31 && recent_days <= 180) {
-//                recent_score = 2;
-//            } else if (recent_days >= 180) {
-//                recent_score = 1;
-//            }
-//            //-------------------------------------------------------------------------------*/
-//
-//            // recent_content
-//            for (
-//                    int number : m_cnt_int) {
-//                recent_content += number;
-//            }
-//            if (recent_content == 0) {
-//                content_score = 1;
-//            } else if (recent_content >= 1 && recent_content <= 500) {
-//                content_score = 2;
-//            } else if (recent_content >= 501 && recent_content <= 1000) {
-//                content_score = 3;
-//            } else if (recent_content >= 1001 && recent_content <= 9999) {
-//                content_score = 4;
-//            } else if (recent_content >= 10000) {
-//                content_score = 5;
-//            }
-//
-//            // Calculate
-//            calc_fam = content_score * user_fam * how_long_month * recent_score;
-//
-//            // Familiarity Equation Final Check
-//            //Log.d("CalFam", "content_score : " + content_score); //최근 연락 내용
-//            //Log.d("CalFam", "user_fam : " + user_fam); //친밀도 (유저 입력)
-//            //Log.d("CalFam", "how_long_month : " + how_long_month); //알고 지낸 시간(월)
-//            //Log.d("CalFam", "recent_score : " + recent_score); //최근 연락일
-//            Log.d("CalFam", "contact_id : " + cur_contact_id + " || calc_fam : " + calc_fam); //친밀도(계산값)
-//
-//            // [DB에 data 추가] cur_contact_id에 대해 user_fam, recent_contact, first_contact, calc_fam 값 추가
-//            ContentValues values = new ContentValues();
-//            values.put("contact_id", cur_contact_id);
-//            values.put("user_fam", user_fam);
-//            values.put("calc_fam", calc_fam);
-//            values.put("recent_contact", timestamp_recent_contact);
-//            values.put("first_contact", timestamp_first_contact);
-//            db.insert("ANALYSIS", null, values);
-//
-//
-//        }
-//    }
+    // 파이 그래프에 %넣으려고 포맷팅하는
+    public class PercentValueFormatter extends ValueFormatter {
+        private DecimalFormat format;
 
-    public void drawPieChart_compareCallvsSms(PieChart pieChart) {
-        Log.d("sehee update", "second pie start");
-
-        // contact_id list 가져오기
-        ArrayList<Contact> contactsList = ((MainActivity) getActivity()).getContactsList().getContactsList();
-
-        String[] contactNameArray = new String[contactsList.size()];
-        String[] contactIdArray = new String[contactsList.size()];
-        int[] contactIdIntArray = new int[contactIdArray.length];
-        for (int i = 0; i < contactsList.size(); i++) {
-            contactNameArray[i] = contactsList.get(i).getName();
-            contactIdArray[i] = contactsList.get(i).getId();
-            contactIdIntArray[i] = Integer.parseInt(contactIdArray[i]);
+        public PercentValueFormatter() {
+            format = new DecimalFormat("##.#%");
         }
+
+        @Override
+        public String getFormattedValue(float value) {
+            return format.format(value);
+        }
+    }
+
+    public void drawPieChart_compareCallvsSms_initial(PieChart pieChart) {
+        Log.d("sehee update", "second pie start");
 
         pieChart.setDrawHoleEnabled(true);
         pieChart.setHoleColor(Color.WHITE);
@@ -390,16 +253,33 @@ public class StatisticsFragment extends Fragment {
         pieChart.getLegend().setEnabled(false);
         pieChart.setEntryLabelColor(Color.BLACK);
 
-        List<PieEntry> entries = new ArrayList<>();
-        int[] colors = {0xFF66FF99, 0xFFFFFF99, 0xFFFF6666, 0xFF99CCFF, 0xFFCCFF99};
-        int total_sms_portion = contactedDates_sms.size();
-        int total_call_portion = contactedDates_call.size();
+        ArrayList<Contact> contactsList = ((MainActivity) getActivity()).getContactsList().getContactsList();
+        int start_index = Integer.parseInt(contactsList.get(0).getId());
+        List<Long> contactedDates_sms_initial = new ArrayList<>();
+        for (int i = 0; i < contactsList.size(); i++) {
+            List<Long> tmp = dbHelper.getLongFromTable("MESSENGER_HISTORY",
+                    "datetime", "contact_id = " + (i + start_index));
+            contactedDates_sms_initial.addAll(tmp);
+            contactedDates_sms_total += contactedDates_sms_initial.size();
+        }
+        List<Long> contactedDates_call_initial = new ArrayList<>();
+        for (int i = 0; i < contactsList.size(); i++) {
+            List<Long> tmp = dbHelper.getLongFromTable("CALL_LOG",
+                    "datetime", "contact_id = " + (i + start_index));
+            contactedDates_call_initial.addAll(tmp);
+            contactedDates_call_total += contactedDates_call_initial.size();
+        }
+
+        float total_sms_portion = (float) contactedDates_sms_total / (contactedDates_sms_total + contactedDates_call_total);
+        float total_call_portion = (float) contactedDates_call_total / (contactedDates_sms_total + contactedDates_call_total);
         Log.d("sehee update", "total portion sms : " + total_sms_portion);
         Log.d("sehee update", "total portion call : " + total_call_portion);
 
-        entries.add(new PieEntry(total_call_portion));
-        entries.add(new PieEntry(total_sms_portion));
+        List<PieEntry> entries = new ArrayList<>();
+        entries.add(new PieEntry(total_call_portion, "Call"));
+        entries.add(new PieEntry(total_sms_portion, "SMS"));
 
+        int[] colors = {0xFF66FF99, 0xFFFFFF99, 0xFFFF6666, 0xFF99CCFF, 0xFFCCFF99};
 
         PieDataSet dataSet = new PieDataSet(entries, "LabelPie");
 
@@ -407,6 +287,7 @@ public class StatisticsFragment extends Fragment {
         dataSet.setColors(colors);
         dataSet.setValueTextSize(12f);
         dataSet.setValueTextColor(Color.BLACK);
+        dataSet.setValueFormatter(new PercentValueFormatter());
 
         PieData data = new PieData(dataSet);
 
@@ -414,7 +295,42 @@ public class StatisticsFragment extends Fragment {
         pieChart.invalidate(); // chart 그리기
     }
 
-    public void drawPieChart_total(PieChart pieChart) {
+    public void drawPieChart_compareCallvsSms(PieChart pieChart) {
+        Log.d("sehee update", "second pie start");
+
+        pieChart.setDrawHoleEnabled(true);
+        pieChart.setHoleColor(Color.WHITE);
+        pieChart.setTransparentCircleRadius(61f);
+        pieChart.getDescription().setEnabled(false);
+        pieChart.getLegend().setEnabled(false);
+        pieChart.setEntryLabelColor(Color.BLACK);
+
+        float total_sms_portion = (float) contactedDates_sms.size() / (contactedDates_sms.size() + contactedDates_call.size());
+        float total_call_portion = (float) contactedDates_call.size() / (contactedDates_sms.size() + contactedDates_call.size());
+        Log.d("sehee update", "total portion sms : " + total_sms_portion);
+        Log.d("sehee update", "total portion call : " + total_call_portion);
+
+        List<PieEntry> entries = new ArrayList<>();
+        entries.add(new PieEntry(total_call_portion, "Call"));
+        entries.add(new PieEntry(total_sms_portion, "SMS"));
+
+        int[] colors = {0xFF66FF99, 0xFFFFFF99, 0xFFFF6666, 0xFF99CCFF, 0xFFCCFF99};
+
+        PieDataSet dataSet = new PieDataSet(entries, "LabelPie");
+
+        //dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
+        dataSet.setColors(colors);
+        dataSet.setValueTextSize(12f);
+        dataSet.setValueTextColor(Color.BLACK);
+        dataSet.setValueFormatter(new PercentValueFormatter());
+
+        PieData data = new PieData(dataSet);
+
+        pieChart.setData(data); // chart에 data설정
+        pieChart.invalidate(); // chart 그리기
+    }
+
+    public void drawPieChart_totalFam(PieChart pieChart) {
         // contact_id list 가져오기
         ArrayList<Contact> contactsList = ((MainActivity) getActivity()).getContactsList().getContactsList();
 
@@ -578,7 +494,7 @@ public class StatisticsFragment extends Fragment {
         Log.d("paintMiniCal", "painting end");
     }
 
-    // [SMS only]
+    // [SMS + Call Log] 일주일 연락 비교
     public void aggregateWeekContact(List<Long> contactedDates_sms) {
         //weeklyFrequencies = new int[7];
 
@@ -646,6 +562,7 @@ public class StatisticsFragment extends Fragment {
 
         barChart.setData(barData);
         barChart.invalidate();
+        Log.d("sehee update", "bar fin");
     }
 
 }

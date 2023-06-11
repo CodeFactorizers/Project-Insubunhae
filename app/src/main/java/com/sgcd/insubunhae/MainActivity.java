@@ -535,19 +535,6 @@ public class MainActivity extends AppCompatActivity {
             }
             //Log.d("CalFam", "sms_cnt : " + m_cnt);
 
-            // [DB에서 추출] recent_contact, first_contact
-            Long recent_contact = dbHelper.getMaxOfAttribute("MESSENGER_HISTORY", "datetime", cur_contact_id);
-            //Log.d("CalFam", "recent_contact : " + recent_contact);
-            Date date_recent_contact = new Date(recent_contact);
-            SimpleDateFormat dateFormat_recent_contact = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
-            String timestamp_recent_contact = dateFormat_recent_contact.format(date_recent_contact);
-
-            Long first_contact = dbHelper.getMinOfAttribute("MESSENGER_HISTORY", "datetime", cur_contact_id);
-            //Log.d("CalFam", "first_contact : " + first_contact);
-            Date date_first_contact = new Date(first_contact);
-            SimpleDateFormat dateFormat_first_contact = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
-            String timestamp_first_contact = dateFormat_first_contact.format(date_first_contact);
-
             // currentTimestamp = 현재 시간(yy-MM-dd HH:mm:ss) ---------------------------------*/
             Date date_current = new Date();
 
@@ -558,6 +545,24 @@ public class MainActivity extends AppCompatActivity {
 
             String timestamp_current = dateFormat_current.format(calendar.getTime());
             //-------------------------------------------------------------------------------*/
+
+            // [DB에서 추출] recent_contact, first_contact
+            Long recent_contact = dbHelper.getMaxOfAttribute("MESSENGER_HISTORY", "datetime", cur_contact_id);
+            //Log.d("CalFam", "recent_contact : " + recent_contact);
+            Date date_recent_contact = new Date(recent_contact);
+            SimpleDateFormat dateFormat_recent_contact = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
+            String timestamp_recent_contact = dateFormat_recent_contact.format(date_recent_contact);
+
+            Long first_contact = dbHelper.getMinOfAttribute("MESSENGER_HISTORY", "datetime", cur_contact_id);
+            Log.d("CalFam", "first_contact : " + first_contact);
+            String timestamp_first_contact;
+            SimpleDateFormat dateFormat_first_contact = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
+            if (first_contact != 0) {
+                Date date_first_contact = new Date(first_contact);
+                timestamp_first_contact = dateFormat_first_contact.format(date_first_contact);
+            } else {
+                timestamp_first_contact = timestamp_current;
+            }
 
             // how_long_month, recent_days, recent_score 계산 --------------------------------*/
             try {
