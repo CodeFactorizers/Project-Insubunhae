@@ -554,7 +554,7 @@ public class MainActivity extends AppCompatActivity {
             String timestamp_recent_contact = dateFormat_recent_contact.format(date_recent_contact);
 
             Long first_contact = dbHelper.getMinOfAttribute("MESSENGER_HISTORY", "datetime", cur_contact_id);
-            Log.d("CalFam", "first_contact : " + first_contact);
+            //Log.d("CalFam", "first_contact : " + first_contact);
             String timestamp_first_contact;
             SimpleDateFormat dateFormat_first_contact = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
             if (first_contact != 0) {
