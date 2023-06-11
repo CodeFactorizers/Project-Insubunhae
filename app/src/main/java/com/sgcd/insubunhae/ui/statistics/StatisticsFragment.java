@@ -104,6 +104,7 @@ public class StatisticsFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
         StatisticsViewModel statisticsViewModel =
                 new ViewModelProvider(this).get(StatisticsViewModel.class);
+        statisticsViewModel.setDBHelper(dbHelper);
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_statistics, container, false);
         View root = binding.getRoot();
@@ -141,12 +142,31 @@ public class StatisticsFragment extends Fragment {
 
         // 캘린더
         MaterialCalendarView calendarView = binding.calendarView;
-        //List<CalendarDay> paintedDates_sms = paintMiniCalendar_aggregateDates_sms();
         paintMiniCalendar(calendarView);
+        //List<CalendarDay> paintedDates_sms = paintMiniCalendar_aggregateDates_sms();
+
+        // [Draw] information table
+        TextView textViewTable1 = binding.textViewTable1;
+//        statisticsViewModel.getFirstContact(cur_contact_id).observe(getViewLifecycleOwner(), text -> {
+//            textViewTable1.setText(text);
+//        });
+        textViewTable1.setVisibility(View.INVISIBLE);
+        TextView textViewTable2 = binding.textViewTable2;
+//        statisticsViewModel.getRecentContact(cur_contact_id).observe(getViewLifecycleOwner(), text -> {
+//            textViewTable2.setText(text);
+//        });
+        textViewTable2.setVisibility(View.INVISIBLE);
+        TextView textViewTable3 = binding.textViewTable3;
+//        statisticsViewModel.getFam(cur_contact_id).observe(getViewLifecycleOwner(), text -> {
+//            textViewTable3.setText(text);
+//        });
+        textViewTable3.setVisibility(View.INVISIBLE);
 
         // 차트
         PieChart pieChart1 = binding.piechart1;
         drawPieChart_totalFam(pieChart1);
+        pieChart1.setVisibility(View.VISIBLE);
+
         PieChart pieChart2 = binding.piechart2;
         drawPieChart_compareCallvsSms_initial(pieChart2);
         BarChart barChart = binding.barchart;
@@ -210,16 +230,43 @@ public class StatisticsFragment extends Fragment {
 
                         // [Draw Again] calendar
                         MaterialCalendarView calendarView = binding.calendarView;
+                        paintMiniCalendar(calendarView);
                         //List<CalendarDay> paintedDates_sms = paintMiniCalendar_aggregateDates_sms();
                         //paintMiniCalendar(calendarView, paintedDates_sms, "#000000");
                         //List<CalendarDay> paintedDates_call = paintMiniCalendar_aggregateDates_call();
-                        paintMiniCalendar(calendarView);
+
+                        TextView textView_pieTitle = binding.textViewPieTitle;
+                        textView_pieTitle.setVisibility(View.INVISIBLE);
+
+                        Log.d("AddTable", "cur id : " + cur_contact_id);
+                        // [Draw] information table
+                        TextView textViewTable1 = binding.textViewTable1;
+                        statisticsViewModel.getFirstContact(cur_contact_id).observe(getViewLifecycleOwner(), text -> {
+                            //Log.d("AddTable>", "cur id : " + cur_contact_id);
+                            textViewTable1.setText(text);
+                        });
+                        textViewTable1.setVisibility(View.VISIBLE);
+                        TextView textViewTable2 = binding.textViewTable2;
+                        statisticsViewModel.getRecentContact(cur_contact_id).observe(getViewLifecycleOwner(), text -> {
+                            //Log.d("AddTable>>", "cur id : " + cur_contact_id);
+                            textViewTable2.setText(text);
+                        });
+                        textViewTable2.setVisibility(View.VISIBLE);
+                        TextView textViewTable3 = binding.textViewTable3;
+                        statisticsViewModel.getFam(cur_contact_id).observe(getViewLifecycleOwner(), text -> {
+                            //Log.d("AddTable>>>", "cur id : " + cur_contact_id);
+                            textViewTable3.setText(text);
+                        });
+                        textViewTable3.setVisibility(View.VISIBLE);
 
                         // [Draw Again] pie chart
                         PieChart pieChart1 = binding.piechart1;
                         drawPieChart_totalFam(pieChart1);
+                        pieChart1.setVisibility(View.INVISIBLE);
+
                         PieChart pieChart2 = binding.piechart2;
                         drawPieChart_compareCallvsSms(pieChart2);
+                        pieChart2.setVisibility(View.VISIBLE);
 
                         // [Draw Again] bar chart
                         BarChart barChart = binding.barchart;
@@ -272,8 +319,8 @@ public class StatisticsFragment extends Fragment {
 
         float total_sms_portion = (float) contactedDates_sms_total / (contactedDates_sms_total + contactedDates_call_total);
         float total_call_portion = (float) contactedDates_call_total / (contactedDates_sms_total + contactedDates_call_total);
-        Log.d("sehee update", "total portion sms : " + total_sms_portion);
-        Log.d("sehee update", "total portion call : " + total_call_portion);
+        //Log.d("sehee update", "total portion sms : " + total_sms_portion);
+        //Log.d("sehee update", "total portion call : " + total_call_portion);
 
         List<PieEntry> entries = new ArrayList<>();
         entries.add(new PieEntry(total_call_portion, "Call"));
@@ -296,7 +343,7 @@ public class StatisticsFragment extends Fragment {
     }
 
     public void drawPieChart_compareCallvsSms(PieChart pieChart) {
-        Log.d("sehee update", "second pie start");
+        //Log.d("sehee update", "second pie start");
 
         pieChart.setDrawHoleEnabled(true);
         pieChart.setHoleColor(Color.WHITE);
@@ -307,8 +354,8 @@ public class StatisticsFragment extends Fragment {
 
         float total_sms_portion = (float) contactedDates_sms.size() / (contactedDates_sms.size() + contactedDates_call.size());
         float total_call_portion = (float) contactedDates_call.size() / (contactedDates_sms.size() + contactedDates_call.size());
-        Log.d("sehee update", "total portion sms : " + total_sms_portion);
-        Log.d("sehee update", "total portion call : " + total_call_portion);
+        //Log.d("sehee update", "total portion sms : " + total_sms_portion);
+        //Log.d("sehee update", "total portion call : " + total_call_portion);
 
         List<PieEntry> entries = new ArrayList<>();
         entries.add(new PieEntry(total_call_portion, "Call"));
@@ -436,12 +483,12 @@ public class StatisticsFragment extends Fragment {
 
     // [통계] 미니 캘린더 색칠
     public void paintMiniCalendar(MaterialCalendarView calendarView) {
-        Log.d("sehee update", "cal start");
+        //Log.d("sehee update", "cal start");
 
         //SMS
         contactedDates_sms = dbHelper.getLongFromTable("MESSENGER_HISTORY",
                 "datetime", "contact_id = " + cur_contact_id);
-        Log.d("paintMiniCal", "paint sms dates : " + contactedDates_sms);
+        //Log.d("paintMiniCal", "paint sms dates : " + contactedDates_sms);
 
         List<CalendarDay> paintedDates = new ArrayList<>();
         for (Long paintingDate_sms : contactedDates_sms) {
@@ -454,12 +501,12 @@ public class StatisticsFragment extends Fragment {
 
             paintedDates.add(calendarDay);
         }
-        Log.d("paintMiniCal", "paint sms dates again : " + paintedDates);
+        //Log.d("paintMiniCal", "paint sms dates again : " + paintedDates);
 
         //CALL LOG
         contactedDates_call = dbHelper.getLongFromTable("CALL_LOG",
                 "datetime", "contact_id = " + cur_contact_id);
-        Log.d("paintMiniCal", "paint call dates : " + contactedDates_call);
+        //Log.d("paintMiniCal", "paint call dates : " + contactedDates_call);
 
         //List<CalendarDay> paintedDates_call = new ArrayList<>();
         for (Long paintingDate_call : contactedDates_call) {
@@ -472,7 +519,7 @@ public class StatisticsFragment extends Fragment {
 
             paintedDates.add(calendarDay);
         }
-        Log.d("paintMiniCal", "paint sms + call dates again : " + paintedDates);
+        //Log.d("paintMiniCal", "paint sms + call dates again : " + paintedDates);
 
         DayViewDecorator decorator = new DayViewDecorator() {
             @Override
@@ -491,7 +538,7 @@ public class StatisticsFragment extends Fragment {
         calendarView.removeDecorators();
         calendarView.addDecorator(decorator);
         calendarView.invalidateDecorators();
-        Log.d("paintMiniCal", "painting end");
+        //Log.d("paintMiniCal", "painting end");
     }
 
     // [SMS + Call Log] 일주일 연락 비교
@@ -510,7 +557,7 @@ public class StatisticsFragment extends Fragment {
     }
 
     public void drawBarChart(BarChart barChart) {
-        Log.d("sehee update", "bar start");
+        //Log.d("sehee update", "bar start");
 
         aggregateWeekContact(contactedDates_sms); //일주일 데이터 누적 리스트
         aggregateWeekContact(contactedDates_call);
@@ -562,7 +609,7 @@ public class StatisticsFragment extends Fragment {
 
         barChart.setData(barData);
         barChart.invalidate();
-        Log.d("sehee update", "bar fin");
+        //Log.d("sehee update", "bar fin");
     }
 
 }

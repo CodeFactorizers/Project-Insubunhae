@@ -547,6 +547,36 @@ public class DBHelper extends SQLiteOpenHelper {
         return id;
     }
 
+    public String getTimestampFromANALYSIS(String what, int id) {
+        String ts = null;
+
+        //Log.d("AddTable", "..");
+        SQLiteDatabase idb = getWritableDatabase();
+        Cursor dbCursor = null;
+        //Log.d("AddTable", "..");
+        try {
+            String query = "SELECT " + what + " FROM ANALYSIS WHERE contact_id = " + id;
+            dbCursor = idb.rawQuery(query, null);
+            //Log.d("AddTable", "query : " + query);
+
+            if (dbCursor != null) {
+                while (dbCursor.moveToNext()) {
+                    int columnIndex = dbCursor.getColumnIndex(what);
+                    ts = dbCursor.getString(columnIndex);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (dbCursor != null) {
+                dbCursor.close();
+            }
+        }
+        //idb.close();
+
+        return ts;
+    }
+
     public List<Long> getLongFromTable(String tableName, String attributeName, String condition) {
         List<Long> attributeValues = new ArrayList<>();
 
@@ -556,7 +586,7 @@ public class DBHelper extends SQLiteOpenHelper {
         try {
             String query = "SELECT " + attributeName + " FROM " + tableName + " WHERE " + condition;
             dbCursor = idb.rawQuery(query, null);
-            Log.d("StatisticsFragment", "query : " + query);
+            //Log.d("StatisticsFragment", "query : " + query);
 
             if (dbCursor != null) {
                 while (dbCursor.moveToNext()) {

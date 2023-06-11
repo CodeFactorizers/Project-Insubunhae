@@ -59,6 +59,45 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
+            android:id="@+id/textViewTable1"
+            android:layout_width="250dp"
+            android:layout_height="25dp"
+            android:layout_marginStart="50dp"
+            android:layout_marginTop="16dp"
+            android:background="#99FF66"
+            android:gravity="center"
+            android:text="@{statisticsViewModel.text}"
+            android:textColor="@color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/contactChangeButton" />
+
+        <TextView
+            android:id="@+id/textViewTable2"
+            android:layout_width="250dp"
+            android:layout_height="25dp"
+            android:layout_marginStart="50dp"
+            android:layout_marginTop="16dp"
+            android:background="#99FF66"
+            android:gravity="center"
+            android:text="@{statisticsViewModel.text}"
+            android:textColor="@color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textViewTable1" />
+
+        <TextView
+            android:id="@+id/textViewTable3"
+            android:layout_width="250dp"
+            android:layout_height="25dp"
+            android:layout_marginStart="50dp"
+            android:layout_marginTop="16dp"
+            android:background="#99FF66"
+            android:gravity="center"
+            android:text="@{statisticsViewModel.text}"
+            android:textColor="@color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textViewTable2" />
+
+        <TextView
             android:id="@+id/textView_pieTitle"
             android:layout_width="150dp"
             android:layout_height="30dp"
