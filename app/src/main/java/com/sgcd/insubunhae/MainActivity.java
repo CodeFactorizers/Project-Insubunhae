@@ -59,6 +59,7 @@ import com.sgcd.insubunhae.databinding.ActivityMainBinding;
 import com.sgcd.insubunhae.db.Contact;
 import com.sgcd.insubunhae.db.ContactsList;
 import com.sgcd.insubunhae.db.DBHelper;
+import com.sgcd.insubunhae.db.PermissionSupport;
 import com.sgcd.insubunhae.ui.contacts_viewer.FragmentContactsObjectViewer;
 import com.sgcd.insubunhae.ui.home.HomeFragment;
 
@@ -74,6 +75,8 @@ public class MainActivity extends AppCompatActivity {
     public SQLiteDatabase getSQLiteDatabase(){return idb;}
     private Cursor dbCursor;
 
+
+    private PermissionSupport permission;
     private static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1;
     private static final int MY_PERMISSIONS_REQUEST_READ_CALL_LOG = 2;
     private static final int MY_PERMISSIONS_REQUEST_READ_SMS = 3;
@@ -109,13 +112,13 @@ public class MainActivity extends AppCompatActivity {
                 .detectLeakedClosableObjects()
                 .build());
 
-        if (getPermission()) { //sms 접근권한 받는 메소드(contacts, call log도 이 메소드 내에 추가하면 될듯!)
-            // Create new helper
-            dbHelper = new DBHelper(this);
-            // Get the database. If it does not exist, this is where it will also be created.
-            idb = dbHelper.getWritableDatabase();
-            contactsList = dbHelper.getContactsList();
-        }
+//        if (getPermission()) { //sms 접근권한 받는 메소드(contacts, call log도 이 메소드 내에 추가하면 될듯!)
+//            // Create new helper
+//            dbHelper = new DBHelper(this);
+//            // Get the database. If it does not exist, this is where it will also be created.
+//            idb = dbHelper.getWritableDatabase();
+//            contactsList = dbHelper.getContactsList();
+//        }
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -139,10 +142,10 @@ public class MainActivity extends AppCompatActivity {
         //SQLiteDatabase db = dbHelper.getWritableDatabase();
         //calculateFamiliarity(db);
         //db.close();
-        famThread thread = new famThread();
-        thread.start();
+//        famThread thread = new famThread();
+//        thread.start();
 
-
+        permissionCheck();
     }
 
     //contacts viewer 뒤로가기 인터페이스
@@ -182,6 +185,9 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
                 startActivity(intent);
                 break;
+            case R.id.menu_btn3:
+//                moveToMindmap();
+                break;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -191,6 +197,27 @@ public class MainActivity extends AppCompatActivity {
     /*
     Below: Permission Related Methods & Log Process Methods
      */
+    private void newDBHelper(){
+        if(dbHelper == null){
+            if(permission.checkPermission()) {
+                dbHelper = new DBHelper(this);
+                idb = dbHelper.getWritableDatabase();
+                contactsList = dbHelper.getContactsList();
+                moveToMindmap();
+                famThread thread = new famThread();
+                thread.start();
+            }
+        }
+    }
+    private void permissionCheck(){
+        permission = new PermissionSupport(this, this);
+        if(!permission.checkPermission()){
+            permission.requestPermission();
+        }
+        else{
+            newDBHelper();
+        }
+    }
     private boolean getPermission() {
         Log.d("getPermission", "getPermission");
 
@@ -237,33 +264,34 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        if (requestCode == MY_PERMISSIONS_REQUEST_READ_CONTACTS) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                //showToast("Contacts permission granted.");
-                // Permission granted for reading contacts
-                // Add your desired action here
-
-                // If contacts permission is granted, request call log permission
-                requestCallLogPermission();
-            } else {
-               //showToast("Contacts permission denied.");
-                // some appropriate actions like re-request permission..?
-            }
-        } else if (requestCode == MY_PERMISSIONS_REQUEST_READ_CALL_LOG) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                //showToast("Call log permission granted.");// If call log permission is granted, request SMS permission
-                requestSmsPermission();
-            } else {
-                //showToast("Call log permission denied.");
-            }
-        } else if (requestCode == MY_PERMISSIONS_REQUEST_READ_SMS) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                //showToast("SMS permission granted.");
-            } else {
-                //showToast("SMS permission denied.");
-            }
-        }
+//
+//        if (requestCode == MY_PERMISSIONS_REQUEST_READ_CONTACTS) {
+//            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                //showToast("Contacts permission granted.");
+//                // Permission granted for reading contacts
+//                // Add your desired action here
+//
+//                // If contacts permission is granted, request call log permission
+//                requestCallLogPermission();
+//            } else {
+//               //showToast("Contacts permission denied.");
+//                // some appropriate actions like re-request permission..?
+//            }
+//        } else if (requestCode == MY_PERMISSIONS_REQUEST_READ_CALL_LOG) {
+//            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                //showToast("Call log permission granted.");// If call log permission is granted, request SMS permission
+//                requestSmsPermission();
+//            } else {
+//                //showToast("Call log permission denied.");
+//            }
+//        } else if (requestCode == MY_PERMISSIONS_REQUEST_READ_SMS) {
+//            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                //showToast("SMS permission granted.");
+//            } else {
+//                //showToast("SMS permission denied.");
+//            }
+//        }
+        newDBHelper();
     }
 
     private void processCallLog(Cursor cursor) {
@@ -469,6 +497,9 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
+    public void moveToMindmap(){
+        navController.navigate(R.id.action_fragmentBlank_action);
+    }
     //연락처 뷰어의 편집버튼 눌렀을 때 편집창으로 넘어감
     public void moveToViewer(String id){
         final Bundle bundle = new Bundle();
@@ -500,6 +531,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static void calculateFamiliarity(SQLiteDatabase db) {
         // MAIN_CONTACTS 에서 contact_id 리스트 가져오기
+        Log.d("calculateFamiliarity", "enter");
         List<String> contact_id_list = new ArrayList<>();
         contact_id_list = dbHelper.getAttributeValueFromTable("MAIN_CONTACTS", "contact_id", "contact_id >= 0");
         List<Integer> contact_id_list_int = new ArrayList<>();
@@ -680,5 +712,6 @@ public class MainActivity extends AppCompatActivity {
 
 
         }
+        Log.d("calculateFamiliarity", "end");
     }
 }
