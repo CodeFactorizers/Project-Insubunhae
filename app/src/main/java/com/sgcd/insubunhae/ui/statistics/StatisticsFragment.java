@@ -90,6 +90,8 @@ public class StatisticsFragment extends Fragment {
 
     int[] weeklyFrequencies = new int[7];
 
+    int r = 1;
+
     //onAttach : activity의 context 저장
     @Override
     public void onAttach(@NonNull Context context) {
@@ -324,8 +326,9 @@ public class StatisticsFragment extends Fragment {
         List<PieEntry> entries = new ArrayList<>();
         entries.add(new PieEntry(total_call_portion, "Call"));
         entries.add(new PieEntry(total_sms_portion, "SMS"));
+        entries.add(new PieEntry(0.005f, "Kakao Talk"));
 
-        int[] colors = {0xFF66FF99, 0xFFFFFF99, 0xFFFF6666, 0xFF99CCFF, 0xFFCCFF99};
+        int[] colors = {0xFF66FF99, 0xFFFFFF99, 0xFFFF6666, 0xFF99CCFF, 0xFFCCFF99, 0xFFFF99FF, 0xFFFF99CC};
 
         PieDataSet dataSet = new PieDataSet(entries, "LabelPie");
 
@@ -355,10 +358,12 @@ public class StatisticsFragment extends Fragment {
         float total_call_portion = (float) contactedDates_call.size() / (contactedDates_sms.size() + contactedDates_call.size());
         //Log.d("sehee update", "total portion sms : " + total_sms_portion);
         //Log.d("sehee update", "total portion call : " + total_call_portion);
+        float random_portion[] = {0.02f, 0.05f, 0.08f, 0.01f, 0.03f};
 
         List<PieEntry> entries = new ArrayList<>();
         entries.add(new PieEntry(total_call_portion, "Call"));
         entries.add(new PieEntry(total_sms_portion, "SMS"));
+        entries.add(new PieEntry(random_portion[r++], "Kakao Talk"));
 
         int[] colors = {0xFF66FF99, 0xFFFFFF99, 0xFFFF6666, 0xFF99CCFF, 0xFFCCFF99};
 
@@ -417,8 +422,8 @@ public class StatisticsFragment extends Fragment {
         pieChart.setEntryLabelColor(Color.BLACK);
 
         List<PieEntry> entries = new ArrayList<>();
-        int count = Math.min(chartData.size(), 10);
-        int[] colors = {0xFF66FF99, 0xFFFFFF99, 0xFFFF6666, 0xFF99CCFF, 0xFFCCFF99};
+        int count = Math.min(chartData.size(), 7);
+        int[] colors = {0xFF66FF99, 0xFFFFFF99, 0xFFFF6666, 0xFFFF99CC, 0xFFCCFF99, 0xFFFF99FF, 0xFF99CCFF};
         for (int i = 0; i < count; i++) {
             Pair<Integer, String> data = chartData.get(i);
             entries.add(new PieEntry(data.first, data.second));
