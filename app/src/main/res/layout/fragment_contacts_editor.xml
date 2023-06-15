@@ -60,7 +60,7 @@
                     android:text="저장"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    ></Button>
+                    />
 
 
                 <TextView

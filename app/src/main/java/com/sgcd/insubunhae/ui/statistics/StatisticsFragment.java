@@ -147,6 +147,7 @@ public class StatisticsFragment extends Fragment {
 
         // [Draw] information table
         TextView textViewTable1 = binding.textViewTable1;
+        //textViewTable1.setPaintFlags(textViewTable1.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
 //        statisticsViewModel.getFirstContact(cur_contact_id).observe(getViewLifecycleOwner(), text -> {
 //            textViewTable1.setText(text);
 //        });

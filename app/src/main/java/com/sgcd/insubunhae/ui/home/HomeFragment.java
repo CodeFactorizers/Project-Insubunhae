@@ -50,6 +50,7 @@ import android.widget.Toast;
 
 import com.gyso.treeview.TreeViewEditor;
 import com.sgcd.insubunhae.db.Contact;
+import com.sgcd.insubunhae.db.ContactsList;
 
 import org.w3c.dom.Node;
 

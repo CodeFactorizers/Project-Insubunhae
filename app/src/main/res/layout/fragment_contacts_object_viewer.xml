@@ -4,57 +4,43 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <import type="java.util.ArrayList" />
-
         <variable
             name="name"
             type="String" />
-
         <variable
             name="phone_number1"
             type="String" />
-
         <variable
             name="phone_number2"
             type="String" />
-
         <variable
             name="phone_number3"
             type="String" />
-
         <variable
             name="group_list"
             type="String" />
-
         <variable
             name="group_count"
             type="String" />
-
         <variable
             name="address"
             type="String" />
-
         <variable
             name="address2"
             type="String" />
-
         <variable
             name="email"
             type="String" />
-
         <variable
             name="email2"
             type="String" />
-
         <variable
             name="work"
             type="String" />
-
         <variable
             name="SNS_ID"
             type="String" />
-
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -74,13 +60,13 @@
         <androidx.core.widget.NestedScrollView
             android:id="@+id/contacts_viewer_scroll"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fillViewport="true"
-            android:scrollbars="vertical"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_height="0dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0">
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintVertical_bias="1.0"
+            android:layout_marginBottom="100dp"
+            >
 
             <androidx.constraintlayout.widget.ConstraintLayout
 
