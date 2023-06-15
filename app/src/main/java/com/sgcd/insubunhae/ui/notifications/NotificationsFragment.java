@@ -57,7 +57,7 @@ public class NotificationsFragment extends Fragment {
         allQueue.add(queue1);
         allQueue.add(queue2);
         allQueue.add(queue3);
-
+        mainActivity.createNotification("DEFAULT", 1, "인수분해", "김준수님에게 연락해보세요");
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
