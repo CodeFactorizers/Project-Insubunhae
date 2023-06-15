@@ -6,10 +6,12 @@ import static com.sgcd.insubunhae.BR.statisticsViewModel;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.List;
 
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
@@ -67,11 +69,14 @@ import com.sgcd.insubunhae.MainActivity;
 import com.sgcd.insubunhae.R;
 import com.sgcd.insubunhae.databinding.FragmentStatisticsBinding;
 import com.sgcd.insubunhae.db.Contact;
+import com.sgcd.insubunhae.db.ContactsList;
 import com.sgcd.insubunhae.db.DBHelper;
+import com.sgcd.insubunhae.db.Group;
 import com.sgcd.insubunhae.ui.statistics.StatisticsViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class StatisticsFragment extends Fragment {
 
@@ -199,6 +204,24 @@ public class StatisticsFragment extends Fragment {
     // 인물 변경하기 버튼
     public void showContactIdSelectionDialog() {
         ArrayList<Contact> contactsList = ((MainActivity) getActivity()).getContactsList().getContactsList();
+        ContactsList contactsListNotArray = ((MainActivity) getActivity()).getContactsList();
+
+        Map<String, Group> groupMap = contactsListNotArray.getGroupMap();
+        ArrayList<String> groupNameArrayList = new ArrayList<>();
+        ArrayList<ArrayList<String>> groupContactIdArrayList = new ArrayList<>();
+        Iterator<String> keys = groupMap.keySet().iterator();
+        while(keys.hasNext()){
+            String key = keys.next();
+            ArrayList<String> tmpContactNameArrayList = new ArrayList<>();
+            groupNameArrayList.add(groupMap.get(key).getGroupName());
+            for(String id:groupMap.get(key).getMemberList()){
+                tmpContactNameArrayList.add(contactsListNotArray.getContactsList().get(contactsListNotArray.getIndexFromId(id)).getName());
+            }
+
+            groupContactIdArrayList.add(tmpContactNameArrayList);
+        }
+        String[] groupNameArray = groupNameArrayList.toArray(new String[groupNameArrayList.size()]);
+
 
         String[] contactNameArray = new String[contactsList.size()];
         //List<Integer> contact_id_list_int = new ArrayList<>();
@@ -210,68 +233,78 @@ public class StatisticsFragment extends Fragment {
 
         // 다이얼로그
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Select contact_id")
-                .setItems(contactNameArray, new DialogInterface.OnClickListener() {
+        builder.setTitle("Select group")
+                .setItems(groupNameArray, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         //cur_contact_id = contactIds.get(which);
                         cur_contact_id = which + start_index + 1;
                         Log.d("Check CI in dialog", "cur_contact_id : " + cur_contact_id);
+                        String[] groupContactIdArray = groupContactIdArrayList.get(which).toArray(new String[groupContactIdArrayList.get(which).size()]);
+                        AlertDialog.Builder builder2 = new AlertDialog.Builder(context);
+                        builder2.setTitle("Select contact");
+                        builder2.setItems(groupContactIdArray,  new DialogInterface.OnClickListener(){
+                            public void onClick(DialogInterface dialog, int which){
+                                //cur_contact_id = contactIds.get(which);
+                                cur_contact_id = which + start_index + 1;
+                                Log.d("Check CI in dialog", "cur_contact_id : " + cur_contact_id);
 
-                        // name tag
-                        StatisticsViewModel statisticsViewModel =
-                                new ViewModelProvider(requireActivity()).get(StatisticsViewModel.class);
-                        final TextView textView = binding.textView;
-                        //statisticsViewModel.setText(String.valueOf(contactNameArray[cur_contact_id - 1 - start_index]));
-                        statisticsViewModel.getText().observe(getViewLifecycleOwner(), text -> {
-                            textView.setText(text);
-                        });
-                        //statisticsViewModel.setText(String.valueOf(cur_contact_id - 1));
-                        statisticsViewModel.setText(String.valueOf(contactNameArray[cur_contact_id - 1 - start_index]));
+                                // name tag
+                                StatisticsViewModel statisticsViewModel =
+                                        new ViewModelProvider(requireActivity()).get(StatisticsViewModel.class);
+                                final TextView textView = binding.textView;
+                                //statisticsViewModel.setText(String.valueOf(groupContactIdArray[cur_contact_id - 1 - start_index]));
+                                statisticsViewModel.getText().observe(getViewLifecycleOwner(), text -> {
+                                    textView.setText(text);
+                                });
+                                //statisticsViewModel.setText(String.valueOf(cur_contact_id - 1));
+                                statisticsViewModel.setText(String.valueOf(groupContactIdArray[cur_contact_id - 1 - start_index]));
 
-                        // [Draw Again] calendar
-                        MaterialCalendarView calendarView = binding.calendarView;
-                        paintMiniCalendar(calendarView);
-                        //List<CalendarDay> paintedDates_sms = paintMiniCalendar_aggregateDates_sms();
-                        //paintMiniCalendar(calendarView, paintedDates_sms, "#000000");
-                        //List<CalendarDay> paintedDates_call = paintMiniCalendar_aggregateDates_call();
+                                // [Draw Again] calendar
+                                MaterialCalendarView calendarView = binding.calendarView;
+                                paintMiniCalendar(calendarView);
+                                //List<CalendarDay> paintedDates_sms = paintMiniCalendar_aggregateDates_sms();
+                                //paintMiniCalendar(calendarView, paintedDates_sms, "#000000");
+                                //List<CalendarDay> paintedDates_call = paintMiniCalendar_aggregateDates_call();
 
-                        TextView textView_pieTitle = binding.textViewPieTitle;
-                        textView_pieTitle.setVisibility(View.INVISIBLE);
+                                TextView textView_pieTitle = binding.textViewPieTitle;
+                                textView_pieTitle.setVisibility(View.INVISIBLE);
 
-                        //Log.d("AddTable", "cur id : " + cur_contact_id);
-                        // [Draw] information table
-                        TextView textViewTable1 = binding.textViewTable1;
-                        statisticsViewModel.getFirstContact(cur_contact_id).observe(getViewLifecycleOwner(), text -> {
-                            //Log.d("AddTable>", "cur id : " + cur_contact_id);
-                            textViewTable1.setText(text);
-                        });
-                        textViewTable1.setVisibility(View.VISIBLE);
-                        TextView textViewTable2 = binding.textViewTable2;
-                        statisticsViewModel.getRecentContact(cur_contact_id).observe(getViewLifecycleOwner(), text -> {
-                            //Log.d("AddTable>>", "cur id : " + cur_contact_id);
-                            textViewTable2.setText(text);
-                        });
-                        textViewTable2.setVisibility(View.VISIBLE);
-                        TextView textViewTable3 = binding.textViewTable3;
-                        statisticsViewModel.getFam(cur_contact_id).observe(getViewLifecycleOwner(), text -> {
-                            //Log.d("AddTable>>>", "cur id : " + cur_contact_id);
-                            textViewTable3.setText(text);
-                        });
-                        textViewTable3.setVisibility(View.VISIBLE);
+                                //Log.d("AddTable", "cur id : " + cur_contact_id);
+                                // [Draw] information table
+                                TextView textViewTable1 = binding.textViewTable1;
+                                statisticsViewModel.getFirstContact(cur_contact_id).observe(getViewLifecycleOwner(), text -> {
+                                    //Log.d("AddTable>", "cur id : " + cur_contact_id);
+                                    textViewTable1.setText(text);
+                                });
+                                textViewTable1.setVisibility(View.VISIBLE);
+                                TextView textViewTable2 = binding.textViewTable2;
+                                statisticsViewModel.getRecentContact(cur_contact_id).observe(getViewLifecycleOwner(), text -> {
+                                    //Log.d("AddTable>>", "cur id : " + cur_contact_id);
+                                    textViewTable2.setText(text);
+                                });
+                                textViewTable2.setVisibility(View.VISIBLE);
+                                TextView textViewTable3 = binding.textViewTable3;
+                                statisticsViewModel.getFam(cur_contact_id).observe(getViewLifecycleOwner(), text -> {
+                                    //Log.d("AddTable>>>", "cur id : " + cur_contact_id);
+                                    textViewTable3.setText(text);
+                                });
+                                textViewTable3.setVisibility(View.VISIBLE);
 
-                        // [Draw Again] pie chart
-                        PieChart pieChart1 = binding.piechart1;
-                        drawPieChart_totalFam(pieChart1);
-                        pieChart1.setVisibility(View.INVISIBLE);
+                                // [Draw Again] pie chart
+                                PieChart pieChart1 = binding.piechart1;
+                                drawPieChart_totalFam(pieChart1);
+                                pieChart1.setVisibility(View.INVISIBLE);
 
-                        PieChart pieChart2 = binding.piechart2;
-                        drawPieChart_compareCallvsSms(pieChart2);
-                        pieChart2.setVisibility(View.VISIBLE);
+                                PieChart pieChart2 = binding.piechart2;
+                                drawPieChart_compareCallvsSms(pieChart2);
+                                pieChart2.setVisibility(View.VISIBLE);
 
-                        // [Draw Again] bar chart
-                        BarChart barChart = binding.barchart;
-                        drawBarChart(barChart);
+                                // [Draw Again] bar chart
+                                BarChart barChart = binding.barchart;
+                                drawBarChart(barChart);
+                            }
+                        }).show();
                     }
                 })
                 .show();
