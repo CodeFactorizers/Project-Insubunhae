@@ -543,12 +543,13 @@ public class MainActivity extends AppCompatActivity {
 
         //각 contact_id에 대하여, 친밀도(calc_fam) 계산
         for (Integer cur_contact_id : contact_id_list_int) {
-            //Log.d("CalFam", "cur contact id : " + cur_contact_id);
+            Log.d("CalFam", "cur contact id : " + cur_contact_id);
 
             int calc_fam = 0; // 친밀도(계산값)
             int recent_content = 0; //
             int content_score = 1; // 최근 연락내용(점수 1~5점)
-            int user_fam = cur_contact_id; // 친밀도(유저 입력)
+            //int user_fam = cur_contact_id; // 친밀도(유저 입력)
+            int user_fam = 1; // 친밀도(유저 입력)
             int how_long_month = -1; // 알고 지낸 시간(월)
             int recent_days = -1; // 최근 연락일 ~ 현재(일)
             int recent_score = -1; // 최근 연락일(점수 1~5점)
@@ -566,7 +567,7 @@ public class MainActivity extends AppCompatActivity {
                 int number = Integer.parseInt(str);
                 m_cnt_int.add(number);
             }
-            //Log.d("CalFam", "sms_cnt ( x1 ): " + m_cnt);
+            Log.d("CalFam", "sms_cnt ( x1 ): " + m_cnt_int);
 
             // [DB에서 추출] CALL_LOG의 datetime, duration
             List<String> c_dt = new ArrayList<>();
@@ -581,7 +582,7 @@ public class MainActivity extends AppCompatActivity {
                 int number = Integer.parseInt(str);
                 c_duration_int.add(number);
             }
-            //Log.d("CalFam", "call_duration ( x1 ): " + c_duration);
+            Log.d("CalFam", "call_duration ( x1 ): " + c_duration);
 
             // currentTimestamp = 현재 시간(yy-MM-dd HH:mm:ss) ---------------------------------*/
             Date date_current = new Date();
@@ -599,35 +600,40 @@ public class MainActivity extends AppCompatActivity {
             Long recent_contact_call = dbHelper.getMaxOfAttribute("CALL_LOG", "datetime", cur_contact_id);
             Long recent_contact = null;
             if (recent_contact_call < recent_contact_sms) {
-                recent_contact = recent_contact_call;
-            } else {
                 recent_contact = recent_contact_sms;
+            } else {
+                recent_contact = recent_contact_call;
             }
-            //Log.d("CalFam", "recent_contact_sms : " + recent_contact_sms);
-            //Log.d("CalFam", "recent_contact_call : " + recent_contact_call);
-            //Log.d("CalFam", "recent_contact (sms + call) : " + recent_contact);
-            Date date_recent_contact = new Date(recent_contact);
+            Log.d("CalFam", "recent_contact_sms : " + recent_contact_sms);
+            Log.d("CalFam", "recent_contact_call : " + recent_contact_call);
+            Log.d("CalFam", "recent_contact (sms + call) : " + recent_contact);
+            String timestamp_recent_contact;
             SimpleDateFormat dateFormat_recent_contact = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
-            String timestamp_recent_contact = dateFormat_recent_contact.format(date_recent_contact);
+            if (recent_contact > 0) {
+                Date date_recent_contact = new Date(recent_contact);
+                timestamp_recent_contact = dateFormat_recent_contact.format(date_recent_contact);
+            } else {
+                timestamp_recent_contact = "00-00-00 00:00:00";
+            }
 
             Long first_contact_sms = dbHelper.getMinOfAttribute("MESSENGER_HISTORY", "datetime", cur_contact_id);
             Long first_contact_call = dbHelper.getMinOfAttribute("CALL_LOG", "datetime", cur_contact_id);
             Long first_contact = null;
-            if (first_contact_call < recent_contact_sms) {
+            if (first_contact_call < first_contact_sms) {
                 first_contact = first_contact_call;
             } else {
                 first_contact = first_contact_sms;
             }
-            //Log.d("CalFam", "first_contact_sms : " + first_contact_sms);
-            //Log.d("CalFam", "first_contact_call : " + first_contact_call);
-            //Log.d("CalFam", "first_contact : " + first_contact);
+            Log.d("CalFam", "first_contact_sms : " + first_contact_sms);
+            Log.d("CalFam", "first_contact_call : " + first_contact_call);
+            Log.d("CalFam", "first_contact : " + first_contact);
             String timestamp_first_contact;
             SimpleDateFormat dateFormat_first_contact = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
             if (first_contact != 0) {
                 Date date_first_contact = new Date(first_contact);
                 timestamp_first_contact = dateFormat_first_contact.format(date_first_contact);
             } else {
-                timestamp_first_contact = timestamp_current;
+                timestamp_first_contact = "00-00-00 00:00:00";
             }
 
             // how_long_month, recent_days, recent_score 계산 --------------------------------*/

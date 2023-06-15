@@ -304,14 +304,14 @@ public class StatisticsFragment extends Fragment {
         List<Long> contactedDates_sms_initial = new ArrayList<>();
         for (int i = 0; i < contactsList.size(); i++) {
             List<Long> tmp = dbHelper.getLongFromTable("MESSENGER_HISTORY",
-                    "datetime", "contact_id = " + (i + start_index));
+                    "datetime", "contact_id = " + (i + start_index + 1));
             contactedDates_sms_initial.addAll(tmp);
             contactedDates_sms_total += contactedDates_sms_initial.size();
         }
         List<Long> contactedDates_call_initial = new ArrayList<>();
         for (int i = 0; i < contactsList.size(); i++) {
             List<Long> tmp = dbHelper.getLongFromTable("CALL_LOG",
-                    "datetime", "contact_id = " + (i + start_index));
+                    "datetime", "contact_id = " + (i + start_index + 1));
             contactedDates_call_initial.addAll(tmp);
             contactedDates_call_total += contactedDates_call_initial.size();
         }
@@ -417,7 +417,7 @@ public class StatisticsFragment extends Fragment {
         pieChart.setEntryLabelColor(Color.BLACK);
 
         List<PieEntry> entries = new ArrayList<>();
-        int count = Math.min(chartData.size(), 5);
+        int count = Math.min(chartData.size(), 10);
         int[] colors = {0xFF66FF99, 0xFFFFFF99, 0xFFFF6666, 0xFF99CCFF, 0xFFCCFF99};
         for (int i = 0; i < count; i++) {
             Pair<Integer, String> data = chartData.get(i);
