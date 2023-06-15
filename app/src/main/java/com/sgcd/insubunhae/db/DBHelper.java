@@ -76,10 +76,35 @@ public class DBHelper extends SQLiteOpenHelper {
         }
 
         contacts_list.getContacts(context, this, db);
-        contacts_list.dbInsert(db);
+//        Thread dbInsertThread = new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+                contacts_list.dbInsert(db);
+//            }
+//        });
+//        dbInsertThread.start();
 
-        smsFromDeviceToDB(db);
-        callLogFromDeviceToDB(db);
+//        Thread smsLogThread = new Thread(new Runnable(){
+//            public void run() {
+                smsFromDeviceToDB(db);
+//            }
+//        });
+//        Thread callLogThread = new Thread(new Runnable(){
+//            public void run() {
+                callLogFromDeviceToDB(db);
+//            }
+//        });
+//        smsLogThread.start();
+//        callLogThread.start();
+//        try{
+//            callLogThread.join();
+//            smsLogThread.join();
+//            dbInsertThread.join();
+//        }
+//        catch(InterruptedException e){
+//            e.printStackTrace();
+//        }
+
         //calculateFamiliarity(db);
     }
 
@@ -106,7 +131,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     }
     public void callLogFromDeviceToDB(SQLiteDatabase db) {
-        new Thread(() -> {
+
             int callLogId = DBContract.CallLog.call_log_cnt;        // Call log ID
             int contactId = 0;        // Contact ID
             long callDatetime = DBContract.CallLog.last_updated;    // Call date and time
@@ -247,7 +272,6 @@ public class DBHelper extends SQLiteOpenHelper {
                 //Toast.makeText(context, "CallLog Retrieval finished, lastCallLogId: " + lastCallLogId, Toast.LENGTH_SHORT).show();
                 // For example, you can notify the user that the task is completed or update UI elements based on the retrieved data
             });
-        }).start();
     }
 
     public void smsFromDeviceToDB(SQLiteDatabase db) {
