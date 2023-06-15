@@ -256,7 +256,7 @@ public class FragmentContactsEditor extends Fragment{
         }
         //sns id
         if(contact.getSnsId() != null) binding.setSNSID(contact.getSnsId());
-        else root.findViewById(R.id.contacts_editor_sns_id).setVisibility(View.GONE);
+        //else root.findViewById(R.id.contacts_editor_sns_id).setVisibility(View.GONE);
     }
 
 

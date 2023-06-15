@@ -157,10 +157,10 @@ public class FragmentContactsObjectViewer extends Fragment {
         //직장
         if(contact.getCompany() != null)binding.setWork(contact.getCompany());
         else{
-            root.findViewById(R.id.contacts_viewer_work).setVisibility(View.GONE);
+//            root.findViewById(R.id.contacts_viewer_work).setVisibility(View.GONE);
         }
         //sns id
         if(contact.getSnsId() != null) binding.setSNSID(contact.getSnsId());
-        else root.findViewById(R.id.contacts_viewer_sns_id).setVisibility(View.GONE);
+//        else root.findViewById(R.id.contacts_viewer_sns_id).setVisibility(View.GONE);
     }
 }
