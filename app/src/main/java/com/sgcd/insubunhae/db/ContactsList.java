@@ -185,6 +185,7 @@ public class ContactsList implements Parcelable {
                 contact.setGroupCount(contact.getGroupId().size());
                 if(contact.getGroupCount() != 0){
                     contact.setIsGrouped(1);
+                    groupIdToName(contact);
                 }
                 if (groupMemberCursor != null) {
                     groupMemberCursor.close();
