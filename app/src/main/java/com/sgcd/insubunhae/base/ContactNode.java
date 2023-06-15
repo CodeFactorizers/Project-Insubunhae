@@ -17,6 +17,7 @@ public class ContactNode {
     public ContactNode(String name){
         this.name = name;
         this.type = GROUP;
+        headId = R.drawable.baseline_groups_48;
     }
     public ContactNode(String id, String name, int isGrouped){
         this.type = CONTACT;
