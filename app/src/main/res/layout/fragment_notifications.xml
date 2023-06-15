@@ -72,7 +72,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView
+                <LinearLayout
                     android:id="@+id/queue_1"
                     android:layout_width="300dp"
                     android:layout_height="130dp"
@@ -85,9 +85,53 @@
                     app:layout_constraintBottom_toTopOf="@+id/queue_2"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/queue_head" />
+                    app:layout_constraintTop_toBottomOf="@+id/queue_head" >
 
-                <TextView
+                    <TextView
+                        android:id="@+id/queue1_1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="TextView"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="15dp"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="10dp"
+                        android:background="#FFCCFF"
+                        />
+                    <TextView
+                        android:id="@+id/queue1_2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="TextView"
+                        app:layout_constraintStart_toEndOf="@id/queue1_1"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="15dp"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="10dp"
+                        android:background="#FFCCFF"
+                        />
+                    <TextView
+                        android:id="@+id/queue1_3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="TextView"
+                        app:layout_constraintStart_toEndOf="@id/queue1_2"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="15dp"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="10dp"
+                        android:background="#FFCCFF"
+                        />
+                </LinearLayout>
+
+                <LinearLayout
                     android:id="@+id/queue_2"
                     android:layout_width="300dp"
                     android:layout_height="130dp"
@@ -101,9 +145,56 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.504"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/queue_1" />
+                    app:layout_constraintTop_toBottomOf="@+id/queue_1">
+                        <TextView
+                            android:id="@+id/queue2_1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="TextView"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
 
-                <TextView
+                            android:layout_marginStart="15dp"
+                            android:layout_marginEnd="15dp"
+                            android:paddingHorizontal="10dp"
+                            android:paddingVertical="10dp"
+                            android:background="#FFCCFF"
+                            />
+                        <TextView
+                            android:id="@+id/queue2_2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="TextView"
+                            app:layout_constraintStart_toEndOf="@id/queue2_1"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+
+                            android:layout_marginStart="15dp"
+                            android:layout_marginEnd="15dp"
+                            android:paddingHorizontal="10dp"
+                            android:paddingVertical="10dp"
+                            android:background="#FFCCFF"
+                            />
+                        <TextView
+                            android:id="@+id/queue2_3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="TextView"
+                            app:layout_constraintStart_toEndOf="@id/queue2_2"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+
+                            android:layout_marginStart="15dp"
+                            android:layout_marginEnd="15dp"
+                            android:paddingHorizontal="10dp"
+                            android:paddingVertical="10dp"
+                            android:background="#FFCCFF"
+                            />
+                </LinearLayout>
+
+
+                <LinearLayout
                     android:id="@+id/queue_3"
                     android:layout_width="300dp"
                     android:layout_height="130dp"
@@ -117,7 +208,54 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.504"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/queue_2" />
+                    app:layout_constraintTop_toBottomOf="@+id/queue_2">
+                    <TextView
+                        android:id="@+id/queue3_1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="TextView"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="15dp"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="10dp"
+                        android:background="#FFCCFF"
+                        />
+                    <TextView
+                        android:id="@+id/queue3_2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="TextView"
+                        app:layout_constraintStart_toEndOf="@id/queue3_1"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="15dp"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="10dp"
+                        android:background="#FFCCFF"
+                        />
+                    <TextView
+                        android:id="@+id/queue3_3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="TextView"
+                        app:layout_constraintStart_toEndOf="@id/queue3_2"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="15dp"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="10dp"
+                        android:background="#FFCCFF"
+                        />
+
+                </LinearLayout>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </ScrollView>

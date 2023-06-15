@@ -59,6 +59,7 @@ import com.sgcd.insubunhae.databinding.ActivityMainBinding;
 import com.sgcd.insubunhae.db.Contact;
 import com.sgcd.insubunhae.db.ContactsList;
 import com.sgcd.insubunhae.db.DBHelper;
+import com.sgcd.insubunhae.db.Familiarity;
 import com.sgcd.insubunhae.db.PermissionSupport;
 import com.sgcd.insubunhae.ui.contacts_viewer.FragmentContactsObjectViewer;
 import com.sgcd.insubunhae.ui.home.HomeFragment;
@@ -77,10 +78,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     private PermissionSupport permission;
-    private static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1;
-    private static final int MY_PERMISSIONS_REQUEST_READ_CALL_LOG = 2;
-    private static final int MY_PERMISSIONS_REQUEST_READ_SMS = 3;
-    private static final int MY_PERMISSIONS_REQUEST_POST_NOTIFICATION = 4;
 
     private long lastRetrievalDate = 0L; // Store the timestamp of the last retrieval
 
@@ -95,6 +92,8 @@ public class MainActivity extends AppCompatActivity {
     private FragmentTransaction fragmentTransaction;
     private ContactsList contactsList;
     public ContactsList getContactsList(){ return this.contactsList;}
+    private static ArrayList<Familiarity> famList;
+    public ArrayList<Familiarity> getFamList(){return this.famList;}
     private NavController navController;
 
     private static MainActivity instance;
@@ -111,14 +110,6 @@ public class MainActivity extends AppCompatActivity {
         StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder(StrictMode.getVmPolicy())
                 .detectLeakedClosableObjects()
                 .build());
-
-//        if (getPermission()) { //sms 접근권한 받는 메소드(contacts, call log도 이 메소드 내에 추가하면 될듯!)
-//            // Create new helper
-//            dbHelper = new DBHelper(this);
-//            // Get the database. If it does not exist, this is where it will also be created.
-//            idb = dbHelper.getWritableDatabase();
-//            contactsList = dbHelper.getContactsList();
-//        }
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -138,12 +129,6 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
 
-        // 친밀도 계산
-        //SQLiteDatabase db = dbHelper.getWritableDatabase();
-        //calculateFamiliarity(db);
-        //db.close();
-//        famThread thread = new famThread();
-//        thread.start();
 
         permissionCheck();
     }
@@ -218,79 +203,9 @@ public class MainActivity extends AppCompatActivity {
             newDBHelper();
         }
     }
-    private boolean getPermission() {
-        Log.d("getPermission", "getPermission");
-
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.READ_CONTACTS}, MY_PERMISSIONS_REQUEST_READ_CONTACTS);
-            Log.d("getPermission", "in if");
-            return false;
-        } else {
-            //showToast("Contacts permission already granted.");
-            requestCallLogPermission();// If contacts permission is granted, request call log permission
-            return true;
-        }
-    }
-
-    private void requestCallLogPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CALL_LOG}, MY_PERMISSIONS_REQUEST_READ_CALL_LOG);
-        } else {
-            //showToast("Call log permission already granted.");
-            requestSmsPermission();// If call log permission is granted, request SMS permission
-        }
-    }
-
-    private void requestSmsPermission() {
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.READ_SMS}, MY_PERMISSIONS_REQUEST_READ_SMS);
-        } else {
-            //showToast("SMS permission already granted.");
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                requestNotificationPermission();
-            }
-        }
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
-    private void requestNotificationPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, MY_PERMISSIONS_REQUEST_POST_NOTIFICATION);
-        } else {
-            //showToast("Notification permission already granted.");
-        }
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//
-//        if (requestCode == MY_PERMISSIONS_REQUEST_READ_CONTACTS) {
-//            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                //showToast("Contacts permission granted.");
-//                // Permission granted for reading contacts
-//                // Add your desired action here
-//
-//                // If contacts permission is granted, request call log permission
-//                requestCallLogPermission();
-//            } else {
-//               //showToast("Contacts permission denied.");
-//                // some appropriate actions like re-request permission..?
-//            }
-//        } else if (requestCode == MY_PERMISSIONS_REQUEST_READ_CALL_LOG) {
-//            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                //showToast("Call log permission granted.");// If call log permission is granted, request SMS permission
-//                requestSmsPermission();
-//            } else {
-//                //showToast("Call log permission denied.");
-//            }
-//        } else if (requestCode == MY_PERMISSIONS_REQUEST_READ_SMS) {
-//            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                //showToast("SMS permission granted.");
-//            } else {
-//                //showToast("SMS permission denied.");
-//            }
-//        }
         newDBHelper();
     }
 
@@ -530,6 +445,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static void calculateFamiliarity(SQLiteDatabase db) {
+        famList = new ArrayList<>();
         // MAIN_CONTACTS 에서 contact_id 리스트 가져오기
         Log.d("calculateFamiliarity", "enter");
         List<String> contact_id_list = new ArrayList<>();
@@ -716,7 +632,8 @@ public class MainActivity extends AppCompatActivity {
             values.put("first_contact", timestamp_first_contact);
             db.insert("ANALYSIS", null, values);
 
-
+            Familiarity tmpFam = new Familiarity(cur_contact_id, dbHelper.getNameFromContactID(cur_contact_id),calc_fam);
+            famList.add(tmpFam);
         }
         Log.d("calculateFamiliarity", "end");
     }

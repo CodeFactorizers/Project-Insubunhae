@@ -76,37 +76,12 @@ public class DBHelper extends SQLiteOpenHelper {
         }
 
         contacts_list.getContacts(context, this, db);
-//        Thread dbInsertThread = new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-                contacts_list.dbInsert(db);
-//            }
-//        });
-//        dbInsertThread.start();
 
-//        Thread smsLogThread = new Thread(new Runnable(){
-//            public void run() {
-                smsFromDeviceToDB(db);
-//            }
-//        });
-//        Thread callLogThread = new Thread(new Runnable(){
-//            public void run() {
-                callLogFromDeviceToDB(db);
-                Log.d("tmp", "tmp");
-//            }
-//        });
-//        smsLogThread.start();
-//        callLogThread.start();
-//        try{
-//            callLogThread.join();
-//            smsLogThread.join();
-//            dbInsertThread.join();
-//        }
-//        catch(InterruptedException e){
-//            e.printStackTrace();
-//        }
+        contacts_list.dbInsert(db);
 
-        //calculateFamiliarity(db);
+        smsFromDeviceToDB(db);
+
+        callLogFromDeviceToDB(db);
     }
 
     @Override
