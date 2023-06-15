@@ -46,12 +46,12 @@ public class NotificationsFragment extends Fragment {
         Collections.sort(queue1);
         ArrayList<Familiarity> queue2 = new ArrayList<>();
         for(int i = 0; i < MAX_COL; i++){
-            queue1.add(famList.subList(3,6).get(i));
+            queue2.add(famList.subList(3,6).get(i));
         }
         Collections.sort(queue2);
         ArrayList<Familiarity> queue3 = new ArrayList<>();
         for(int i = 0; i < MAX_COL; i++){
-            queue1.add(famList.subList(6,9).get(i));
+            queue3.add(famList.subList(6,9).get(i));
         }
         Collections.sort(queue3);
         allQueue.add(queue1);
@@ -79,9 +79,19 @@ public class NotificationsFragment extends Fragment {
         tmpTxtView = root.findViewById(R.id.queue1_3);
         tmpTxtView.setText(allQueue.get(0).get(2).getName());
 
-        root.findViewById(R.id.queue1_2);
+        tmpTxtView = root.findViewById(R.id.queue2_1);
+        tmpTxtView.setText(allQueue.get(1).get(0).getName());
+        tmpTxtView = root.findViewById(R.id.queue2_2);
+        tmpTxtView.setText(allQueue.get(1).get(1).getName());
+        tmpTxtView = root.findViewById(R.id.queue2_3);
+        tmpTxtView.setText(allQueue.get(1).get(2).getName());
 
-        root.findViewById(R.id.queue1_3);
+        tmpTxtView = root.findViewById(R.id.queue3_1);
+        tmpTxtView.setText(allQueue.get(2).get(0).getName());
+        tmpTxtView = root.findViewById(R.id.queue3_2);
+        tmpTxtView.setText(allQueue.get(2).get(1).getName());
+        tmpTxtView = root.findViewById(R.id.queue3_3);
+        tmpTxtView.setText(allQueue.get(2).get(2).getName());
 
         return root;
     }
