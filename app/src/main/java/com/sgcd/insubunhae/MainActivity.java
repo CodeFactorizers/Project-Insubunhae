@@ -119,7 +119,6 @@ public class MainActivity extends AppCompatActivity {
 //            idb = dbHelper.getWritableDatabase();
 //            contactsList = dbHelper.getContactsList();
 //        }
-        permissionCheck();
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -143,10 +142,10 @@ public class MainActivity extends AppCompatActivity {
         //SQLiteDatabase db = dbHelper.getWritableDatabase();
         //calculateFamiliarity(db);
         //db.close();
-        famThread thread = new famThread();
-        thread.start();
+//        famThread thread = new famThread();
+//        thread.start();
 
-
+        permissionCheck();
     }
 
     //contacts viewer 뒤로가기 인터페이스
@@ -187,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
                 break;
             case R.id.menu_btn3:
-                moveToMindmap();
+//                moveToMindmap();
                 break;
             default:
                 return super.onOptionsItemSelected(item);
@@ -204,6 +203,7 @@ public class MainActivity extends AppCompatActivity {
                 dbHelper = new DBHelper(this);
                 idb = dbHelper.getWritableDatabase();
                 contactsList = dbHelper.getContactsList();
+                moveToMindmap();
                 famThread thread = new famThread();
                 thread.start();
             }
@@ -531,6 +531,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static void calculateFamiliarity(SQLiteDatabase db) {
         // MAIN_CONTACTS 에서 contact_id 리스트 가져오기
+        Log.d("calculateFamiliarity", "enter");
         List<String> contact_id_list = new ArrayList<>();
         contact_id_list = dbHelper.getAttributeValueFromTable("MAIN_CONTACTS", "contact_id", "contact_id >= 0");
         List<Integer> contact_id_list_int = new ArrayList<>();
@@ -672,5 +673,6 @@ public class MainActivity extends AppCompatActivity {
 
 
         }
+        Log.d("calculateFamiliarity", "end");
     }
 }
