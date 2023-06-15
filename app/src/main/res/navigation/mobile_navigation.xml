@@ -4,21 +4,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
     android:background="@drawable/tp_white_bg"
-    app:startDestination="@+id/navigation_home">
+    app:startDestination="@+id/fragmentBlank">
 
     <fragment
         android:id="@+id/fragmentContactsEditor"
         android:name="com.sgcd.insubunhae.ui.contacts_viewer.FragmentContactsEditor"
         android:label="FragmentContactsEditor"
-        tools:layout="@layout/fragment_contacts_editor"/>
+        tools:layout="@layout/fragment_contacts_editor">
+    </fragment>
     <fragment
         android:id="@+id/fragmentContactsObjectViewer"
         android:name="com.sgcd.insubunhae.ui.contacts_viewer.FragmentContactsObjectViewer"
         android:label="FragmentContactsObjectViewer"
         tools:layout="@layout/fragment_contacts_object_viewer">
         <action
-            android:id="@+id/action_fragmentContactsObjectViewer_to_fragmentContactsEditor"
-            app:destination="@id/fragmentContactsEditor" />
+            android:id="@+id/action_fragmentContactsObjectViewer_action"
+            app:destination="@id/fragmentContactsEditor"
+            />
     </fragment>
 
     <fragment
@@ -27,8 +29,18 @@
         android:label="@string/title_home"
         tools:layout="@layout/fragment_home" >
         <action
-            android:id="@+id/action_navigation_home_to_fragmentContactsObjectViewer"
+            android:id="@+id/action_navigation_home_action"
             app:destination="@id/fragmentContactsObjectViewer" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragmentBlank"
+        android:name="com.sgcd.insubunhae.ui.home.BlankFragment"
+        android:label="@string/title_home"
+        tools:layout="@layout/fragment_blank" >
+        <action
+            android:id="@+id/action_fragmentBlank_action"
+            app:destination="@id/navigation_home" />
     </fragment>
 
 

@@ -76,11 +76,12 @@ public class DBHelper extends SQLiteOpenHelper {
         }
 
         contacts_list.getContacts(context, this, db);
+
         contacts_list.dbInsert(db);
 
         smsFromDeviceToDB(db);
+
         callLogFromDeviceToDB(db);
-        //calculateFamiliarity(db);
     }
 
     @Override
@@ -106,7 +107,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     }
     public void callLogFromDeviceToDB(SQLiteDatabase db) {
-        new Thread(() -> {
+
             int callLogId = DBContract.CallLog.call_log_cnt;        // Call log ID
             int contactId = 0;        // Contact ID
             long callDatetime = DBContract.CallLog.last_updated;    // Call date and time
@@ -247,7 +248,6 @@ public class DBHelper extends SQLiteOpenHelper {
                 //Toast.makeText(context, "CallLog Retrieval finished, lastCallLogId: " + lastCallLogId, Toast.LENGTH_SHORT).show();
                 // For example, you can notify the user that the task is completed or update UI elements based on the retrieved data
             });
-        }).start();
     }
 
     public void smsFromDeviceToDB(SQLiteDatabase db) {
@@ -547,6 +547,36 @@ public class DBHelper extends SQLiteOpenHelper {
         return id;
     }
 
+    public String getTimestampFromANALYSIS(String what, int id) {
+        String ts = null;
+
+        //Log.d("AddTable", "..");
+        SQLiteDatabase idb = getWritableDatabase();
+        Cursor dbCursor = null;
+        //Log.d("AddTable", "..");
+        try {
+            String query = "SELECT " + what + " FROM ANALYSIS WHERE contact_id = " + id;
+            dbCursor = idb.rawQuery(query, null);
+            //Log.d("AddTable", "query : " + query);
+
+            if (dbCursor != null) {
+                while (dbCursor.moveToNext()) {
+                    int columnIndex = dbCursor.getColumnIndex(what);
+                    ts = dbCursor.getString(columnIndex);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (dbCursor != null) {
+                dbCursor.close();
+            }
+        }
+        //idb.close();
+
+        return ts;
+    }
+
     public List<Long> getLongFromTable(String tableName, String attributeName, String condition) {
         List<Long> attributeValues = new ArrayList<>();
 
@@ -556,7 +586,7 @@ public class DBHelper extends SQLiteOpenHelper {
         try {
             String query = "SELECT " + attributeName + " FROM " + tableName + " WHERE " + condition;
             dbCursor = idb.rawQuery(query, null);
-            Log.d("StatisticsFragment", "query : " + query);
+            //Log.d("StatisticsFragment", "query : " + query);
 
             if (dbCursor != null) {
                 while (dbCursor.moveToNext()) {

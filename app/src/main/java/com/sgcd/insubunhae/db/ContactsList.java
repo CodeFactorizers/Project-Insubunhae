@@ -120,6 +120,7 @@ public class ContactsList implements Parcelable {
                 String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
                 contact.setId(id);
                 String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+                if(name == null) continue;
                 contact.setName(name);
 
                 // phoneNumber
@@ -184,6 +185,7 @@ public class ContactsList implements Parcelable {
                 contact.setGroupCount(contact.getGroupId().size());
                 if(contact.getGroupCount() != 0){
                     contact.setIsGrouped(1);
+                    groupIdToName(contact);
                 }
                 if (groupMemberCursor != null) {
                     groupMemberCursor.close();

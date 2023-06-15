@@ -44,6 +44,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import android.view.MenuInflater;
@@ -58,6 +59,8 @@ import com.sgcd.insubunhae.databinding.ActivityMainBinding;
 import com.sgcd.insubunhae.db.Contact;
 import com.sgcd.insubunhae.db.ContactsList;
 import com.sgcd.insubunhae.db.DBHelper;
+import com.sgcd.insubunhae.db.Familiarity;
+import com.sgcd.insubunhae.db.PermissionSupport;
 import com.sgcd.insubunhae.ui.contacts_viewer.FragmentContactsObjectViewer;
 import com.sgcd.insubunhae.ui.home.HomeFragment;
 
@@ -73,10 +76,8 @@ public class MainActivity extends AppCompatActivity {
     public SQLiteDatabase getSQLiteDatabase(){return idb;}
     private Cursor dbCursor;
 
-    private static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1;
-    private static final int MY_PERMISSIONS_REQUEST_READ_CALL_LOG = 2;
-    private static final int MY_PERMISSIONS_REQUEST_READ_SMS = 3;
-    private static final int MY_PERMISSIONS_REQUEST_POST_NOTIFICATION = 4;
+
+    private PermissionSupport permission;
 
     private long lastRetrievalDate = 0L; // Store the timestamp of the last retrieval
 
@@ -91,6 +92,9 @@ public class MainActivity extends AppCompatActivity {
     private FragmentTransaction fragmentTransaction;
     private ContactsList contactsList;
     public ContactsList getContactsList(){ return this.contactsList;}
+    private static ArrayList<Familiarity> famList;
+    public ArrayList<Familiarity> getFamList(){return this.famList;}
+    private NavController navController;
 
     private static MainActivity instance;
 
@@ -107,14 +111,6 @@ public class MainActivity extends AppCompatActivity {
                 .detectLeakedClosableObjects()
                 .build());
 
-        if (getPermission()) { //sms 접근권한 받는 메소드(contacts, call log도 이 메소드 내에 추가하면 될듯!)
-            // Create new helper
-            dbHelper = new DBHelper(this);
-            // Get the database. If it does not exist, this is where it will also be created.
-            idb = dbHelper.getWritableDatabase();
-            contactsList = dbHelper.getContactsList();
-        }
-
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
@@ -129,18 +125,12 @@ public class MainActivity extends AppCompatActivity {
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.navigation_home, R.id.navigation_statistics, R.id.navigation_notifications)
                 .build();
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
+        navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
 
-        // 친밀도 계산
-        //SQLiteDatabase db = dbHelper.getWritableDatabase();
-        //calculateFamiliarity(db);
-        //db.close();
-        famThread thread = new famThread();
-        thread.start();
 
-
+        permissionCheck();
     }
 
     //contacts viewer 뒤로가기 인터페이스
@@ -171,15 +161,17 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Switching on the item id of the menu item
         switch (item.getItemId()) {
+            case android.R.id.home:
+                navController.navigateUp();
+                break;
             case R.id.menu_btn1:
-                fragmentTransaction = fragmentManager.beginTransaction();
-                if(fragmentManager.findFragmentByTag("viewer") == null) {
-                    fragmentTransaction.replace(R.id.nav_host_fragment_activity_main, FragmentContactsObjectViewer.newInstance(), "viewer").addToBackStack("viewer").commit();
-                }
                 break;
             case R.id.menu_btn2:
                 Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
                 startActivity(intent);
+                break;
+            case R.id.menu_btn3:
+//                moveToMindmap();
                 break;
             default:
                 return super.onOptionsItemSelected(item);
@@ -190,79 +182,31 @@ public class MainActivity extends AppCompatActivity {
     /*
     Below: Permission Related Methods & Log Process Methods
      */
-    private boolean getPermission() {
-        Log.d("getPermission", "getPermission");
-
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.READ_CONTACTS}, MY_PERMISSIONS_REQUEST_READ_CONTACTS);
-            Log.d("getPermission", "in if");
-            return false;
-        } else {
-            //showToast("Contacts permission already granted.");
-            requestCallLogPermission();// If contacts permission is granted, request call log permission
-            return true;
-        }
-    }
-
-    private void requestCallLogPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CALL_LOG}, MY_PERMISSIONS_REQUEST_READ_CALL_LOG);
-        } else {
-            //showToast("Call log permission already granted.");
-            requestSmsPermission();// If call log permission is granted, request SMS permission
-        }
-    }
-
-    private void requestSmsPermission() {
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.READ_SMS}, MY_PERMISSIONS_REQUEST_READ_SMS);
-        } else {
-            //showToast("SMS permission already granted.");
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                requestNotificationPermission();
+    private void newDBHelper(){
+        if(dbHelper == null){
+            if(permission.checkPermission()) {
+                dbHelper = new DBHelper(this);
+                idb = dbHelper.getWritableDatabase();
+                contactsList = dbHelper.getContactsList();
+                moveToMindmap();
+                famThread thread = new famThread();
+                thread.start();
             }
         }
     }
-
-    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
-    private void requestNotificationPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, MY_PERMISSIONS_REQUEST_POST_NOTIFICATION);
-        } else {
-            //showToast("Notification permission already granted.");
+    private void permissionCheck(){
+        permission = new PermissionSupport(this, this);
+        if(!permission.checkPermission()){
+            permission.requestPermission();
+        }
+        else{
+            newDBHelper();
         }
     }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        if (requestCode == MY_PERMISSIONS_REQUEST_READ_CONTACTS) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                //showToast("Contacts permission granted.");
-                // Permission granted for reading contacts
-                // Add your desired action here
-
-                // If contacts permission is granted, request call log permission
-                requestCallLogPermission();
-            } else {
-               //showToast("Contacts permission denied.");
-                // some appropriate actions like re-request permission..?
-            }
-        } else if (requestCode == MY_PERMISSIONS_REQUEST_READ_CALL_LOG) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                //showToast("Call log permission granted.");// If call log permission is granted, request SMS permission
-                requestSmsPermission();
-            } else {
-                //showToast("Call log permission denied.");
-            }
-        } else if (requestCode == MY_PERMISSIONS_REQUEST_READ_SMS) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                //showToast("SMS permission granted.");
-            } else {
-                //showToast("SMS permission denied.");
-            }
-        }
+        newDBHelper();
     }
 
     private void processCallLog(Cursor cursor) {
@@ -468,6 +412,9 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
+    public void moveToMindmap(){
+        navController.navigate(R.id.action_fragmentBlank_action);
+    }
     //연락처 뷰어의 편집버튼 눌렀을 때 편집창으로 넘어감
     public void moveToViewer(String id){
         final Bundle bundle = new Bundle();
@@ -476,7 +423,7 @@ public class MainActivity extends AppCompatActivity {
         bundle.putInt("toViewerIdx", idx);
         fragment.setArguments(bundle);
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
-        navController.navigate(R.id.action_navigation_home_to_fragmentContactsObjectViewer, bundle);
+        navController.navigate(R.id.action_navigation_home_action, bundle);
     }
 
     public void moveToEditor(Fragment fragment, int idx){
@@ -484,26 +431,7 @@ public class MainActivity extends AppCompatActivity {
         bundle.putInt("toEditorIdx", idx);
         fragment.setArguments(bundle);
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
-        navController.navigate(R.id.action_fragmentContactsObjectViewer_to_fragmentContactsEditor, bundle);
-    }
-
-    public void toViewer(String id){
-        final Bundle bundle = new Bundle();
-        FragmentContactsObjectViewer fragment = new FragmentContactsObjectViewer();
-        int idx = contactsList.getIndexFromId(id);
-        bundle.putInt("toViewerIdx", idx);
-        fragment.setArguments(bundle);
-        fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.nav_host_fragment_activity_main, fragment, "viewer").addToBackStack("viewer").commit();
-    }
-    public void toEditor(Fragment fragment, int idx){
-        final Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList("contactsListToEditor", dbHelper.getContactsList().getContactsList());
-        bundle.putInt("toEditorIdx", idx);
-        fragment.setArguments(bundle);
-        fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.nav_host_fragment_activity_main, fragment, "editor").addToBackStack("editor").commit();
-        //fragmentTransaction.add(fragment, "editor").commit();
+        navController.navigate(R.id.action_fragmentContactsObjectViewer_action, bundle);
     }
     // some additional functions end
 
@@ -517,7 +445,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static void calculateFamiliarity(SQLiteDatabase db) {
+        famList = new ArrayList<>();
         // MAIN_CONTACTS 에서 contact_id 리스트 가져오기
+        Log.d("calculateFamiliarity", "enter");
         List<String> contact_id_list = new ArrayList<>();
         contact_id_list = dbHelper.getAttributeValueFromTable("MAIN_CONTACTS", "contact_id", "contact_id >= 0");
         List<Integer> contact_id_list_int = new ArrayList<>();
@@ -529,11 +459,13 @@ public class MainActivity extends AppCompatActivity {
 
         //각 contact_id에 대하여, 친밀도(calc_fam) 계산
         for (Integer cur_contact_id : contact_id_list_int) {
+            Log.d("CalFam", "cur contact id : " + cur_contact_id);
 
             int calc_fam = 0; // 친밀도(계산값)
             int recent_content = 0; //
             int content_score = 1; // 최근 연락내용(점수 1~5점)
-            int user_fam = cur_contact_id; // 친밀도(유저 입력)
+            //int user_fam = cur_contact_id; // 친밀도(유저 입력)
+            int user_fam = 1; // 친밀도(유저 입력)
             int how_long_month = -1; // 알고 지낸 시간(월)
             int recent_days = -1; // 최근 연락일 ~ 현재(일)
             int recent_score = -1; // 최근 연락일(점수 1~5점)
@@ -551,20 +483,22 @@ public class MainActivity extends AppCompatActivity {
                 int number = Integer.parseInt(str);
                 m_cnt_int.add(number);
             }
-            //Log.d("CalFam", "sms_cnt : " + m_cnt);
+            Log.d("CalFam", "sms_cnt ( x1 ): " + m_cnt_int);
 
-            // [DB에서 추출] recent_contact, first_contact
-            Long recent_contact = dbHelper.getMaxOfAttribute("MESSENGER_HISTORY", "datetime", cur_contact_id);
-            //Log.d("CalFam", "recent_contact : " + recent_contact);
-            Date date_recent_contact = new Date(recent_contact);
-            SimpleDateFormat dateFormat_recent_contact = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
-            String timestamp_recent_contact = dateFormat_recent_contact.format(date_recent_contact);
-
-            Long first_contact = dbHelper.getMinOfAttribute("MESSENGER_HISTORY", "datetime", cur_contact_id);
-            //Log.d("CalFam", "first_contact : " + first_contact);
-            Date date_first_contact = new Date(first_contact);
-            SimpleDateFormat dateFormat_first_contact = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
-            String timestamp_first_contact = dateFormat_first_contact.format(date_first_contact);
+            // [DB에서 추출] CALL_LOG의 datetime, duration
+            List<String> c_dt = new ArrayList<>();
+            m_dt = dbHelper.getAttributeValueFromTable("CALL_LOG",
+                    "datetime", "contact_id = " + cur_contact_id);
+            //Log.d("CalFam", "call_datetime : " + m_dt);
+            List<String> c_duration = new ArrayList<>();
+            c_duration = dbHelper.getAttributeValueFromTable("CALL_LOG",
+                    "duration", "contact_id = " + cur_contact_id);
+            List<Integer> c_duration_int = new ArrayList<>();
+            for (String str : c_duration) {
+                int number = Integer.parseInt(str);
+                c_duration_int.add(number);
+            }
+            Log.d("CalFam", "call_duration ( x1 ): " + c_duration);
 
             // currentTimestamp = 현재 시간(yy-MM-dd HH:mm:ss) ---------------------------------*/
             Date date_current = new Date();
@@ -576,6 +510,47 @@ public class MainActivity extends AppCompatActivity {
 
             String timestamp_current = dateFormat_current.format(calendar.getTime());
             //-------------------------------------------------------------------------------*/
+
+            // [DB에서 추출] recent_contact, first_contact
+            Long recent_contact_sms = dbHelper.getMaxOfAttribute("MESSENGER_HISTORY", "datetime", cur_contact_id);
+            Long recent_contact_call = dbHelper.getMaxOfAttribute("CALL_LOG", "datetime", cur_contact_id);
+            Long recent_contact = null;
+            if (recent_contact_call < recent_contact_sms) {
+                recent_contact = recent_contact_sms;
+            } else {
+                recent_contact = recent_contact_call;
+            }
+            Log.d("CalFam", "recent_contact_sms : " + recent_contact_sms);
+            Log.d("CalFam", "recent_contact_call : " + recent_contact_call);
+            Log.d("CalFam", "recent_contact (sms + call) : " + recent_contact);
+            String timestamp_recent_contact;
+            SimpleDateFormat dateFormat_recent_contact = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
+            if (recent_contact > 0) {
+                Date date_recent_contact = new Date(recent_contact);
+                timestamp_recent_contact = dateFormat_recent_contact.format(date_recent_contact);
+            } else {
+                timestamp_recent_contact = "00-00-00 00:00:00";
+            }
+
+            Long first_contact_sms = dbHelper.getMinOfAttribute("MESSENGER_HISTORY", "datetime", cur_contact_id);
+            Long first_contact_call = dbHelper.getMinOfAttribute("CALL_LOG", "datetime", cur_contact_id);
+            Long first_contact = null;
+            if (first_contact_call < first_contact_sms) {
+                first_contact = first_contact_call;
+            } else {
+                first_contact = first_contact_sms;
+            }
+            Log.d("CalFam", "first_contact_sms : " + first_contact_sms);
+            Log.d("CalFam", "first_contact_call : " + first_contact_call);
+            Log.d("CalFam", "first_contact : " + first_contact);
+            String timestamp_first_contact;
+            SimpleDateFormat dateFormat_first_contact = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
+            if (first_contact != 0) {
+                Date date_first_contact = new Date(first_contact);
+                timestamp_first_contact = dateFormat_first_contact.format(date_first_contact);
+            } else {
+                timestamp_first_contact = "00-00-00 00:00:00";
+            }
 
             // how_long_month, recent_days, recent_score 계산 --------------------------------*/
             try {
@@ -619,8 +594,13 @@ public class MainActivity extends AppCompatActivity {
             // recent_content
             for (
                     int number : m_cnt_int) {
+                recent_content += number * 20;
+            }
+            for (
+                    int number : c_duration_int) {
                 recent_content += number;
             }
+            //Log.d("CalFam", "recent content : " + recent_content);
             if (recent_content == 0) {
                 content_score = 1;
             } else if (recent_content >= 1 && recent_content <= 500) {
@@ -652,7 +632,9 @@ public class MainActivity extends AppCompatActivity {
             values.put("first_contact", timestamp_first_contact);
             db.insert("ANALYSIS", null, values);
 
-
+            Familiarity tmpFam = new Familiarity(cur_contact_id, dbHelper.getNameFromContactID(cur_contact_id),calc_fam);
+            famList.add(tmpFam);
         }
+        Log.d("calculateFamiliarity", "end");
     }
 }

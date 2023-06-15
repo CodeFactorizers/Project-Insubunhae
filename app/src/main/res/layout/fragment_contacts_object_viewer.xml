@@ -2,218 +2,384 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
-    <data>
-        <import type="java.util.ArrayList"/>
-        <variable name= "name" type= "String" />
-        <variable name= "phone_number1" type= "String"/>
-        <variable name= "phone_number2" type= "String"/>
-        <variable name= "phone_number3" type= "String"/>
-        <variable name= "group_list" type= "String" />
-        <variable name= "group_count" type= "String" />
-        <variable name= "address" type= "String" />
-        <variable name= "address2" type= "String" />
-        <variable name= "email" type= "String" />
-        <variable name= "email2" type= "String" />
-        <variable name= "work" type= "String" />
-        <variable name= "SNS_ID" type= "String" />
 
+    <data>
+        <import type="java.util.ArrayList" />
+        <variable
+            name="name"
+            type="String" />
+        <variable
+            name="phone_number1"
+            type="String" />
+        <variable
+            name="phone_number2"
+            type="String" />
+        <variable
+            name="phone_number3"
+            type="String" />
+        <variable
+            name="group_list"
+            type="String" />
+        <variable
+            name="group_count"
+            type="String" />
+        <variable
+            name="address"
+            type="String" />
+        <variable
+            name="address2"
+            type="String" />
+        <variable
+            name="email"
+            type="String" />
+        <variable
+            name="email2"
+            type="String" />
+        <variable
+            name="work"
+            type="String" />
+        <variable
+            name="SNS_ID"
+            type="String" />
     </data>
 
-    <ScrollView
-        android:id="@+id/contacts_viewer_scroll"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <androidx.constraintlayout.widget.ConstraintLayout
 
-            android:id="@+id/contacts_viewer_constLayout"
+        <Button
+            android:id="@+id/btn_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:elevation="1dp"
+            android:text="편집"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/contacts_viewer_scroll"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="20dp">
-
-
-
-            <TextView
-                android:id="@+id/contacts_viewer_const_name"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="name"
-                android:textSize="16sp"
-                android:layout_marginTop="100dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <Button
-                android:id="@+id/btn_edit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="편집"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
-
-            <TextView
-                android:id="@+id/contacts_viewer_name"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="@{name}"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/contacts_viewer_const_name" />
-
-            <TextView
-                android:id="@+id/contacts_viewer_const_phoneNumber"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="전화번호"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/contacts_viewer_name" />
-
-            <TextView
-                android:id="@+id/contacts_viewer_phoneNumber1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="@{phone_number1}"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/contacts_viewer_const_phoneNumber" />
-
-            <TextView
-                android:id="@+id/contacts_viewer_phoneNumber2"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="@{phone_number2}"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/contacts_viewer_phoneNumber1" />
-
-            <TextView
-                android:id="@+id/contacts_viewer_phoneNumber3"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="@{phone_number3}"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/contacts_viewer_phoneNumber2" />
-
-            <TextView
-                android:id="@+id/contacts_viewer_const_group_list"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="group"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/contacts_viewer_phoneNumber3" />
-
-            <TextView
-                android:id="@+id/contacts_viewer_group_list"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="@{group_list}"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/contacts_viewer_const_group_list" />
-
-            <TextView
-                android:id="@+id/contacts_viewer_group_count"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="@{group_count}"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/contacts_viewer_group_list" />
-
-            <TextView
-                android:id="@+id/contacts_viewer_const_address"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="주소"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/contacts_viewer_group_count" />
-
-            <TextView
-                android:id="@+id/contacts_viewer_address1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="@{address}"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/contacts_viewer_const_address" />
-
-            <TextView
-                android:id="@+id/contacts_viewer_address2"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="@{address2}"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/contacts_viewer_address1" />
-
-            <TextView
-                android:id="@+id/contacts_viewer_const_email"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="이메일"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/contacts_viewer_address2" />
-
-            <TextView
-                android:id="@+id/contacts_viewer_email"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="@{email}"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/contacts_viewer_const_email" />
-
-            <TextView
-                android:id="@+id/contacts_viewer_sub_email"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="@{email2}"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/contacts_viewer_email" />
-
-            <TextView
-                android:id="@+id/contacts_viewer_const_work"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="직장"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/contacts_viewer_sub_email" />
-
-            <TextView
-                android:id="@+id/contacts_viewer_work"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="@{work}"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/contacts_viewer_const_work" />
-
-            <TextView
-                android:id="@+id/contacts_viewer_const_sns_id"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="SNS_ID"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/contacts_viewer_work" />
-            <TextView
-                android:id="@+id/contacts_viewer_sns_id"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="@{SNS_ID}"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/contacts_viewer_sns_id" />
-        </androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_height="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintVertical_bias="1.0"
+            android:layout_marginBottom="100dp"
             >
-    </ScrollView>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+
+                android:id="@+id/contacts_viewer_constLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+
+                <TextView
+                    android:id="@+id/contacts_viewer_const_name"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="40dp"
+                    android:layout_marginRight="10dp"
+                    android:background="#FFFFFF"
+                    android:text="name"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/contacts_viewer_name"
+                    android:layout_width="300dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:background="#FFFFFF"
+                    android:elevation="1dp"
+                    android:padding="10dp"
+                    android:text="@{name}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/contacts_viewer_const_name" />
+
+                <TextView
+                    android:id="@+id/contacts_viewer_const_phoneNumber"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="전화번호"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/contacts_viewer_name" />
+
+                <TextView
+                    android:id="@+id/contacts_viewer_phoneNumber1"
+                    android:layout_width="300dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:background="#FFFFFF"
+                    android:elevation="1dp"
+                    android:padding="10dp"
+                    android:text="@{phone_number1}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/contacts_viewer_const_phoneNumber" />
+
+                <TextView
+                    android:id="@+id/contacts_viewer_phoneNumber2"
+                    android:layout_width="300dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:background="#FFFFFF"
+                    android:elevation="1dp"
+                    android:padding="10dp"
+                    android:text="@{phone_number2}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/callIcon"
+                    app:layout_constraintTop_toBottomOf="@id/contacts_viewer_phoneNumber1" />
+
+                <TextView
+                    android:id="@+id/contacts_viewer_phoneNumber3"
+                    android:layout_width="300dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="40dp"
+                    android:background="#FFFFFF"
+                    android:elevation="1dp"
+                    android:padding="10dp"
+                    android:text="@{phone_number3}"
+                    app:layout_constraintBottom_toTopOf="@+id/contacts_viewer_const_group_list"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/callIcon"
+                    app:layout_constraintTop_toBottomOf="@id/contacts_viewer_phoneNumber2" />
+
+                <TextView
+                    android:id="@+id/contacts_viewer_const_group_list"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:text="group"
+                    app:layout_constraintBottom_toTopOf="@+id/contacts_viewer_group_list"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/contacts_viewer_phoneNumber3" />
+
+                <TextView
+                    android:id="@+id/contacts_viewer_group_list"
+                    android:layout_width="300dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:background="#FFFFFF"
+                    android:elevation="1dp"
+                    android:padding="10dp"
+                    android:text="@{group_list}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/groupIcon"
+                    app:layout_constraintTop_toBottomOf="@id/contacts_viewer_const_group_list" />
+
+                <TextView
+                    android:id="@+id/contacts_viewer_group_count"
+                    android:layout_width="300dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:background="#FFFFFF"
+                    android:elevation="1dp"
+                    android:padding="10dp"
+                    android:text="@{group_count}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/groupIcon"
+                    app:layout_constraintTop_toBottomOf="@id/contacts_viewer_group_list" />
+
+                <TextView
+                    android:id="@+id/contacts_viewer_const_address"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="주소"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/contacts_viewer_group_count" />
+
+                <TextView
+                    android:id="@+id/contacts_viewer_address1"
+                    android:layout_width="300dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:layout_marginStart="11dp"
+                    android:background="#FFFFFF"
+                    android:elevation="1dp"
+                    android:padding="10dp"
+                    android:text="@{address}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/locationIcon"
+                    app:layout_constraintTop_toBottomOf="@id/contacts_viewer_const_address" />
+
+                <TextView
+                    android:id="@+id/contacts_viewer_address2"
+                    android:layout_width="300dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:layout_marginTop="408dp"
+                    android:background="#FFFFFF"
+                    android:elevation="1dp"
+                    android:padding="10dp"
+                    android:text="@{address2}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/locationIcon"
+                    app:layout_constraintTop_toBottomOf="@id/contacts_viewer_address1" />
+
+                <TextView
+                    android:id="@+id/contacts_viewer_const_email"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="9dp"
+                    android:text="이메일"
+                    app:layout_constraintBottom_toTopOf="@+id/contacts_viewer_email"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/contacts_viewer_address2" />
+
+                <TextView
+                    android:id="@+id/contacts_viewer_email"
+                    android:layout_width="300dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:background="#FFFFFF"
+                    android:elevation="1dp"
+                    android:padding="10dp"
+                    android:text="@{email}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/emailIcon"
+                    app:layout_constraintTop_toBottomOf="@id/contacts_viewer_const_email" />
+
+                <TextView
+                    android:id="@+id/contacts_viewer_sub_email"
+                    android:layout_width="300dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:background="#FFFFFF"
+                    android:elevation="1dp"
+                    android:padding="10dp"
+                    android:text="@{email2}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/emailIcon"
+                    app:layout_constraintTop_toBottomOf="@id/contacts_viewer_email" />
+
+                <TextView
+                    android:id="@+id/contacts_viewer_const_work"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="직장"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/contacts_viewer_sub_email" />
+
+                <TextView
+                    android:id="@+id/contacts_viewer_work"
+                    android:layout_width="300dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:layout_marginTop="8dp"
+                    android:background="#FFFFFF"
+                    android:elevation="1dp"
+                    android:padding="10dp"
+                    android:text="@{work}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/workIcon"
+                    app:layout_constraintTop_toBottomOf="@id/contacts_viewer_const_work" />
+
+                <TextView
+                    android:id="@+id/contacts_viewer_const_sns_id"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="SNS_ID"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/contacts_viewer_work" />
+
+                <TextView
+                    android:id="@+id/contacts_viewer_sns_id"
+                    android:layout_width="300dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:background="#FFFFFF"
+                    android:elevation="1dp"
+                    android:padding="10dp"
+                    android:text="@{SNS_ID}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/snsIcon"
+                    app:layout_constraintTop_toBottomOf="@id/contacts_viewer_const_sns_id" />
+
+                <ImageView
+                    android:id="@+id/nameIcon"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintEnd_toStartOf="@+id/contacts_viewer_name"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/contacts_viewer_const_name"
+                    app:srcCompat="@drawable/baseline_person_outline_2" />
+
+                <ImageView
+                    android:id="@+id/callIcon"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="8dp"
+                    android:padding="3dp"
+                    app:layout_constraintEnd_toStartOf="@+id/contacts_viewer_phoneNumber1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/contacts_viewer_const_phoneNumber"
+                    app:srcCompat="@drawable/baseline_call_24" />
+
+                <ImageView
+                    android:id="@+id/groupIcon"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="8dp"
+                    android:padding="3dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/contacts_viewer_const_group_list"
+                    app:srcCompat="@drawable/baseline_groups_24" />
+
+                <ImageView
+                    android:id="@+id/locationIcon"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/contacts_viewer_const_address"
+                    app:srcCompat="@drawable/baseline_location_on_50" />
+
+                <ImageView
+                    android:id="@+id/emailIcon"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/contacts_viewer_const_email"
+                    app:srcCompat="@drawable/baseline_mail_outline_50" />
+
+                <ImageView
+                    android:id="@+id/workIcon"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/contacts_viewer_const_work"
+                    app:srcCompat="@drawable/baseline_home_work_50" />
+
+                <ImageView
+                    android:id="@+id/snsIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/contacts_viewer_const_sns_id"
+                    app:srcCompat="@drawable/baseline_thumb_up_off_alt_50" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.core.widget.NestedScrollView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
 
 

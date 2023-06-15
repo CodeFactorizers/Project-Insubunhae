@@ -39,7 +39,7 @@
         <ScrollView
             android:id="@+id/notification_scrollView"
             android:layout_width="match_parent"
-            android:layout_height="400dp"
+            android:layout_height="300dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/calendarView_notification"
@@ -62,38 +62,81 @@
                     android:layout_marginTop="10dp"
                     android:layout_marginBottom="30dp"
                     android:layout_weight="1"
-                    android:background="#33CC66"
+                    android:background="@color/ic_launcher_ico_background"
                     android:gravity="center"
                     android:padding="10dp"
                     android:text="연락 알림 QUEUE"
-                    android:textColor="@android:color/black"
+                    android:textColor="@android:color/white"
                     app:layout_constraintBottom_toTopOf="@+id/queue_1"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView
+                <LinearLayout
                     android:id="@+id/queue_1"
                     android:layout_width="300dp"
-                    android:layout_height="130dp"
+                    android:layout_height="100dp"
                     android:layout_marginBottom="15dp"
                     android:layout_weight="1"
-                    android:background="#99FFCC"
+                    android:background="@drawable/rounded_square_background_blue3"
                     android:gravity="center"
                     android:text="queue_1"
                     android:textColor="@android:color/black"
                     app:layout_constraintBottom_toTopOf="@+id/queue_2"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/queue_head" />
+                    app:layout_constraintTop_toBottomOf="@+id/queue_head">
 
-                <TextView
+                    <TextView
+                        android:id="@+id/queue1_1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="15dp"
+                        android:background="@drawable/rounded_square_background"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="10dp"
+                        android:text="TextView"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/queue1_2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="15dp"
+                        android:background="@drawable/rounded_square_background"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="10dp"
+                        android:text="TextView"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/queue1_1"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/queue1_3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="15dp"
+                        android:background="@drawable/rounded_square_background"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="10dp"
+                        android:text="TextView"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/queue1_2"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </LinearLayout>
+
+                <LinearLayout
                     android:id="@+id/queue_2"
                     android:layout_width="300dp"
-                    android:layout_height="130dp"
+                    android:layout_height="100dp"
                     android:layout_marginBottom="15dp"
                     android:layout_weight="1"
-                    android:background="#99FFCC"
+                    android:background="@drawable/rounded_square_background_blue"
                     android:gravity="center"
                     android:text="queue_2"
                     android:textColor="@android:color/black"
@@ -101,15 +144,62 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.504"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/queue_1" />
+                    app:layout_constraintTop_toBottomOf="@+id/queue_1">
 
-                <TextView
+                    <TextView
+                        android:id="@+id/queue2_1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="15dp"
+                        android:background="@drawable/rounded_square_background"
+                        android:paddingHorizontal="10dp"
+
+                        android:paddingVertical="10dp"
+                        android:text="TextView"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/queue2_2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="15dp"
+                        android:background="@drawable/rounded_square_background"
+                        android:paddingHorizontal="10dp"
+
+                        android:paddingVertical="10dp"
+                        android:text="TextView"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/queue2_1"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/queue2_3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="15dp"
+                        android:background="@drawable/rounded_square_background"
+                        android:paddingHorizontal="10dp"
+
+                        android:paddingVertical="10dp"
+                        android:text="TextView"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/queue2_2"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </LinearLayout>
+
+
+                <LinearLayout
                     android:id="@+id/queue_3"
                     android:layout_width="300dp"
-                    android:layout_height="130dp"
+                    android:layout_height="100dp"
                     android:layout_marginBottom="30dp"
                     android:layout_weight="1"
-                    android:background="#99FFCC"
+                    android:background="@drawable/rounded_square_background_blue2"
                     android:gravity="center"
                     android:text="queue_2"
                     android:textColor="@android:color/black"
@@ -117,7 +207,54 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.504"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/queue_2" />
+                    app:layout_constraintTop_toBottomOf="@+id/queue_2">
+
+                    <TextView
+                        android:id="@+id/queue3_1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="15dp"
+                        android:background="@drawable/rounded_square_background"
+                        android:paddingHorizontal="10dp"
+
+                        android:paddingVertical="10dp"
+                        android:text="TextView"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/queue3_2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="15dp"
+                        android:background="@drawable/rounded_square_background"
+                        android:paddingHorizontal="10dp"
+
+                        android:paddingVertical="10dp"
+                        android:text="TextView"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/queue3_1"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/queue3_3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="15dp"
+                        android:background="@drawable/rounded_square_background"
+                        android:paddingHorizontal="10dp"
+
+                        android:paddingVertical="10dp"
+                        android:text="TextView"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/queue3_2"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </LinearLayout>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </ScrollView>

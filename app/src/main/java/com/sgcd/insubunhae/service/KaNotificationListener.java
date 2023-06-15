@@ -35,7 +35,7 @@ public class KaNotificationListener extends NotificationListenerService {
         String text=null;
 
         if(!TextUtils.isEmpty(packageName) && packageName.equals("com.kakao.talk")) {
-            Toast.makeText(this, "Kakao Talk message read", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "Kakao Talk message read", Toast.LENGTH_SHORT).show();
             Log.d(TAG, "onNotificationPosted");
 
             if(sbn.getPackageName().equalsIgnoreCase("com.kakao.talk")) {

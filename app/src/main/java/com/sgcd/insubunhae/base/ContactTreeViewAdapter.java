@@ -43,7 +43,7 @@ public class ContactTreeViewAdapter extends TreeViewAdapter<ContactNode> {
         ImageView headView = itemView.findViewById(R.id.portrait);
         final ContactNode contact = node.value;
         nameView.setText(contact.getName());
-        //headView.setImageResource(contact.headId);
+        headView.setImageResource(contact.headId);
         headView.setOnClickListener(v -> {
             if(listener!=null){
                 listener.onItemClick(v,node);

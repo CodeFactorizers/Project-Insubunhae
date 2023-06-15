@@ -7,7 +7,7 @@ public class ContactNode {
     private String id;
     private int isGrouped;
 
-    private int headId = R.drawable.baseline_person_outline_48;
+    public int headId = R.drawable.baseline_person_outline_48;
     private int type;   //0이면 연락처. 1이면 그룹. 기본적으로 연락처
 
     public static final int CONTACT = 0;
@@ -17,6 +17,7 @@ public class ContactNode {
     public ContactNode(String name){
         this.name = name;
         this.type = GROUP;
+        headId = R.drawable.baseline_groups_48;
     }
     public ContactNode(String id, String name, int isGrouped){
         this.type = CONTACT;

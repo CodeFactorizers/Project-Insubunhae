@@ -32,44 +32,90 @@
 
         <TextView
             android:id="@+id/textView"
-            android:layout_width="90dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:background="#66CC66"
-            android:gravity="center"
+            android:layout_width="95dp"
+            android:layout_height="30dp"
+            android:layout_margin="10dp"
+            android:layout_marginBottom="20dp"
+            android:background="#FFFFFF"
+            android:gravity="left"
             android:text="@{statisticsViewModel.text}"
-            android:textColor="@color/white"
+            android:textColor="@color/black"
+            app:layout_constraintBottom_toTopOf="@+id/textViewTable1"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="@+id/contactChangeButton" />
 
         <Button
             android:id="@+id/contactChangeButton"
-            android:layout_width="215dp"
-            android:layout_height="48dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="16dp"
-            android:backgroundTint="#CA4E4E"
-            android:text="Select Contact ID"
-            app:layout_constraintStart_toEndOf="@id/textView"
+            android:layout_width="95dp"
+            android:layout_height="40dp"
+            android:layout_margin="10dp"
+            android:backgroundTint="@color/ic_launcher_temp_background"
+            android:elevation="1dp"
+            android:text="인물 선택"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textViewTable1"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:elevation="1dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="20dp"
+            android:background="#FFFFFF"
+            android:gravity="start"
+            android:text="@{statisticsViewModel.text}"
+            android:textColor="@color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+        <TextView
+            android:id="@+id/textViewTable2"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="16dp"
+            android:background="#FFFFFF"
+            android:elevation="1dp"
+            android:gravity="start"
+            android:text="@{statisticsViewModel.text}"
+            android:textColor="@color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textViewTable1" />
+
+        <TextView
+            android:id="@+id/textViewTable3"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:elevation="1dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="16dp"
+            android:background="#FFFFFF"
+            android:gravity="start"
+            android:text="@{statisticsViewModel.text}"
+            android:textColor="@color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textViewTable2" />
 
         <TextView
             android:id="@+id/textView_pieTitle"
             android:layout_width="150dp"
             android:layout_height="30dp"
-            android:background="@color/purple_700"
+            android:layout_margin="10dp"
+            android:background="@color/ic_launcher_ico_background"
+            android:elevation="1dp"
             android:gravity="center"
             android:text="전체 인물의 친밀도"
             android:textColor="@color/white"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/contactChangeButton"
-            app:layout_constraintBottom_toTopOf="@+id/piechart1" />
+            app:layout_constraintBottom_toBottomOf="@+id/textView"
+            app:layout_constraintTop_toTopOf="@+id/textView"
+            tools:layout_editor_absoluteX="10dp" />
 
         <com.github.mikephil.charting.charts.PieChart
             android:id="@+id/piechart1"
             android:layout_width="400dp"
             android:layout_height="200dp"
+            android:background="#FFFFFF"
             app:layout_constraintBottom_toTopOf="@+id/calendarView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.454"
@@ -81,6 +127,7 @@
             android:id="@+id/piechart2"
             android:layout_width="150dp"
             android:layout_height="120dp"
+            android:background="#FFFFFF"
             app:layout_constraintBottom_toTopOf="@+id/calendarView"
             app:layout_constraintEnd_toStartOf="@+id/barchart"
             app:layout_constraintStart_toStartOf="parent"
@@ -91,6 +138,7 @@
             android:id="@+id/barchart"
             android:layout_width="150dp"
             android:layout_height="120dp"
+            android:background="#FFFFFF"
             app:layout_constraintBottom_toTopOf="@+id/calendarView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/piechart2"
@@ -100,8 +148,9 @@
         <com.prolificinteractive.materialcalendarview.MaterialCalendarView
             android:id="@+id/calendarView"
             android:layout_width="332dp"
-            android:layout_height="292dp"
+            android:layout_height="270dp"
             android:background="#FFFFFF"
+            android:gravity="left"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
             app:layout_constraintBottom_toBottomOf="parent"

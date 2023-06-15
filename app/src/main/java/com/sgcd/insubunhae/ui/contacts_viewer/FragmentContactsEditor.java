@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.provider.Contacts;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -20,6 +21,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.sgcd.insubunhae.MainActivity;
 import com.sgcd.insubunhae.R;
@@ -31,8 +33,10 @@ import com.sgcd.insubunhae.db.DBHelper;
 
 import java.util.ArrayList;
 
-public class FragmentContactsEditor extends Fragment implements MainActivity.onBackPressedListener{
+//public class FragmentContactsEditor extends Fragment implements MainActivity.onBackPressedListener{
+public class FragmentContactsEditor extends Fragment{
     private FragmentContactsEditorBinding binding;
+    private FragmentContactsEditor fragmentContactsEditor;
     private Context context;
     private Contact contacts;
     private MainActivity activity;
@@ -50,6 +54,7 @@ public class FragmentContactsEditor extends Fragment implements MainActivity.onB
         super.onAttach(context);
         this.context = context;
         activity = (MainActivity) getActivity();
+        fragmentContactsEditor = this;
     }
 
 //    @Override
@@ -81,17 +86,18 @@ public class FragmentContactsEditor extends Fragment implements MainActivity.onB
 
 
         Button btn_save = root.findViewById(R.id.btn_save);
-        Button btn_back = root.findViewById(R.id.btn_back);
+//        Button btn_back = root.findViewById(R.id.btn_back);
         EditText editText = root.findViewById(R.id.contacts_editor_name);
         Contact tmp = contacts;
         tmp = activity.getContactsList().getContact(idx);
 
-        btn_back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+//        btn_back.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+////                onBackPressed();
+//                NavHostFragment.findNavController(fragmentContactsEditor).navigateUp();
+//            }
+//        });
         btn_save.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 contacts.setName(binding.getName());
@@ -141,8 +147,9 @@ public class FragmentContactsEditor extends Fragment implements MainActivity.onB
 
                 Toast.makeText(context, binding.getName(), Toast.LENGTH_SHORT).show();
                 Log.d("editor", "before call back");
+                NavHostFragment.findNavController(fragmentContactsEditor).navigateUp();
 
-                onBackPressed();
+//                onBackPressed();
             }
         });
 
@@ -162,11 +169,11 @@ public class FragmentContactsEditor extends Fragment implements MainActivity.onB
         return root;
     }
 
-    @Override
-    public void onBackPressed() {
-        Log.d("editor", "onBackPressed");
-//        activity.myGetFragmentManager().popBackStack();
-    }
+//    @Override
+//    public void onBackPressed() {
+//        Log.d("editor", "onBackPressed");
+////        activity.myGetFragmentManager().popBackStack();
+//    }
 
     private static boolean isValid(String str){
         boolean ret = str == null || str.isEmpty();
@@ -182,7 +189,7 @@ public class FragmentContactsEditor extends Fragment implements MainActivity.onB
             binding.setPhoneNumber1(db_phone_num.get(0));
         }
         else{
-            binding.setPhoneNumber1(" ");
+            binding.setPhoneNumber1("");
 //            View tmpView = root.findViewById(R.id.contacts_editor_phoneNumber1);
 //            tmpView.setVisibility(View.GONE);
         }
@@ -190,17 +197,17 @@ public class FragmentContactsEditor extends Fragment implements MainActivity.onB
             binding.setPhoneNumber2(db_phone_num.get(1));
         }
         else{
-            binding.setPhoneNumber2(" ");
+            binding.setPhoneNumber2("");
             View tmpView = root.findViewById(R.id.contacts_editor_phoneNumber2);
-            tmpView.setVisibility(View.GONE);
+            //tmpView.setVisibility(View.GONE);
         }
         if(db_phone_num.size() > 2 && db_phone_num.get(2) != null){
             binding.setPhoneNumber3(db_phone_num.get(2));
         }
         else{
-            binding.setPhoneNumber3(" ");
+            binding.setPhoneNumber3("");
             View tmpView = root.findViewById(R.id.contacts_editor_phoneNumber3);
-            tmpView.setVisibility(View.GONE);
+            //tmpView.setVisibility(View.GONE);
         }
         if(contact.getGroupId().size() != 0){
             String groupStr = new String();
@@ -211,45 +218,45 @@ public class FragmentContactsEditor extends Fragment implements MainActivity.onB
             binding.setGroupList(groupStr);
         }
         else{
-            binding.setGroupList(" ");
+            binding.setGroupList("");
             View tmpView = root.findViewById((R.id.contacts_editor_group_list));
-            tmpView.setVisibility(View.GONE);
+            //tmpView.setVisibility(View.GONE);
         }
         //주소
         if((contact.getAddress().size() > 0) && (contact.getAddress().get(0) !=null)) binding.setAddress(contact.getAddress().get(0));
         else{
-            binding.setAddress(" ");
+            binding.setAddress("");
             View tmpView = root.findViewById(R.id.contacts_editor_address1);
-            tmpView.setVisibility(View.GONE);
+            //tmpView.setVisibility(View.GONE);
         }
         if(contact.getAddress().size() > 1 && (contact.getAddress().get(0) !=null)) binding.setAddress2(contact.getAddress().get(1));
         else{
-            binding.setAddress2(" ");
+            binding.setAddress2("");
             View tmpView = root.findViewById(R.id.contacts_editor_address2);
-            tmpView.setVisibility(View.GONE);
+            //tmpView.setVisibility(View.GONE);
         }
         //이메일
         if(contact.getEmail().size() > 0 && (contact.getEmail().get(0) !=null)) binding.setEmail(contact.getEmail().get(0));
         else{
-            binding.setEmail(" ");
+            binding.setEmail("");
             View tmpView = root.findViewById(R.id.contacts_editor_email);
-            tmpView.setVisibility(View.GONE);
+            //tmpView.setVisibility(View.GONE);
         }
         if(contact.getEmail().size() > 1 && (contact.getEmail().get(0) !=null))binding.setEmail2(contact.getEmail().get(1));
         else{
-            binding.setEmail2(" ");
+            binding.setEmail2("");
             View tmpView = root.findViewById(R.id.contacts_editor_sub_email);
-            tmpView.setVisibility(View.GONE);
+            //tmpView.setVisibility(View.GONE);
         }
         //직장
         if(contact.getCompany() != null)binding.setWork(contact.getCompany());
         else{
-            binding.setWork(" ");
+            binding.setWork("");
             root.findViewById(R.id.contacts_editor_work).setVisibility(View.GONE);
         }
         //sns id
         if(contact.getSnsId() != null) binding.setSNSID(contact.getSnsId());
-        else root.findViewById(R.id.contacts_editor_sns_id).setVisibility(View.GONE);
+        //else root.findViewById(R.id.contacts_editor_sns_id).setVisibility(View.GONE);
     }
 
 
