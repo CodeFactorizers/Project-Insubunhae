@@ -92,6 +92,7 @@ public class DBHelper extends SQLiteOpenHelper {
 //        Thread callLogThread = new Thread(new Runnable(){
 //            public void run() {
                 callLogFromDeviceToDB(db);
+                Log.d("tmp", "tmp");
 //            }
 //        });
 //        smsLogThread.start();
