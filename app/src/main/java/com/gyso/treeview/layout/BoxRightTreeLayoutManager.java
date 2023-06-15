@@ -53,7 +53,7 @@ public class BoxRightTreeLayoutManager extends TreeLayoutManager {
             ITraversal<NodeModel<?>> traversal = new ITraversal<NodeModel<?>>() {
                 @Override
                 public void next(NodeModel<?> next) {
-                    Log.d(TAG, "performMeasure:"+next);
+                    //Log.d(TAG, "performMeasure:"+next);
                     if(!next.childNodes.isEmpty()){
                         parentsStack.add(next);
                     }else{
