@@ -214,8 +214,7 @@ public class StatisticsFragment extends Fragment {
                     public void onClick(DialogInterface dialog, int which) {
                         //cur_contact_id = contactIds.get(which);
                         cur_contact_id = which + start_index + 1;
-                        //cur_contact_id =
-                        Log.d("sehee update", "cur_contact_id : " + cur_contact_id);
+                        Log.d("Check CI in dialog", "cur_contact_id : " + cur_contact_id);
 
                         // name tag
                         StatisticsViewModel statisticsViewModel =
@@ -238,7 +237,7 @@ public class StatisticsFragment extends Fragment {
                         TextView textView_pieTitle = binding.textViewPieTitle;
                         textView_pieTitle.setVisibility(View.INVISIBLE);
 
-                        Log.d("AddTable", "cur id : " + cur_contact_id);
+                        //Log.d("AddTable", "cur id : " + cur_contact_id);
                         // [Draw] information table
                         TextView textViewTable1 = binding.textViewTable1;
                         statisticsViewModel.getFirstContact(cur_contact_id).observe(getViewLifecycleOwner(), text -> {
@@ -291,7 +290,7 @@ public class StatisticsFragment extends Fragment {
     }
 
     public void drawPieChart_compareCallvsSms_initial(PieChart pieChart) {
-        Log.d("sehee update", "second pie start");
+        //Log.d("sehee update", "second pie start");
 
         pieChart.setDrawHoleEnabled(true);
         pieChart.setHoleColor(Color.WHITE);
@@ -398,6 +397,7 @@ public class StatisticsFragment extends Fragment {
         List<Pair<Integer, String>> chartData = new ArrayList<>();
         for (int i = 0; i < calc_fam_list.length; i++) {
             chartData.add(new Pair<>(calc_fam_list[i], contactNameArray[i]));
+            Log.d("Check CI in totalpie", "id : " + calc_fam_list[i] + ", name : " + contactNameArray[i]);
         }
 
         // 정렬
@@ -407,6 +407,7 @@ public class StatisticsFragment extends Fragment {
                 return o2.first - o1.first;
             }
         });
+
 
         pieChart.setDrawHoleEnabled(true);
         pieChart.setHoleColor(Color.WHITE);
