@@ -38,7 +38,7 @@ public class StatisticsViewModel extends ViewModel {
 
     public LiveData<String> getFirstContact(int cur_contact_id) {
         String tmp = dbHelper.getTimestampFromANALYSIS("first_contact", cur_contact_id);
-        Log.d("AddTable", "tmp : " + tmp);
+        Log.d("AddTable", "first contact : " + tmp);
         tmp_string1 = new MutableLiveData<>("첫 연락일 : " + tmp);
 
         return tmp_string1;
@@ -46,7 +46,7 @@ public class StatisticsViewModel extends ViewModel {
 
     public LiveData<String> getRecentContact(int cur_contact_id) {
         String tmp = dbHelper.getTimestampFromANALYSIS("recent_contact", cur_contact_id);
-        Log.d("AddTable", "tmp : " + tmp);
+        Log.d("AddTable", "recent contact : " + tmp);
         tmp_string2 = new MutableLiveData<>("최근 연락일 : " + tmp);
 
         return tmp_string2;
@@ -54,6 +54,7 @@ public class StatisticsViewModel extends ViewModel {
 
     public LiveData<String> getFam(int cur_contact_id) {
         int tmp = dbHelper.getIntFromTable("ANALYSIS", "calc_fam", "contact_id = " + cur_contact_id);
+        Log.d("AddTable", "fam : " + tmp);
         tmp_string3 = new MutableLiveData<>("친밀도 : " + String.valueOf(tmp) + "점");
 
         return tmp_string3;

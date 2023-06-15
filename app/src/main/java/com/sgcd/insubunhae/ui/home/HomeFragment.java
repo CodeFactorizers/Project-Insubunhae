@@ -359,7 +359,7 @@ public class HomeFragment extends Fragment {
                 if(notAssignedNode.leafCount >= LEAF_MAX){
                     //notAssigend에 연락처 많으면 로그만 출력
 //                    Log.d("nANode", "leafCount: "+ notAssignedNode.leafCount+" leavesList"+ notAssignedNode.leavesList+"child"+notAssignedNode.childNodes);
-//                    Log.d("nANode", "node : " + tmpContact.getName());
+
                 }
                 else {
                     //notAssigned에 추가
