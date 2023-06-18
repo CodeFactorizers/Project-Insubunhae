@@ -531,7 +531,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static void calculateFamiliarity(SQLiteDatabase db) {
         // MAIN_CONTACTS 에서 contact_id 리스트 가져오기
-        Log.d("calculateFamiliarity", "enter");
+        //Log.d("calculateFamiliarity", "enter");
         List<String> contact_id_list = new ArrayList<>();
         contact_id_list = dbHelper.getAttributeValueFromTable("MAIN_CONTACTS", "contact_id", "contact_id >= 0");
         List<Integer> contact_id_list_int = new ArrayList<>();
@@ -543,7 +543,7 @@ public class MainActivity extends AppCompatActivity {
 
         //각 contact_id에 대하여, 친밀도(calc_fam) 계산
         for (Integer cur_contact_id : contact_id_list_int) {
-            Log.d("CalFam", "cur contact id : " + cur_contact_id);
+            //Log.d("CalFam", "cur contact id : " + cur_contact_id);
 
             int calc_fam = 0; // 친밀도(계산값)
             int recent_content = 0; //
@@ -567,7 +567,7 @@ public class MainActivity extends AppCompatActivity {
                 int number = Integer.parseInt(str);
                 m_cnt_int.add(number);
             }
-            Log.d("CalFam", "sms_cnt ( x1 ): " + m_cnt_int);
+            //Log.d("CalFam", "sms_cnt ( x1 ): " + m_cnt_int);
 
             // [DB에서 추출] CALL_LOG의 datetime, duration
             List<String> c_dt = new ArrayList<>();
@@ -582,7 +582,7 @@ public class MainActivity extends AppCompatActivity {
                 int number = Integer.parseInt(str);
                 c_duration_int.add(number);
             }
-            Log.d("CalFam", "call_duration ( x1 ): " + c_duration);
+            //Log.d("CalFam", "call_duration ( x1 ): " + c_duration);
 
             // currentTimestamp = 현재 시간(yy-MM-dd HH:mm:ss) ---------------------------------*/
             Date date_current = new Date();
@@ -604,9 +604,9 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 recent_contact = recent_contact_call;
             }
-            Log.d("CalFam", "recent_contact_sms : " + recent_contact_sms);
-            Log.d("CalFam", "recent_contact_call : " + recent_contact_call);
-            Log.d("CalFam", "recent_contact (sms + call) : " + recent_contact);
+//            Log.d("CalFam", "recent_contact_sms : " + recent_contact_sms);
+//            Log.d("CalFam", "recent_contact_call : " + recent_contact_call);
+//            Log.d("CalFam", "recent_contact (sms + call) : " + recent_contact);
             String timestamp_recent_contact;
             SimpleDateFormat dateFormat_recent_contact = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
             if (recent_contact > 0) {
@@ -624,9 +624,9 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 first_contact = first_contact_sms;
             }
-            Log.d("CalFam", "first_contact_sms : " + first_contact_sms);
-            Log.d("CalFam", "first_contact_call : " + first_contact_call);
-            Log.d("CalFam", "first_contact : " + first_contact);
+//            Log.d("CalFam", "first_contact_sms : " + first_contact_sms);
+//            Log.d("CalFam", "first_contact_call : " + first_contact_call);
+//            Log.d("CalFam", "first_contact : " + first_contact);
             String timestamp_first_contact;
             SimpleDateFormat dateFormat_first_contact = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
             if (first_contact != 0) {
@@ -718,6 +718,6 @@ public class MainActivity extends AppCompatActivity {
 
 
         }
-        Log.d("calculateFamiliarity", "end");
+        //Log.d("calculateFamiliarity", "end");
     }
 }
