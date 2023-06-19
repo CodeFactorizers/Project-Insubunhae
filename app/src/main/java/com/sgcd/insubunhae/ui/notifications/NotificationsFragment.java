@@ -73,26 +73,25 @@ public class NotificationsFragment extends Fragment {
         ArrayList<Familiarity> tmpQueue = allQueue.get(0);
         TextView tmpTxtView;
         tmpTxtView = root.findViewById(R.id.queue1_1);
-        tmpTxtView.setText(allQueue.get(0).get(0).getName());
+        tmpTxtView.setText(allQueue.get(0).get(0).getName()+"\n 6/18");
         tmpTxtView = root.findViewById(R.id.queue1_2);
-        tmpTxtView.setText(allQueue.get(0).get(1).getName());
+        tmpTxtView.setText(allQueue.get(0).get(1).getName()+"\n 6/20");
         tmpTxtView = root.findViewById(R.id.queue1_3);
-        tmpTxtView.setText(allQueue.get(0).get(2).getName());
+        tmpTxtView.setText(allQueue.get(0).get(2).getName()+"\n 6/24");
 
         tmpTxtView = root.findViewById(R.id.queue2_1);
-        tmpTxtView.setText(allQueue.get(1).get(0).getName());
+        tmpTxtView.setText(allQueue.get(1).get(0).getName()+"\n 7/1");
         tmpTxtView = root.findViewById(R.id.queue2_2);
-        tmpTxtView.setText(allQueue.get(1).get(1).getName());
+        tmpTxtView.setText(allQueue.get(1).get(1).getName()+"\n 7/3");
         tmpTxtView = root.findViewById(R.id.queue2_3);
-        tmpTxtView.setText(allQueue.get(1).get(2).getName());
+        tmpTxtView.setText(allQueue.get(1).get(2).getName()+"\n 7/7");
 
         tmpTxtView = root.findViewById(R.id.queue3_1);
-        tmpTxtView.setText(allQueue.get(2).get(0).getName());
+        tmpTxtView.setText(allQueue.get(2).get(0).getName()+"\n 8/3");
         tmpTxtView = root.findViewById(R.id.queue3_2);
-        tmpTxtView.setText(allQueue.get(2).get(1).getName());
+        tmpTxtView.setText(allQueue.get(2).get(1).getName() + "\n 8/4");
         tmpTxtView = root.findViewById(R.id.queue3_3);
-        tmpTxtView.setText(allQueue.get(2).get(2).getName());
-
+        tmpTxtView.setText(allQueue.get(2).get(2).getName()+"\n 8.7");
         return root;
     }
 
